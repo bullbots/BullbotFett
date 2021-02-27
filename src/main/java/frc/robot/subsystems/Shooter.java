@@ -49,8 +49,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public Shooter(){
-        top_shooter = new SafeSparkMax(Constants.TOP_SHOOTER_PORT, MotorType.kBrushless);
-        bottom_shooter = new SafeSparkMax(Constants.BOTTOM_SHOOTER_PORT, MotorType.kBrushless);
+        // top_shooter = new SafeSparkMax(Constants.TOP_SHOOTER_PORT, MotorType.kBrushless);
+        // bottom_shooter = new SafeSparkMax(Constants.BOTTOM_SHOOTER_PORT, MotorType.kBrushless);
       
         // Always reset to factory defaults, just in case.
         top_shooter.restoreFactoryDefaults();

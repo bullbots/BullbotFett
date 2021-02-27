@@ -15,10 +15,12 @@ public final class Constants {
     // Intake Ports
     public static int INTAKE_PORT = 10;
     public static int INTAKE_RAISE_PORT = 13;
+    // public static int INTAKE_RAISE_CHANNEL = 0; // 2/27/21
+    // public static int INTAKE_LOWER_CHANNEL = 1;
 
     // Shooter Ports
-    public static int TOP_SHOOTER_PORT = 6;
-    public static int BOTTOM_SHOOTER_PORT = 7;
+    // public static int TOP_SHOOTER_PORT = 6;
+    // public static int BOTTOM_SHOOTER_PORT = 7;
     // public static int SHAKER_PORT = 11;
     public static int RELEASE_SERVO_PORT = 0;
 
@@ -39,6 +41,7 @@ public final class Constants {
     /**
      * ALL DRIVETRAIN RELATED CONSTANTS GO HERE
      */
+    public static double MAX_SPEED_LOW_GEAR = .8;
 
     public static double LEFT_VELOCITY_FF = 0.0455;
     public static double LEFT_VELOCITY_P = 0.18;
