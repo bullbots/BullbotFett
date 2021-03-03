@@ -14,6 +14,7 @@ import frc.robot.util.Shifter;
 import frc.robot.util.NavX;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.music.Orchestra;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -38,6 +39,8 @@ public class DrivetrainFalcon extends SubsystemBase {
 
   public final SafeTalonFX leftMasterFalcon = new SafeTalonFX(Constants.LEFT_MASTER_PORT, true); // change to false for no PID?
   public final SafeTalonFX rightMasterFalcon = new SafeTalonFX(Constants.RIGHT_MASTER_PORT, true);
+  private final SafeTalonFX leftSlaveFalcon = new SafeTalonFX(Constants.LEFT_SLAVE_PORT, true);
+  private final SafeTalonFX rightSlaveFalcon = new SafeTalonFX(Constants.RIGHT_SLAVE_PORT, true);
 
   private final DifferentialDrive diffDrive = new DifferentialDrive(leftMasterFalcon, rightMasterFalcon);
   private final NavX gyro = new NavX();
@@ -69,14 +72,11 @@ public class DrivetrainFalcon extends SubsystemBase {
 
   public DrivetrainFalcon() {
     if (Robot.isReal()) {
-      SafeTalonFX leftSlaveFalcon = new SafeTalonFX(Constants.LEFT_SLAVE_PORT);
-      SafeTalonFX rightSlaveFalcon = new SafeTalonFX(Constants.RIGHT_SLAVE_PORT);
-
       leftSlaveFalcon.follow(leftMasterFalcon);
       rightSlaveFalcon.follow(rightMasterFalcon);
 
       leftMasterFalcon.setInverted(true);
-      leftSlaveFalcon.setInverted(true);
+      leftSlaveFalcon.setInverted(InvertType.FollowMaster);
 
       leftMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
       rightMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
@@ -96,7 +96,7 @@ public class DrivetrainFalcon extends SubsystemBase {
     diffDrive.setSafetyEnabled(false);
 
     configurePID();
-    configureMotionMagic();
+    // configureMotionMagic();
     configureSmartDashboard();
   }
 
@@ -134,6 +134,16 @@ public class DrivetrainFalcon extends SubsystemBase {
     rightMasterFalcon.config_kP(0, Constants.RIGHT_VELOCITY_P);
     rightMasterFalcon.config_kI(0, Constants.RIGHT_VELOCITY_I);
     rightMasterFalcon.config_kD(0, Constants.RIGHT_VELOCITY_D);
+
+    leftSlaveFalcon.config_kF(0, Constants.LEFT_VELOCITY_FF);
+    leftSlaveFalcon.config_kP(0, Constants.LEFT_VELOCITY_P);
+    leftSlaveFalcon.config_kI(0, Constants.LEFT_VELOCITY_I);
+    leftSlaveFalcon.config_kP(0, Constants.LEFT_VELOCITY_D);
+
+    rightSlaveFalcon.config_kF(0, Constants.RIGHT_VELOCITY_FF);
+    rightSlaveFalcon.config_kP(0, Constants.RIGHT_VELOCITY_P);
+    rightSlaveFalcon.config_kI(0, Constants.RIGHT_VELOCITY_I);
+    rightSlaveFalcon.config_kD(0, Constants.RIGHT_VELOCITY_D);
   }
 
   private void configureMotionMagic() {
@@ -157,8 +167,8 @@ public class DrivetrainFalcon extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Encoder Ticks - Left", leftMasterFalcon.getSelectedSensorPosition());
     SmartDashboard.putNumber("Encoder Ticks - Right", rightMasterFalcon.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Encoder Rate - Left", leftMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot);
-    SmartDashboard.putNumber("Encoder Rate - Right", rightMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot);
+    SmartDashboard.putNumber("Encoder Rate - Left", leftMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0);
+    SmartDashboard.putNumber("Encoder Rate - Right", rightMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0);
 
     updateOdometry();
 

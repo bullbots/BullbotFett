@@ -41,20 +41,28 @@ public final class Constants {
     /**
      * ALL DRIVETRAIN RELATED CONSTANTS GO HERE
      */
-    public static double MAX_SPEED_LOW_GEAR = .8;
+    public static double MAX_SPEED_LOW_GEAR = 8.0;
 
-    public static double LEFT_VELOCITY_FF = 0.0455;
-    public static double LEFT_VELOCITY_P = 0.18;
+    // public static double LEFT_VELOCITY_FF = 0.0455;
+    public static double LEFT_VELOCITY_P = 0.15;
     public static double LEFT_VELOCITY_I = 0.0001;
     public static double LEFT_VELOCITY_D = 0;
+    public static double LEFT_VELOCITY_FF = 4096.0/21000.0;
+    // public static double LEFT_VELOCITY_P = 0.2;
+    // public static double LEFT_VELOCITY_I = 0.001;
+    // public static double LEFT_VELOCITY_D = 0;
 
     public static int LEFT_MASTER_ACCELERATION = 0;
     public static int LEFT_MASTER_VELOCITY = 0;
 
-    public static double RIGHT_VELOCITY_FF = 0.0473;
+    // public static double RIGHT_VELOCITY_FF = 0.0473;
     public static double RIGHT_VELOCITY_P = 0.15;
     public static double RIGHT_VELOCITY_I = 0;
     public static double RIGHT_VELOCITY_D = 0;
+    public static double RIGHT_VELOCITY_FF = 4096.0/21000.0;
+    // public static double RIGHT_VELOCITY_P = 0.2;
+    // public static double RIGHT_VELOCITY_I = 0.001;
+    // public static double RIGHT_VELOCITY_D = 0;
 
     public static int RIGHT_MASTER_ACCELERATION = 3300;
     public static int RIGHT_MASTER_VELOCITY = 3300;

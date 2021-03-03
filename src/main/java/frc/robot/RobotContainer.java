@@ -63,7 +63,7 @@ public class RobotContainer {
   // private final Climb climb = new Climb();
   private final ControlPanel controlPanel = new ControlPanel();
 
-  // private final Compressor compressor = new Compressor();
+  private final Compressor compressor = new Compressor();
 
   private Trajectory m_trajectory;
 
@@ -79,7 +79,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // compressor.start();
-    // compressor.stop();
+    compressor.stop();
     
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,
