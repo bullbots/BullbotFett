@@ -47,7 +47,7 @@ public final class Constants {
     public static double LEFT_VELOCITY_P = 0.15;
     public static double LEFT_VELOCITY_I = 0.0001;
     public static double LEFT_VELOCITY_D = 0;
-    public static double LEFT_VELOCITY_FF = 4096.0/21000.0;
+    public static double LEFT_VELOCITY_FF = 2048.0/21000.0;
     // public static double LEFT_VELOCITY_P = 0.2;
     // public static double LEFT_VELOCITY_I = 0.001;
     // public static double LEFT_VELOCITY_D = 0;
@@ -59,7 +59,7 @@ public final class Constants {
     public static double RIGHT_VELOCITY_P = 0.15;
     public static double RIGHT_VELOCITY_I = 0;
     public static double RIGHT_VELOCITY_D = 0;
-    public static double RIGHT_VELOCITY_FF = 4096.0/21000.0;
+    public static double RIGHT_VELOCITY_FF = 2048.0/21000.0;
     // public static double RIGHT_VELOCITY_P = 0.2;
     // public static double RIGHT_VELOCITY_I = 0.001;
     // public static double RIGHT_VELOCITY_D = 0;

@@ -102,10 +102,6 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    SmartDashboard.putNumber("TurnSpeed", 0);
-
-    SmartDashboard.putNumber("Speed", 0);
-
     SmartDashboard.putData(new InstantCommand(
       () -> drivetrain.resetEncoders(),
       drivetrain

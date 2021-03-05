@@ -78,8 +78,8 @@ public class DrivetrainFalcon extends SubsystemBase {
       leftMasterFalcon.setInverted(true);
       leftSlaveFalcon.setInverted(InvertType.FollowMaster);
 
-      leftMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
-      rightMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
+      // leftMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
+      // rightMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
 
       // orchestra = new Orchestra();
       // orchestra.addInstrument(leftMasterFalcon);
@@ -135,15 +135,15 @@ public class DrivetrainFalcon extends SubsystemBase {
     rightMasterFalcon.config_kI(0, Constants.RIGHT_VELOCITY_I);
     rightMasterFalcon.config_kD(0, Constants.RIGHT_VELOCITY_D);
 
-    leftSlaveFalcon.config_kF(0, Constants.LEFT_VELOCITY_FF);
-    leftSlaveFalcon.config_kP(0, Constants.LEFT_VELOCITY_P);
-    leftSlaveFalcon.config_kI(0, Constants.LEFT_VELOCITY_I);
-    leftSlaveFalcon.config_kP(0, Constants.LEFT_VELOCITY_D);
+    // leftSlaveFalcon.config_kF(0, Constants.LEFT_VELOCITY_FF);
+    // leftSlaveFalcon.config_kP(0, Constants.LEFT_VELOCITY_P);
+    // leftSlaveFalcon.config_kI(0, Constants.LEFT_VELOCITY_I);
+    // leftSlaveFalcon.config_kP(0, Constants.LEFT_VELOCITY_D);
 
-    rightSlaveFalcon.config_kF(0, Constants.RIGHT_VELOCITY_FF);
-    rightSlaveFalcon.config_kP(0, Constants.RIGHT_VELOCITY_P);
-    rightSlaveFalcon.config_kI(0, Constants.RIGHT_VELOCITY_I);
-    rightSlaveFalcon.config_kD(0, Constants.RIGHT_VELOCITY_D);
+    // rightSlaveFalcon.config_kF(0, Constants.RIGHT_VELOCITY_FF);
+    // rightSlaveFalcon.config_kP(0, Constants.RIGHT_VELOCITY_P);
+    // rightSlaveFalcon.config_kI(0, Constants.RIGHT_VELOCITY_I);
+    // rightSlaveFalcon.config_kD(0, Constants.RIGHT_VELOCITY_D);
   }
 
   private void configureMotionMagic() {
