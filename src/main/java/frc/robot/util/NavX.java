@@ -7,18 +7,18 @@ public class NavX extends AHRS {
     private double angleDelta = 0;
 
     public NavX(){
-        super();
-
-        angleDelta = super.getAngle();
+        angleDelta = getAngle();
     }
 
     @Override
-    public double getAngle(){
-        return super.getAngle() - angleDelta;
+    public double getAngle() {
+        var angle =  super.getAngle() - angleDelta;
+        angle = ((angle+180) % 360) - 180;
+        return angle;
     }
 
     @Override
     public void reset() {
-        angleDelta = super.getAngle();
+        angleDelta = getAngle();
     }
 }

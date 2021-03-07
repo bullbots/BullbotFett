@@ -67,8 +67,8 @@ public class DrivetrainFalcon extends SubsystemBase {
   private final DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
 
   // This gives a maximum value of 40 after 3 seconds of grabbing a value every robot period.
-  List<Double> simulationList = IntStream.rangeClosed(0, 50 * 2).mapToDouble((i)->i * 0.02 * 40.0 / 2.0).boxed().collect(Collectors.toList());
-  Iterator<Double> simIter = simulationList.iterator();
+  // List<Double> simulationList = IntStream.rangeClosed(0, 50 * 2).mapToDouble((i)->i * 0.02 * 40.0 / 2.0).boxed().collect(Collectors.toList());
+  // Iterator<Double> simIter = simulationList.iterator();
 
   public DrivetrainFalcon() {
     if (Robot.isReal()) {
@@ -117,6 +117,10 @@ public class DrivetrainFalcon extends SubsystemBase {
     rightMasterFalcon.setSelectedSensorPosition(0);
     // m_drivetrainSimulator.setPose(pose);
     m_odometry.resetPosition(pose, gyro.getRotation2d());
+  }
+
+  public void resetGyro() {
+    gyro.reset();
   }
 
   public Pose2d getPose() {
@@ -170,23 +174,25 @@ public class DrivetrainFalcon extends SubsystemBase {
     SmartDashboard.putNumber("Encoder Rate - Left", leftMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0);
     SmartDashboard.putNumber("Encoder Rate - Right", rightMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0);
 
+    SmartDashboard.putNumber("NavX Angle", gyro.getRotation2d().getDegrees());
+
     updateOdometry();
 
     if (Robot.isReal()) {
 
       leftCurrent.setNumber(leftMasterFalcon.getStatorCurrent());
-      leftPosition.setNumber(leftMasterFalcon.getSelectedSensorPosition());
-      leftVelocity.setNumber(leftMasterFalcon.getSelectedSensorVelocity());
+      // leftPosition.setNumber(leftMasterFalcon.getSelectedSensorPosition());
+      // leftVelocity.setNumber(leftMasterFalcon.getSelectedSensorVelocity());
 
       rightCurrent.setNumber(rightMasterFalcon.getStatorCurrent());
-      rightPosition.setNumber(rightMasterFalcon.getSelectedSensorPosition());
-      rightVelocity.setNumber(rightMasterFalcon.getSelectedSensorVelocity());
+      // rightPosition.setNumber(rightMasterFalcon.getSelectedSensorPosition());
+      // rightVelocity.setNumber(rightMasterFalcon.getSelectedSensorVelocity());
 
     } else {
       double curLeftCurrent = 0;
-      if (simIter.hasNext()) {
-        curLeftCurrent = simIter.next();
-      }
+      // if (simIter.hasNext()) {
+      //   curLeftCurrent = simIter.next();
+      // }
 
       leftCurrent.setNumber(curLeftCurrent);
       leftPosition.setNumber(0.0);
@@ -203,7 +209,7 @@ public class DrivetrainFalcon extends SubsystemBase {
    * @param speed double
    * @param rotation double
    */
-  public void arcadeDrive(double speed, double rotation){
+  public void arcadeDrive(double speed, double rotation, boolean squareInputs){
 
     // if (Math.abs(speed) <= shiftThreshold) {
     //   SmartDashboard.putString("State", "Low");
@@ -220,7 +226,7 @@ public class DrivetrainFalcon extends SubsystemBase {
     //   SmartDashboard.putNumber("After", speed);
     // }
 
-    diffDrive.arcadeDrive(speed, rotation);
+    diffDrive.arcadeDrive(speed, rotation, squareInputs);
   }
 
   public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {

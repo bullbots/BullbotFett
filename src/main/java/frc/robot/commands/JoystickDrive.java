@@ -35,7 +35,7 @@ public class JoystickDrive extends CommandBase {
 
   @Override
   public void execute() {
-    m_drivetrain.arcadeDrive(joyY.getAsDouble(), joyX.getAsDouble());  // Someone should find out why these are negative...
+    m_drivetrain.arcadeDrive(joyY.getAsDouble(), joyX.getAsDouble(), true);  // Someone should find out why these are negative...
   }
 
   @Override

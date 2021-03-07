@@ -21,7 +21,7 @@ public class AutonomousBarrelRace extends CommandBase {
 
   private final Timer m_timer = new Timer();
 
-  private final RamseteController m_ramsete = new RamseteController();
+  private final RamseteController m_ramsete = new RamseteController(0.75, 0.7);
   public AutonomousBarrelRace(DrivetrainFalcon drivetrain, Trajectory trajectory) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrain);
@@ -35,9 +35,10 @@ public class AutonomousBarrelRace extends CommandBase {
   public void initialize() {
     m_timer.reset();
     m_timer.start();
+    m_drivetrain.resetGyro();
     m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
 
-    m_ramsete.setEnabled(false);
+    m_ramsete.setEnabled(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -51,7 +52,7 @@ public class AutonomousBarrelRace extends CommandBase {
     var ramsete_speed = speeds.vxMetersPerSecond;
     var ramsete_rot = speeds.omegaRadiansPerSecond;
 
-    m_drivetrain.arcadeDrive(ramsete_speed / Constants.MAX_SPEED_LOW_GEAR, ramsete_rot);
+    m_drivetrain.arcadeDrive(ramsete_speed / Constants.MAX_SPEED_LOW_GEAR, -ramsete_rot, false);
 
     var t_pose = reference.poseMeters;
     var t_x = t_pose.getX();

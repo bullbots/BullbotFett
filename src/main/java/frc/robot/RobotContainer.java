@@ -219,7 +219,7 @@ public class RobotContainer {
             new Pose2d(firstX, firstY, new Rotation2d()),
             path_read,
             new Pose2d(lastX, lastY, Rotation2d.fromDegrees(0)), // Useful if start and end point are the same so autonomous can run repeatedly without setup
-            new TrajectoryConfig(Constants.MAX_SPEED_LOW_GEAR, Constants.MAX_SPEED_LOW_GEAR));
+            new TrajectoryConfig(2.0, 2.0));
 
     drivetrain.resetOdometry(m_trajectory.getInitialPose());
   }

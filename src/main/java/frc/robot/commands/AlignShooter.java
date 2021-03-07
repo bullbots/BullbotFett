@@ -34,14 +34,14 @@ public class AlignShooter extends CommandBase {
     double x = SmartDashboard.getNumber("TargetX", -9999);
 
     if (x != -9999) {
-      drivetrain.arcadeDrive(0, kP * x);
+      drivetrain.arcadeDrive(0, kP * x, false);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drivetrain.arcadeDrive(0, 0);
+    drivetrain.arcadeDrive(0, 0, false);
   }
 
   // Returns true when the command should end.
