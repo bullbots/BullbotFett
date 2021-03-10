@@ -177,6 +177,8 @@ public class RobotContainer {
     
     var path_read = new ArrayList<Translation2d>();
 
+    var angle_list = new ArrayList<Double>();
+
     BufferedReader br = null;
     try {
       // br = new BufferedReader(new FileReader("./Path-1.path"));  
@@ -189,14 +191,30 @@ public class RobotContainer {
     try {
       while ((line = br.readLine()) != null) {
         try {
-        String[] sections = line.split(",");
+          String[] sections = line.split(",");
         
-        double x = Double.parseDouble(sections[0]);
-        double y = -Double.parseDouble(sections[1]);
+          double x = Double.parseDouble(sections[0]);
+          double y = -Double.parseDouble(sections[1]);
 
-        path_read.add(new Translation2d(x,y));
+          path_read.add(new Translation2d(x,y));
 
-      } catch (NumberFormatException error) {
+          Double tangent_x = Double.parseDouble(sections[2]);
+          Double tangent_y = Double.parseDouble(sections[3]);
+
+          Double angle = Math.atan(tangent_y/tangent_x);
+
+          if (Math.signum(tangent_x) == -1.0) {
+            angle += 180;
+          }
+          if (Math.signum(tangent_y) == -1.0) {
+            angle += 90;
+          }
+
+          angle -= 180; // Rotation2D is bound between -180 and 180, not 0 and 360.
+
+          angle_list.add(angle);
+
+        } catch (NumberFormatException error) {
           System.out.println("Ignore this error:");
           error.printStackTrace();
         }
@@ -214,11 +232,17 @@ public class RobotContainer {
     path_read.remove(0);
     path_read.remove(path_read.size()-1);
 
+    // Gets first and last angle and makes end angle relative to start angle instead of absolute.
+    double start_angle = angle_list.get(0);
+    double end_angle = angle_list.get(angle_list.size()-1);
+
+    end_angle = end_angle - start_angle;
+
     m_trajectory =
         TrajectoryGenerator.generateTrajectory(
-            new Pose2d(firstX, firstY, new Rotation2d()),
+            new Pose2d(firstX, firstY, Rotation2d.fromDegrees(0)),
             path_read,
-            new Pose2d(lastX, lastY, Rotation2d.fromDegrees(180)), // Useful if start and end point are the same so autonomous can run repeatedly without setup
+            new Pose2d(lastX, lastY, Rotation2d.fromDegrees(end_angle)),
             new TrajectoryConfig(3.0, 3.0));
 
     drivetrain.resetOdometry(m_trajectory.getInitialPose());
