@@ -15,6 +15,7 @@ import frc.robot.util.NavX;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.music.Orchestra;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -75,8 +76,15 @@ public class DrivetrainFalcon extends SubsystemBase {
       leftSlaveFalcon.follow(leftMasterFalcon);
       rightSlaveFalcon.follow(rightMasterFalcon);
 
+      rightMasterFalcon.setInverted(false);
+      rightSlaveFalcon.setInverted(InvertType.FollowMaster);
       leftMasterFalcon.setInverted(true);
       leftSlaveFalcon.setInverted(InvertType.FollowMaster);
+
+      rightMasterFalcon.setNeutralMode(NeutralMode.Coast);
+      rightSlaveFalcon.setNeutralMode(NeutralMode.Coast);
+      leftMasterFalcon.setNeutralMode(NeutralMode.Coast);
+      leftSlaveFalcon.setNeutralMode(NeutralMode.Coast);
 
       // leftMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
       // rightMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
@@ -171,8 +179,8 @@ public class DrivetrainFalcon extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Encoder Ticks - Left", leftMasterFalcon.getSelectedSensorPosition());
     SmartDashboard.putNumber("Encoder Ticks - Right", rightMasterFalcon.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Encoder Rate - Left", leftMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0);
-    SmartDashboard.putNumber("Encoder Rate - Right", rightMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0);
+    SmartDashboard.putNumber("Encoder Rate (Normalized) - Left", (leftMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0)/Constants.MAX_SPEED_LOW_GEAR);
+    SmartDashboard.putNumber("Encoder Rate (Normalized) - Right", (rightMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0)/Constants.MAX_SPEED_LOW_GEAR);
 
     SmartDashboard.putNumber("NavX Angle", gyro.getRotation2d().getDegrees());
 
@@ -300,5 +308,13 @@ public class DrivetrainFalcon extends SubsystemBase {
             .withPosition(columnIndex, rowIndex)
             .withWidget(BuiltInWidgets.kGraph)
             .getEntry();
+  }
+
+  public void driveLeft(double val) {
+    leftMasterFalcon.set(val);
+  }
+
+  public void driveRight(double val) {
+    rightMasterFalcon.set(val);
   }
 }

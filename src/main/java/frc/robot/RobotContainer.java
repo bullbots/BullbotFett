@@ -180,7 +180,7 @@ public class RobotContainer {
     BufferedReader br = null;
     try {
       // br = new BufferedReader(new FileReader("./Path-1.path"));  
-      br = new BufferedReader(new FileReader(Filesystem.getDeployDirectory() + "/Path-2.path"));
+      br = new BufferedReader(new FileReader(Filesystem.getDeployDirectory() + "/Path-1.path"));
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -218,8 +218,8 @@ public class RobotContainer {
         TrajectoryGenerator.generateTrajectory(
             new Pose2d(firstX, firstY, new Rotation2d()),
             path_read,
-            new Pose2d(lastX, lastY, Rotation2d.fromDegrees(0)), // Useful if start and end point are the same so autonomous can run repeatedly without setup
-            new TrajectoryConfig(2.0, 2.0));
+            new Pose2d(lastX, lastY, Rotation2d.fromDegrees(180)), // Useful if start and end point are the same so autonomous can run repeatedly without setup
+            new TrajectoryConfig(3.0, 3.0));
 
     drivetrain.resetOdometry(m_trajectory.getInitialPose());
   }

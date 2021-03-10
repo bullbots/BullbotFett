@@ -14,6 +14,8 @@ public class SafeTalonFX extends WPI_TalonFX {
     private boolean usePID;
     private int maxSpeed = 21000;
 
+    private double dead_band = 0.05;
+
     public SafeTalonFX(int deviceNumber){
         this(deviceNumber, false);
     }
@@ -32,6 +34,8 @@ public class SafeTalonFX extends WPI_TalonFX {
             currentThresholdTime
         );
 
+        configNeutralDeadband(dead_band);
+
         // configStatorCurrentLimit(config);
         configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
 
@@ -48,9 +52,9 @@ public class SafeTalonFX extends WPI_TalonFX {
      */
     @Override
     public void set(double percentOutput) {
-        if (usePID) {
+        if (usePID && Math.abs(percentOutput) > 0.1) {
             super.set(ControlMode.Velocity, percentOutput * maxSpeed);
-        }else {
+        } else {
             super.set(percentOutput);
         }
     }

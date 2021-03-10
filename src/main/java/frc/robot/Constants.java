@@ -7,10 +7,11 @@ public final class Constants {
      */
 
      // Drivetrain Ports
-    public static int LEFT_MASTER_PORT = 1;
-    public static int LEFT_SLAVE_PORT = 2;
-    public static int RIGHT_MASTER_PORT = 3;
-    public static int RIGHT_SLAVE_PORT = 4;
+    
+    public static int RIGHT_MASTER_PORT = 1;
+    public static int RIGHT_SLAVE_PORT = 2;
+    public static int LEFT_MASTER_PORT = 3;
+    public static int LEFT_SLAVE_PORT = 4;
 
     // Intake Ports
     public static int INTAKE_PORT = 10;
@@ -43,9 +44,11 @@ public final class Constants {
      */
     public static double MAX_SPEED_LOW_GEAR = 8.0;
 
+    public static double MAX_ANGULAR_VELOCITY = 9.0; // wheelbase/2 (1.125) * MAX_SPEED_LOW_GEAR (8) - (omega=r*v)
+
     // public static double LEFT_VELOCITY_FF = 0.0455;
-    public static double LEFT_VELOCITY_P = 0.15;
-    public static double LEFT_VELOCITY_I = 0.0001;
+    public static double LEFT_VELOCITY_P = 0.05;
+    public static double LEFT_VELOCITY_I = 0;
     public static double LEFT_VELOCITY_D = 0;
     public static double LEFT_VELOCITY_FF = 2048.0/21000.0;
     // public static double LEFT_VELOCITY_P = 0.2;
@@ -56,7 +59,7 @@ public final class Constants {
     public static int LEFT_MASTER_VELOCITY = 0;
 
     // public static double RIGHT_VELOCITY_FF = 0.0473;
-    public static double RIGHT_VELOCITY_P = 0.15;
+    public static double RIGHT_VELOCITY_P = 0.05;
     public static double RIGHT_VELOCITY_I = 0;
     public static double RIGHT_VELOCITY_D = 0;
     public static double RIGHT_VELOCITY_FF = 2048.0/21000.0;

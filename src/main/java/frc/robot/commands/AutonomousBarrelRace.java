@@ -52,7 +52,10 @@ public class AutonomousBarrelRace extends CommandBase {
     var ramsete_speed = speeds.vxMetersPerSecond;
     var ramsete_rot = speeds.omegaRadiansPerSecond;
 
-    m_drivetrain.arcadeDrive(ramsete_speed / Constants.MAX_SPEED_LOW_GEAR, -ramsete_rot, false);
+    var normalized_ramsete_speed = ramsete_speed / Constants.MAX_SPEED_LOW_GEAR;
+    var normalized_ramsete_rot = -ramsete_rot / Constants.MAX_ANGULAR_VELOCITY;
+
+    m_drivetrain.arcadeDrive(normalized_ramsete_speed, normalized_ramsete_rot, false);
 
     var t_pose = reference.poseMeters;
     var t_x = t_pose.getX();
@@ -64,8 +67,8 @@ public class AutonomousBarrelRace extends CommandBase {
     var a_y = a_pose.getY();
     var a_rotation = a_pose.getRotation().getDegrees();
 
-    SmartDashboard.putNumber("Ramsete Speed", ramsete_speed);
-    SmartDashboard.putNumber("Ramsete Rot", ramsete_rot);
+    SmartDashboard.putNumber("Ramsete Speed - Normalized", normalized_ramsete_speed);
+    SmartDashboard.putNumber("Ramsete Rot - Normalized", normalized_ramsete_rot);
 
     SmartDashboard.putNumber("Pose X - Trajectory", t_x);
     SmartDashboard.putNumber("Pose Y - Trajectory", t_y);
