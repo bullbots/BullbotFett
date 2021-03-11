@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -21,12 +22,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import frc.robot.subsystems.*;
-import frc.robot.commands.*;
+import frc.robot.commands.Autonomous.AutonomousBarrelRace;
+import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
+import frc.robot.commands.Harm_Commands.IntakeBalls;
+import frc.robot.commands.Harm_Commands.LowerIntake;
+import frc.robot.commands.Harm_Commands.RaiseShooterHood;
+import frc.robot.commands.Shooter_Commands.ShootVelocity;
+import frc.robot.subsystems.DrivetrainFalcon;
+import frc.robot.subsystems.Harm;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -40,28 +46,16 @@ public class RobotContainer {
   // User Input
   private static Joystick stick = new Joystick(0);
   
-  private static JoystickButton trigger = new JoystickButton(stick, 1);
-
+  private static JoystickButton button1 = new JoystickButton(stick, 1);
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button6 = new JoystickButton(stick, 6);
   private static JoystickButton button7 = new JoystickButton(stick, 7);
   private static JoystickButton button11 = new JoystickButton(stick, 11);
 
-  // private static Joystick button_board = new Joystick(1);
-
-  // // private static JoystickButton climber_up = new JoystickButton(button_board, 1);
-  // // private static JoystickButton climber_down = new JoystickButton(button_board, 2);
-  // private static JoystickButton control_panel_height = new JoystickButton(button_board, 3);
-  // private static JoystickButton control_panel_cw = new JoystickButton(button_board, 4);
-  // private static JoystickButton control_panel_ccw = new JoystickButton(button_board, 5);
-  // private static JoystickButton shooter_toggle = new JoystickButton(button_board, 6);
-  
   // Subsystems
-  // private final Shooter shooter;
+  private final Shooter shooter = new Shooter();
   private final DrivetrainFalcon drivetrain = new DrivetrainFalcon();
-  // private final Intake intake = new Intake();
-  // private final Climb climb = new Climb();
-  private final ControlPanel controlPanel = new ControlPanel();
+  private final Harm harm = new Harm();
 
   private final Compressor compressor = new Compressor();
 
@@ -77,21 +71,15 @@ public class RobotContainer {
     // initializeTrajectory must come before configureButtonBindings
     initializeTrajectory();
     configureButtonBindings();
+    DriverStation.getInstance().silenceJoystickConnectionWarning(true);
 
-    // compressor.start();
-    compressor.stop();
+    compressor.start();
     
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,
       () -> -stick.getY(),  // Because Negative Y is forward on the joysticks
-      () -> stick.getX(),
-      () -> button6.get()
+      () -> stick.getX()
     ));
-
-    // shooter = new Shooter();
-    // shooter.setDefaultCommand(
-    //   new RunCommand(() -> shooter.ballReleaseServo.set(-1), shooter)
-    // );
   }
 
   /**
@@ -110,44 +98,16 @@ public class RobotContainer {
       public void initialize() {
         super.initialize();
         setName("Reset Encoders");
-        System.out.println("I got called");
       }
     });
+
+    button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
+
+    button6.whenPressed(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
+
+    button7.whileHeld(new LowerIntake(harm));  // .whenReleased(new RaiseIntake(harm));  // Not needed since default command raises Intake, right?
     
-    // trigger.whileHeld(new ShootVelocity(shooter, () -> !shooter_toggle.get()));
-
-    button2.whileHeld(new AlignShooter(drivetrain));
-
-    // climber_up.whileHeld(new ClimbUp(climb));
-    // climber_down.whileHeld(new ClimbDown(climb));
-    // control_panel.toggleWhenPressed();
-    // control_panel_cw.whileHeld();
-    // control_panel_ccw.whileHeld();
-
-    // control_panel_height.whenPressed(
-    //   new InstantCommand(() -> controlPanel.toggle(), controlPanel)
-    // );
-
-    // control_panel_cw.whileHeld(new StartEndCommand(() -> controlPanel.spinClockwise(), () -> controlPanel.stop(), controlPanel));
-    // control_panel_ccw.whileHeld(new StartEndCommand(() -> controlPanel.spinCounterClockwise(), () -> controlPanel.stop(), controlPanel));
-
-    // button3.whileHeld(new IntakeBalls(intake));
-
-    // shooter_toggle.whenPressed(new LowerShooter(shooter));
-    // shooter_toggle.whenReleased(new RaiseShooter(shooter));
-
-    // button7.whenPressed(new StartEndCommand(
-    //     () -> intake.toggle(), () -> intake.set(0), intake
-    //   ).withTimeout(2)
-    // );
-
-    // button6.whileHeld(new StartEndCommand(() -> intake.set(1), () -> intake.set(0), intake));
-    // button6.whenReleased(new StartEndCommand(() -> intake.set(-0.2), () -> intake.set(0), intake).withTimeout(0.5));
-
-    // button3.whenPressed(new StartEndCommand(
-    //     () -> System.out.println("Start"), () -> System.out.println("End"), intake
-    //   ).withTimeout(3)
-    // );
+    button1.whileHeld(new IntakeBalls(harm));
   }
 
 
@@ -157,21 +117,16 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // return new PIDTune(drivetrain);
-    // return new RunCommand(() -> drivetrain.arcadeDrive(0.3, 0), drivetrain).withTimeout(3);
-    
-    // return new SequentialCommandGroup(
-    //   // new ShootVelocity(shooter, () -> !shooter_toggle.get()).withTimeout(6),
-    //   new RunCommand(() -> drivetrain.arcadeDrive(-0.4, 0), drivetrain).withTimeout(3)
-    // );
-
+//    return new SequentialCommandGroup(
+//            new ShootVelocity(shooter, harm, () -> !button6.get()).withTimeout(6),
+//            new RunCommand(() -> drivetrain.arcadeDrive(-0.4, 0), drivetrain).withTimeout(3)
+//    );
     return new AutonomousBarrelRace(drivetrain, m_trajectory);
   }
 
   public void stopAllSubsystems(){
     drivetrain.stop();
   }
-
   
   public void initializeTrajectory() {
     
@@ -220,6 +175,7 @@ public class RobotContainer {
         }
       }
     } catch (IOException error) {
+      System.out.println("Ignore this error:");
       error.printStackTrace();
     }
 
@@ -251,34 +207,4 @@ public class RobotContainer {
   public void periodic() {
     drivetrain.periodic();
   }
-
 }
-
-
-/*
-This is a 16 wheeler 
-|_|______|_|
-| | |  | | |
-    |  |
-    |  |
-    |  |
-    |  |
-    |  |
-|_|_|__|_|_|
-| |  ||  | |
-     ||
-     ||
-     ||
-     || 
-|_|__||__|_|
-| | |  | | |
-    |  |
-    |  |
-    |  |
-    |  |
-    |  |
-|_|_|__|_|_|
-| |      | |
-This is #3 in the car series.
-Made by Triston Van Wyk
-*/ 

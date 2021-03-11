@@ -5,27 +5,22 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.Drivetrain_Commands;
 
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.ShootVelocity;
-import frc.robot.subsystems.Shooter;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
-public class ShootTimed extends WaitCommand {
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.DrivetrainFalcon;
+
+public class VelocityTest extends CommandBase {
   /**
-   * Creates a new ShootTimed.
+   * Creates a new VelocityTest.
    */
-  private Shooter shooter;
-
-  double topVelocity = 5500;
-  double bottomVelocity = 5500;
-
-  public ShootTimed(Shooter shooter, double seconds) {
-    super(seconds);
+  private DrivetrainFalcon drivetrain;
+  public VelocityTest(DrivetrainFalcon drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.shooter = shooter;
-
-    addRequirements(this.shooter);
+    addRequirements(drivetrain);
+    this.drivetrain = drivetrain;
   }
 
   // Called when the command is initially scheduled.
@@ -36,13 +31,12 @@ public class ShootTimed extends WaitCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.set(topVelocity, bottomVelocity);
+    drivetrain.set(ControlMode.Velocity, 21000, 21000);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.stop();
   }
 
   // Returns true when the command should end.

@@ -7,21 +7,21 @@ public final class Constants {
      */
 
      // Drivetrain Ports
-    
     public static int RIGHT_MASTER_PORT = 1;
     public static int RIGHT_SLAVE_PORT = 2;
     public static int LEFT_MASTER_PORT = 3;
     public static int LEFT_SLAVE_PORT = 4;
 
     // Intake Ports
-    public static int INTAKE_PORT = 10;
-    public static int INTAKE_RAISE_PORT = 13;
-    // public static int INTAKE_RAISE_CHANNEL = 0; // 2/27/21
-    // public static int INTAKE_LOWER_CHANNEL = 1;
+    // public static int INTAKE_PORT = 10;
+    // public static int INTAKE_RAISE_PORT = 13;
+    public static int INTAKE_BELT = 7;
+    public static int INTAKE_BAR = 8;
 
     // Shooter Ports
-    // public static int TOP_SHOOTER_PORT = 6;
-    // public static int BOTTOM_SHOOTER_PORT = 7;
+    public static int TOP_SHOOTER_PORT = 6;
+    public static int BOTTOM_SHOOTER_PORT = 5;
+
     // public static int SHAKER_PORT = 11;
     public static int RELEASE_SERVO_PORT = 0;
 
@@ -32,8 +32,10 @@ public final class Constants {
     public static int CONTROL_PANEL_PORT = 12;
 
     // Pneumatic Channels
-    public static int CONTROL_PANEL_UP_CHANNEL = 0;
-    public static int CONTROL_PANEL_DOWN_CHANNEL = 1;
+    // public static int CONTROL_PANEL_UP_CHANNEL = 0;
+    // public static int CONTROL_PANEL_DOWN_CHANNEL = 1;
+    public static int INTAKE_UP = 0;
+    public static int INTAKE_DOWN = 1;
     public static int LOW_GEAR_CHANNEL = 2;
     public static int HIGH_GEAR_CHANNEL = 3;
     public static int LOW_ANGLE_CHANNEL = 4;
@@ -82,10 +84,10 @@ public final class Constants {
      * ALL SHOOTER RELATED CONSTANTS GO HERE
      */
 
-    public static double SHOOTER_FF = 0;
-    public static double SHOOTER_P = 5e-5;
-    public static double SHOOTER_I = 1e-6;
-    public static double SHOOTER_D = 0;
+    public static double SHOOTER_FF = 0.0473; // 0
+    public static double SHOOTER_P = 0.15; // 5e-5
+    public static double SHOOTER_I = 0; // 1e-6
+    public static double SHOOTER_D = 0; // 0
 
     public static double NEO_MAX_RPM = 5676; // http://www.revrobotics.com/rev-21-1650/ "Empirical Free Speed"    
 

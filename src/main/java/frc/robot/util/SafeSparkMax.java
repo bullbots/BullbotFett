@@ -13,5 +13,7 @@ public class SafeSparkMax extends CANSparkMax {
         clearFaults();
         setSmartCurrentLimit(stallLimit, freeLimit);
         burnFlash();
+
+        restoreFactoryDefaults();
     }
 }

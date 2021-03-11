@@ -1,41 +1,28 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.ControlType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import frc.robot.Robot;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import frc.robot.util.SafeSparkMax;
+import frc.robot.util.SafeTalonFX;
 
 public class Shooter extends SubsystemBase {
 
-    private SafeSparkMax top_shooter;
-    private SafeSparkMax bottom_shooter;
-
-    private CANEncoder top_encoder;
-    private CANEncoder bottom_encoder;
-
-    private CANPIDController top_pid_controller;
-    private CANPIDController bottom_pid_controller;
+    private SafeTalonFX top_shooter;
+    private SafeTalonFX bottom_shooter;
 
     public final Servo ballReleaseServo = new Servo(Constants.RELEASE_SERVO_PORT);
-
-    private final DoubleSolenoid angle_solenoid = new DoubleSolenoid(Constants.HIGH_ANGLE_CHANNEL, Constants.LOW_ANGLE_CHANNEL);
 
     private NetworkTableEntry topVelocity;
     private NetworkTableEntry bottomVelocity;
@@ -49,73 +36,36 @@ public class Shooter extends SubsystemBase {
     }
 
     public Shooter(){
-        // top_shooter = new SafeSparkMax(Constants.TOP_SHOOTER_PORT, MotorType.kBrushless);
-        // bottom_shooter = new SafeSparkMax(Constants.BOTTOM_SHOOTER_PORT, MotorType.kBrushless);
-      
-        // Always reset to factory defaults, just in case.
-        top_shooter.restoreFactoryDefaults();
-        bottom_shooter.restoreFactoryDefaults();
-      
-        top_shooter.clearFaults();
-        bottom_shooter.clearFaults();
-
-        top_encoder = top_shooter.getEncoder();
-        bottom_encoder = bottom_shooter.getEncoder();
-
-        top_pid_controller = top_shooter.getPIDController();
-        bottom_pid_controller = bottom_shooter.getPIDController();
-
-        angle_solenoid.set(Value.kForward);
+        top_shooter = new SafeTalonFX(Constants.TOP_SHOOTER_PORT, true);
+        bottom_shooter = new SafeTalonFX(Constants.BOTTOM_SHOOTER_PORT, true);
 
         configurePID();
-        configureShuffleBoard();
+
+        top_shooter.setNeutralMode(NeutralMode.Coast);
+        bottom_shooter.setNeutralMode(NeutralMode.Coast);
+
+        setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
+
+        var inst = NetworkTableInstance.getDefault();
+        topVelocity = inst.getEntry("Shooter Top Velocity");
+        bottomVelocity = inst.getEntry("Shooter Bottom Velocity");
     }
 
     private void configurePID() {
-        top_pid_controller.setFF(Constants.SHOOTER_FF);
-        top_pid_controller.setP(Constants.SHOOTER_P);
-        top_pid_controller.setI(Constants.SHOOTER_I);
-        top_pid_controller.setD(Constants.SHOOTER_D);
+        top_shooter.config_kF(0, Constants.SHOOTER_FF);
+        top_shooter.config_kP(0, Constants.SHOOTER_P);
+        top_shooter.config_kI(0, Constants.SHOOTER_I);
+        top_shooter.config_kP(0, Constants.SHOOTER_D);
 
-        bottom_pid_controller.setFF(Constants.SHOOTER_FF);
-        bottom_pid_controller.setP(Constants.SHOOTER_P);
-        bottom_pid_controller.setI(Constants.SHOOTER_I);
-        bottom_pid_controller.setD(Constants.SHOOTER_D);
-    }
-
-    public void raiseSolenoid() {
-        angle_solenoid.set(Value.kForward);
-    }
-
-    public void lowerSolenoid() {
-        angle_solenoid.set(Value.kReverse);
+        bottom_shooter.config_kF(0, Constants.SHOOTER_FF);
+        bottom_shooter.config_kP(0, Constants.SHOOTER_P);
+        bottom_shooter.config_kI(0, Constants.SHOOTER_I);
+        bottom_shooter.config_kP(0, Constants.SHOOTER_D);
     }
 
     public void stop() {
         top_shooter.stopMotor();
         bottom_shooter.stopMotor();
-    }
-
-    private void configureShuffleBoard() {
-        topVelocity = Shuffleboard.getTab("Diagnostics")
-                .add("Top Encoder Velocity", 0)
-                .withSize(2, 2)
-                .withPosition(0, 4)
-                .withWidget(BuiltInWidgets.kGraph)
-                .getEntry();
-        bottomVelocity = Shuffleboard.getTab("Diagnostics")
-                .add("Bottom Encoder Velocity", 0)
-                .withSize(2, 2)
-                .withPosition(0, 4)
-                .withWidget(BuiltInWidgets.kGraph)
-                .getEntry();
-
-        // Shuffleboard.getTab("Diagnostics")
-        //         .add("Bottom Encoder Velocity", 0)
-        //         .withSize(2, 2)
-        //         .withPosition(2, 4)
-        //         .withWidget(BuiltInWidgets.kGraph)
-        //         .getEntry();
     }
 
     /**This gets the velocity of the motors
@@ -127,10 +77,10 @@ public class Shooter extends SubsystemBase {
         if (Robot.isReal()) {
             switch (motorPlacement) {
                 case TOP:
-                    curVal = top_encoder.getVelocity();
+                    curVal = top_shooter.getSelectedSensorVelocity();
                     break;
                 case BOTTOM:
-                    curVal = bottom_encoder.getVelocity();
+                    curVal = bottom_shooter.getSelectedSensorVelocity();
             }
         } else {
             int curIndex = 0;
@@ -169,8 +119,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public double[] getVelocities() {
-        double top_vel = top_encoder.getVelocity();
-        double bottom_vel = bottom_encoder.getVelocity();
+        double top_vel = top_shooter.getSelectedSensorVelocity();
+        double bottom_vel = bottom_shooter.getSelectedSensorVelocity();
 
         return new double[] {top_vel, bottom_vel};
     }
@@ -180,8 +130,9 @@ public class Shooter extends SubsystemBase {
      * @param bottom_vel This is the velocity of the bottem mtor
      */
     public void set(double top_vel, double bottom_vel){
-        top_pid_controller.setReference(top_vel, ControlType.kVelocity);
-        bottom_pid_controller.setReference(bottom_vel, ControlType.kVelocity);
+        top_shooter.set(top_vel);
+        bottom_shooter.set(bottom_vel);
+        System.out.println(String.format("Top Velocity %.02f Bottom Velocity %.02f", top_vel, bottom_vel));
     }
 
     public void periodic() {
@@ -203,9 +154,5 @@ public class Shooter extends SubsystemBase {
 
         topVelocity.setDouble(getVelocity(MotorPlacement.TOP));
         bottomVelocity.setDouble(getVelocity(MotorPlacement.BOTTOM));
-    }
-
-    public boolean angle45() {
-        return angle_solenoid.get().equals(Value.kForward);
     }
 }

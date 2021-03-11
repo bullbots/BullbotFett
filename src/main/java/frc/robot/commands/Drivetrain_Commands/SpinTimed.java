@@ -5,43 +5,41 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.Drivetrain_Commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Climb;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
-public class ClimbUp extends CommandBase {
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.DrivetrainFalcon;
+
+public class SpinTimed extends WaitCommand {
+  private DrivetrainFalcon drivetrain;
   /**
-   * Creates a new ClimbUp.
+   * Creates a new SpinTimed.
    */
-
-  private Climb climb;
-
-  public ClimbUp(Climb climb) {
+  // duration is the timeout time, in seconds
+  public SpinTimed(DrivetrainFalcon drivetrain, double seconds) {
+    super(seconds);
     // Use addRequirements() here to declare subsystem dependencies.
-    this.climb = climb;
+    this.drivetrain = drivetrain;
 
-    addRequirements(climb);
+    addRequirements(this.drivetrain);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climb.set(1);
+    this.drivetrain.set(ControlMode.PercentOutput, 1, -1);
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climb.set(0);
+    drivetrain.set(0, 0);
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

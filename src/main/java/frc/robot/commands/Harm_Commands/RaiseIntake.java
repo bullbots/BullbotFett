@@ -5,44 +5,36 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.Harm_Commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DrivetrainFalcon;
+import frc.robot.subsystems.*;
 
-public class AlignShooter extends CommandBase {
+public class RaiseIntake extends CommandBase {
   /**
-   * Creates a new AlignShooter.
+   * Creates a new RaiseIntake.
    */
-  private DrivetrainFalcon drivetrain;
-  private final double kP = 1. / 160;
-
-  public AlignShooter(DrivetrainFalcon drivetrain) {
-    this.drivetrain = drivetrain;
-    addRequirements(drivetrain);
+  private Harm harm;
+  public RaiseIntake(Harm harm) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(harm);
+    this.harm = harm;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    harm.raiseIntakeArm();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double x = SmartDashboard.getNumber("TargetX", -9999);
-
-    if (x != -9999) {
-      drivetrain.arcadeDrive(0, kP * x, false);
-    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    drivetrain.arcadeDrive(0, 0, false);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

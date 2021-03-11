@@ -5,25 +5,31 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.Drivetrain_Commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.DrivetrainFalcon;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class Music extends CommandBase {
+public class MoveTimed extends WaitCommand {
   private DrivetrainFalcon drivetrain;
-  public Music(DrivetrainFalcon drivetrain) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(drivetrain);
+  /**
+   * Creates a new MoveTimed.
+   */
+  public MoveTimed(DrivetrainFalcon drivetrain, double seconds) {
+    super(seconds);
     this.drivetrain = drivetrain;
+    addRequirements(this.drivetrain);
   }
 
-  // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    // drivetrain.orchestra.play();
+  public void execute() {
+    drivetrain.set(ControlMode.PercentOutput, 1, 1);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    drivetrain.set(0, 0);
   }
 }

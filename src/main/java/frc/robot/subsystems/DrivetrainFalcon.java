@@ -35,8 +35,7 @@ import java.util.stream.IntStream;
 public class DrivetrainFalcon extends SubsystemBase {
 
   private double ticks_per_wheel_revolution = 42700.0;
-
-  private double ticks_per_foot = ticks_per_wheel_revolution / (.5 * Math.PI); // .5 is diameter of wheel in feet
+  private double ticks_per_foot = ticks_per_wheel_revolution/ (.5 * Math.PI); // .5 is diameter of wheel in feet
 
   public final SafeTalonFX leftMasterFalcon = new SafeTalonFX(Constants.LEFT_MASTER_PORT, true); // change to false for no PID?
   public final SafeTalonFX rightMasterFalcon = new SafeTalonFX(Constants.RIGHT_MASTER_PORT, true);
@@ -73,6 +72,7 @@ public class DrivetrainFalcon extends SubsystemBase {
 
   public DrivetrainFalcon() {
     if (Robot.isReal()) {
+
       leftSlaveFalcon.follow(leftMasterFalcon);
       rightSlaveFalcon.follow(rightMasterFalcon);
 
@@ -96,12 +96,13 @@ public class DrivetrainFalcon extends SubsystemBase {
       // orchestra.addInstrument(rightSlaveFalcon);
 
       // orchestra.loadMusic("test.chrp");
-
-      shifter.shiftLow();
+      diffDrive.setDeadband(0.05);
     }
 
     diffDrive.setRightSideInverted(false);
     diffDrive.setSafetyEnabled(false);
+
+    shifter.shiftLow();
 
     configurePID();
     // configureMotionMagic();
@@ -109,7 +110,6 @@ public class DrivetrainFalcon extends SubsystemBase {
   }
 
   public void updateOdometry() {
-
     m_leftDist = leftMasterFalcon.getSelectedSensorPosition() / ticks_per_foot;
     m_rightDist = rightMasterFalcon.getSelectedSensorPosition() / ticks_per_foot;
 
@@ -146,16 +146,6 @@ public class DrivetrainFalcon extends SubsystemBase {
     rightMasterFalcon.config_kP(0, Constants.RIGHT_VELOCITY_P);
     rightMasterFalcon.config_kI(0, Constants.RIGHT_VELOCITY_I);
     rightMasterFalcon.config_kD(0, Constants.RIGHT_VELOCITY_D);
-
-    // leftSlaveFalcon.config_kF(0, Constants.LEFT_VELOCITY_FF);
-    // leftSlaveFalcon.config_kP(0, Constants.LEFT_VELOCITY_P);
-    // leftSlaveFalcon.config_kI(0, Constants.LEFT_VELOCITY_I);
-    // leftSlaveFalcon.config_kP(0, Constants.LEFT_VELOCITY_D);
-
-    // rightSlaveFalcon.config_kF(0, Constants.RIGHT_VELOCITY_FF);
-    // rightSlaveFalcon.config_kP(0, Constants.RIGHT_VELOCITY_P);
-    // rightSlaveFalcon.config_kI(0, Constants.RIGHT_VELOCITY_I);
-    // rightSlaveFalcon.config_kD(0, Constants.RIGHT_VELOCITY_D);
   }
 
   private void configureMotionMagic() {

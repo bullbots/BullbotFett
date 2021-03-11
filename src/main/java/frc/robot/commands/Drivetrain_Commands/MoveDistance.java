@@ -5,43 +5,52 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.Drivetrain_Commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import frc.robot.subsystems.DrivetrainFalcon;
 
-public class RaiseShooter extends CommandBase {
+public class MoveDistance extends CommandBase {
   /**
-   * Creates a new RaiseShooter.
+   * Creates a new MoveDistance.
    */
-  Shooter shooter;
-  
-  public RaiseShooter(Shooter shooter) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.shooter = shooter;
+  private DrivetrainFalcon drivetrain;
+  private int targetDistance;
 
-    addRequirements(shooter);
+  private int allowedError = 100;
+
+  public MoveDistance(DrivetrainFalcon drivetrain, int targetDistance) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    this.drivetrain = drivetrain;
+    this.targetDistance = targetDistance;
+
+    addRequirements(drivetrain);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    drivetrain.resetEncoders();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.raiseSolenoid();
+    drivetrain.set(ControlMode.MotionMagic, targetDistance, targetDistance);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    drivetrain.set(0, 0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false; // Do I need to put an end condition, if so, what?  I remember you saying something about end conditions today, but I don't remember if that was about this
+    double[] positions = drivetrain.getPositions();
+
+    return Math.abs(positions[0] - targetDistance) <= allowedError && Math.abs(positions[1] - targetDistance) <= allowedError;
   }
 }
