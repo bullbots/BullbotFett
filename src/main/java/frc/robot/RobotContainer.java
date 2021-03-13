@@ -79,7 +79,8 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,
       () -> -stick.getY(),  // Because Negative Y is forward on the joysticks
-      () -> stick.getX()
+      () -> stick.getX(),
+      () -> (stick.getZ() - 1)/-2.0
     ));
   }
 
@@ -110,7 +111,12 @@ public class RobotContainer {
     
     button1.whileHeld(new IntakeBalls(harm));
 
-    button3.whileHeld(new JoystickDrive(drivetrain, () -> stick.getY(), () -> stick.getX()));
+    button3.whileHeld(new JoystickDrive(
+      drivetrain,
+      () -> stick.getY(),
+      () -> stick.getX(),
+      () -> stick.getZ()
+    ));
   }
 
 
