@@ -63,10 +63,10 @@ public class DifferentialDriveDebug extends DifferentialDrive {
         }
         }
 
-        SmartDashboard.putNumber("Left Motor - Arcade", MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
+        SmartDashboard.putNumber("Left Motor - ArcadeDrive", MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
         double rightSideInvertMultiplier = isRightSideInverted() ? -1.0 : 1.0;
         double maxOutput = m_maxOutput * rightSideInvertMultiplier;
-        SmartDashboard.putNumber("Right Motor - Arcade", MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * maxOutput);
+        SmartDashboard.putNumber("Right Motor - ArcadeDrive", MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * maxOutput);
     }
 
     @SuppressWarnings({"ParameterName", "PMD.CyclomaticComplexity"})
@@ -130,8 +130,8 @@ public class DifferentialDriveDebug extends DifferentialDrive {
             rightMotorOutput /= maxMagnitude;
         }
 
-        SmartDashboard.putNumber("Left Motor - Curvature", leftMotorOutput * m_maxOutput);
+        SmartDashboard.putNumber("Left Motor - CurvatureDrive", leftMotorOutput * m_maxOutput);
         double rightSideInvertMultiplier = isRightSideInverted() ? -1.0 : 1.0;
-        SmartDashboard.putNumber("Right Motor - Curvature", rightMotorOutput * m_maxOutput * rightSideInvertMultiplier);
+        SmartDashboard.putNumber("Right Motor - CurvatureDrive", rightMotorOutput * m_maxOutput * rightSideInvertMultiplier);
     }
 }
