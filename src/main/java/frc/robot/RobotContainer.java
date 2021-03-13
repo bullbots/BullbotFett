@@ -48,6 +48,7 @@ public class RobotContainer {
   
   private static JoystickButton button1 = new JoystickButton(stick, 1);
   private static JoystickButton button2 = new JoystickButton(stick, 2);
+  private static JoystickButton button3 = new JoystickButton(stick, 3);
   private static JoystickButton button6 = new JoystickButton(stick, 6);
   private static JoystickButton button7 = new JoystickButton(stick, 7);
   private static JoystickButton button11 = new JoystickButton(stick, 11);
@@ -108,6 +109,8 @@ public class RobotContainer {
     button7.whileHeld(new LowerIntake(harm));  // .whenReleased(new RaiseIntake(harm));  // Not needed since default command raises Intake, right?
     
     button1.whileHeld(new IntakeBalls(harm));
+
+    button3.whileHeld(new JoystickDrive(drivetrain, () -> stick.getY(), () -> stick.getX()));
   }
 
 
