@@ -230,9 +230,6 @@ public class DrivetrainFalcon extends SubsystemBase {
   }
 
   public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {
-    speed = Math.abs(speed) <= 0.1? 0: speed;
-    rotation = Math.abs(rotation) <= 0.1? 0: rotation;
-    
     diffDrive.curvatureDrive(speed, rotation, isQuickTurn);
   }
 

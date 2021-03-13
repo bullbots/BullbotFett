@@ -47,7 +47,7 @@ public class JoystickDrive extends CommandBase {
     double _joyY = joyY.getAsDouble();
     double _joyX = joyX.getAsDouble();
     double _joyZ = joyZ.getAsDouble();
-    m_drivetrain.arcadeDrive(_joyY * _joyZ, _joyX * _joyZ, true);  // Someone should find out why these are negative...
+    m_drivetrain.curvatureDrive(_joyY * _joyZ, _joyX * _joyZ, true);
     // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
 
     SmartDashboard.putNumber("JoyX", joyX.getAsDouble());

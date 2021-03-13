@@ -34,6 +34,8 @@ import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -79,7 +81,7 @@ public class RobotContainer {
     
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,
-      () -> -stick.getY(),  // Because Negative Y is forward on the joysticks
+      () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
       () -> stick.getX(),
       () -> (stick.getZ() - 1)/-2.0
     ));
@@ -106,18 +108,26 @@ public class RobotContainer {
 
     button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
 
-    button6.whenPressed(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
-
-    button7.whileHeld(new LowerIntake(harm));  // .whenReleased(new RaiseIntake(harm));  // Not needed since default command raises Intake, right?
+    button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
     
-    button1.whileHeld(new IntakeBalls(harm));
-
-    button3.whileHeld(new JoystickDrive(
-      drivetrain,
-      () -> stick.getY(),
-      () -> stick.getX(),
-      () -> (stick.getZ() - 1) / -2.0
+    button1.whileHeld(new ParallelCommandGroup(
+      new SequentialCommandGroup(
+        new LowerIntake(harm).withTimeout(.5),
+        new IntakeBalls(harm)
+      ),
+      new JoystickDrive(
+        drivetrain,
+        () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
+        () -> stick.getX()
+      )
     ));
+
+    // button3.whileHeld(new JoystickDrive(
+    //   drivetrain,
+    //   () -> stick.getY(),
+    //   () -> stick.getX(),
+    //   () -> (stick.getZ() - 1) / -2.0
+    // ));
   }
 
 
