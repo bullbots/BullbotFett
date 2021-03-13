@@ -159,7 +159,7 @@ public class RobotContainer {
     BufferedReader br = null;
     try {
       // br = new BufferedReader(new FileReader("./Path-1.path"));  
-      br = new BufferedReader(new FileReader(Filesystem.getDeployDirectory() + "/Path-1.path"));
+      br = new BufferedReader(new FileReader(Filesystem.getDeployDirectory() + "/BARREL"));
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
