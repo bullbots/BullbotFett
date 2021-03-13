@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import frc.robot.commands.Autonomous.AutonomousBarrelRace;
+import frc.robot.commands.Autonomous.DriveForward;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
@@ -115,7 +116,7 @@ public class RobotContainer {
       drivetrain,
       () -> stick.getY(),
       () -> stick.getX(),
-      () -> stick.getZ()
+      () -> (stick.getZ() - 1) / -2.0
     ));
   }
 
@@ -131,6 +132,8 @@ public class RobotContainer {
 //            new RunCommand(() -> drivetrain.arcadeDrive(-0.4, 0), drivetrain).withTimeout(3)
 //    );
     return new AutonomousBarrelRace(drivetrain, m_trajectory);
+
+    // return new DriveForward(drivetrain).withTimeout(60);
   }
 
   public void stopAllSubsystems(){

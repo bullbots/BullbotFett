@@ -50,8 +50,9 @@ public class JoystickDrive extends CommandBase {
     m_drivetrain.arcadeDrive(_joyY * _joyZ, _joyX * _joyZ, true);  // Someone should find out why these are negative...
     // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
 
-    // SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
+    SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
     SmartDashboard.putNumber("JoyY", joyY.getAsDouble());
+    SmartDashboard.putNumber("JoyZ", joyZ.getAsDouble());
 
     // if (joyX.getAsDouble() < -.1) {
     //   m_drivetrain.driveLeft(.5);
