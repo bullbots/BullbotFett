@@ -159,7 +159,7 @@ public class RobotContainer {
     BufferedReader br = null;
     try {
       // br = new BufferedReader(new FileReader("./Path-1.path"));  
-      br = new BufferedReader(new FileReader(Filesystem.getDeployDirectory() + "/BARREL"));
+      br = new BufferedReader(new FileReader(Filesystem.getDeployDirectory() + "/SLALOM"));
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
@@ -221,7 +221,7 @@ public class RobotContainer {
             new Pose2d(firstX, firstY, Rotation2d.fromDegrees(0)),
             path_read,
             new Pose2d(lastX, lastY, Rotation2d.fromDegrees(end_angle)),
-            new TrajectoryConfig(3.0, 3.0));
+            new TrajectoryConfig(3.5, 3.5));
 
     drivetrain.resetOdometry(m_trajectory.getInitialPose());
   }
