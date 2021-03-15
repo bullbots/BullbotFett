@@ -31,6 +31,7 @@ import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
+import frc.robot.util.TrajectoryPacket;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -139,75 +140,13 @@ public class RobotContainer {
   
   public void initializeTrajectory() {
     
-    var path_read = new ArrayList<Translation2d>();
-
-    var angle_list = new ArrayList<Double>();
-
-    BufferedReader br = null;
-    try {
-      // br = new BufferedReader(new FileReader("./Path-1.path"));  
-      br = new BufferedReader(new FileReader(Filesystem.getDeployDirectory() + "/Path-1.path"));
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-    String line = "";
-
-    try {
-      while ((line = br.readLine()) != null) {
-        try {
-          String[] sections = line.split(",");
-        
-          double x = Double.parseDouble(sections[0]);
-          double y = -Double.parseDouble(sections[1]);
-
-          path_read.add(new Translation2d(x,y));
-
-          Double tangent_x = Double.parseDouble(sections[2]);
-          Double tangent_y = Double.parseDouble(sections[3]);
-
-          Double angle = Math.atan(tangent_y/tangent_x);
-
-          if (Math.signum(tangent_x) == -1.0) {
-            angle += 180;
-          }
-          if (Math.signum(tangent_y) == -1.0) {
-            angle += 90;
-          }
-
-          angle -= 180; // Rotation2D is bound between -180 and 180, not 0 and 360.
-
-          angle_list.add(angle);
-
-        } catch (NumberFormatException error) {
-          System.out.println("Ignore this error:");
-          error.printStackTrace();
-        }
-      }
-    } catch (IOException error) {
-      System.out.println("Ignore this error:");
-      error.printStackTrace();
-    }
-
-    // Gets first and last elements and removes them from list.
-    double firstX = path_read.get(0).getX();
-    double firstY = path_read.get(0).getY();
-    double lastX = path_read.get(path_read.size()-1).getX();
-    double lastY = path_read.get(path_read.size()-1).getY();
-
-    path_read.remove(0);
-    path_read.remove(path_read.size()-1);
-
-    // Gets first and last angle and makes end angle relative to start angle instead of absolute.
-    double start_angle = angle_list.get(0);
-    double end_angle = angle_list.get(angle_list.size()-1);
-
-    end_angle = end_angle - start_angle;
+    TrajectoryPacket trajPack = TrajectoryPacket.generateTrajectoryPacket("/Path-1.path");
 
     m_trajectory =
         TrajectoryGenerator.generateTrajectory(
-            new Pose2d(firstX, firstY, Rotation2d.fromDegrees(0)),
-            path_read,
-            new Pose2d(lastX, lastY, Rotation2d.fromDegrees(end_angle)),
+            new Pose2d(trajPack.firstX, trajPack.firstY, Rotation2d.fromDegrees(trajPack.start_angle)),
+            trajPack.path_read,
+            new Pose2d(trajPack.lastX, trajPack.lastY, Rotation2d.fromDegrees(trajPack.end_angle)),
             new TrajectoryConfig(3.0, 3.0));
 
     drivetrain.resetOdometry(m_trajectory.getInitialPose());
