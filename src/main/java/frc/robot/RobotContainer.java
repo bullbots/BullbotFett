@@ -32,6 +32,7 @@ import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
+import frc.robot.util.TrajectoryManager;
 import frc.robot.util.TrajectoryPacket;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -151,19 +152,14 @@ public class RobotContainer {
     drivetrain.stop();
   }
   
-  public void initializeTrajectory() {
+  // public void initializeTrajectory() {
 
-    TrajectoryPacket trajPack = TrajectoryPacket.generateTrajectoryPacket("/Path-1.path");
+  //   var trajectories = TrajectoryManager.generateTrajectories();
 
-    m_trajectory =
-        TrajectoryGenerator.generateTrajectory(
-            new Pose2d(trajPack.firstX, trajPack.firstY, Rotation2d.fromDegrees(trajPack.start_angle)),
-            trajPack.path_read,
-            new Pose2d(trajPack.lastX, trajPack.lastY, Rotation2d.fromDegrees(trajPack.end_angle)),
-            new TrajectoryConfig(3.0, 3.0));
-
-    drivetrain.resetOdometry(m_trajectory.getInitialPose());
-  }
+  //   for (var trajectoryName : trajectories.keySet()) {
+  //     var trajectory = trajectories.get(trajectoryName);
+  //   }
+  // }
 
   public void periodic() {
     drivetrain.periodic();

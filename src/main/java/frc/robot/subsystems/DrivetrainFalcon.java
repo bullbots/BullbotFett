@@ -61,6 +61,8 @@ public class DrivetrainFalcon extends SubsystemBase {
   private double m_leftDist;
   private double m_rightDist;
 
+  private boolean m_flippedOdometry;
+
   private final DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
 
   // This gives a maximum value of 40 after 3 seconds of grabbing a value every robot period.
@@ -106,9 +108,19 @@ public class DrivetrainFalcon extends SubsystemBase {
     configureSmartDashboard();
   }
 
+  public void setOdometryDirection(boolean invert) {
+    m_flippedOdometry = invert;
+  }
+
   public void updateOdometry() {
     m_leftDist = leftMasterFalcon.getSelectedSensorPosition() / ticks_per_foot;
     m_rightDist = rightMasterFalcon.getSelectedSensorPosition() / ticks_per_foot;
+
+    if (m_flippedOdometry) {
+      var temporary = -m_leftDist;
+      m_leftDist = -m_rightDist;
+      m_rightDist = temporary;
+    }
 
     SmartDashboard.putNumber("Left Distance", m_leftDist);
     SmartDashboard.putNumber("Right Distance", m_rightDist);
