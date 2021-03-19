@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import frc.robot.commands.Autonomous.AutonomousBarrelRace;
+import frc.robot.commands.Autonomous.DriveForward;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
@@ -34,6 +35,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.util.TrajectoryPacket;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -79,7 +82,7 @@ public class RobotContainer {
     
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,
-      () -> -stick.getY(),  // Because Negative Y is forward on the joysticks
+      () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
       () -> stick.getX(),
       () -> (stick.getZ() - 1)/-2.0
     ));
@@ -106,18 +109,26 @@ public class RobotContainer {
 
     button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
 
-    button6.whenPressed(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
-
-    button7.whileHeld(new LowerIntake(harm));  // .whenReleased(new RaiseIntake(harm));  // Not needed since default command raises Intake, right?
+    button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
     
-    button1.whileHeld(new IntakeBalls(harm));
-
-    button3.whileHeld(new JoystickDrive(
-      drivetrain,
-      () -> stick.getY(),
-      () -> stick.getX(),
-      () -> stick.getZ()
+    button1.whileHeld(new ParallelCommandGroup(
+      new SequentialCommandGroup(
+        new LowerIntake(harm).withTimeout(.5),
+        new IntakeBalls(harm)
+      ),
+      new JoystickDrive(
+        drivetrain,
+        () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
+        () -> stick.getX()
+      )
     ));
+
+    // button3.whileHeld(new JoystickDrive(
+    //   drivetrain,
+    //   () -> stick.getY(),
+    //   () -> stick.getX(),
+    //   () -> (stick.getZ() - 1) / -2.0
+    // ));
   }
 
 
@@ -132,6 +143,8 @@ public class RobotContainer {
 //            new RunCommand(() -> drivetrain.arcadeDrive(-0.4, 0), drivetrain).withTimeout(3)
 //    );
     return new AutonomousBarrelRace(drivetrain, m_trajectory);
+
+    // return new DriveForward(drivetrain).withTimeout(60);
   }
 
   public void stopAllSubsystems(){
@@ -139,7 +152,7 @@ public class RobotContainer {
   }
   
   public void initializeTrajectory() {
-    
+
     TrajectoryPacket trajPack = TrajectoryPacket.generateTrajectoryPacket("/Path-1.path");
 
     m_trajectory =

@@ -52,7 +52,7 @@ public class Harm extends SubsystemBase {
    */
   public void set(double spinner, double belt){
     intake_bar_spinner.set(spinner);
-    intake_belt.set(belt);
+    intake_belt.set(-belt);
   }
 /**This sets the value of the intake wheel
  * @param val
