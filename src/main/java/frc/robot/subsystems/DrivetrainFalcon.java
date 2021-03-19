@@ -11,6 +11,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.SafeTalonFX;
 import frc.robot.util.Shifter;
+import frc.robot.util.DifferentialDriveDebug;
 import frc.robot.util.NavX;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -19,7 +20,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.music.Orchestra;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -27,22 +27,19 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class DrivetrainFalcon extends SubsystemBase {
 
   private double ticks_per_wheel_revolution = 42700.0;
   private double ticks_per_foot = ticks_per_wheel_revolution/ (.5 * Math.PI); // .5 is diameter of wheel in feet
+  private double max_ticks_per_hundred_milliseconds = ticks_per_foot*Constants.MAX_SPEED_LOW_GEAR/10;
 
-  public final SafeTalonFX leftMasterFalcon = new SafeTalonFX(Constants.LEFT_MASTER_PORT, true); // change to false for no PID?
-  public final SafeTalonFX rightMasterFalcon = new SafeTalonFX(Constants.RIGHT_MASTER_PORT, true);
-  private final SafeTalonFX leftSlaveFalcon = new SafeTalonFX(Constants.LEFT_SLAVE_PORT, true);
-  private final SafeTalonFX rightSlaveFalcon = new SafeTalonFX(Constants.RIGHT_SLAVE_PORT, true);
+  public final SafeTalonFX leftMasterFalcon = new SafeTalonFX(Constants.LEFT_MASTER_PORT, false); // change to false for no PID?
+  public final SafeTalonFX rightMasterFalcon = new SafeTalonFX(Constants.RIGHT_MASTER_PORT, false);
+  private final SafeTalonFX leftSlaveFalcon = new SafeTalonFX(Constants.LEFT_SLAVE_PORT, false);
+  private final SafeTalonFX rightSlaveFalcon = new SafeTalonFX(Constants.RIGHT_SLAVE_PORT, false);
 
-  private final DifferentialDrive diffDrive = new DifferentialDrive(leftMasterFalcon, rightMasterFalcon);
+  private final DifferentialDriveDebug diffDrive = new DifferentialDriveDebug(leftMasterFalcon, rightMasterFalcon);
   private final NavX gyro = new NavX();
   public Orchestra orchestra;
 
@@ -104,7 +101,7 @@ public class DrivetrainFalcon extends SubsystemBase {
 
     shifter.shiftLow();
 
-    configurePID();
+    // configurePID();
     // configureMotionMagic();
     configureSmartDashboard();
   }
@@ -169,10 +166,15 @@ public class DrivetrainFalcon extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Encoder Ticks - Left", leftMasterFalcon.getSelectedSensorPosition());
     SmartDashboard.putNumber("Encoder Ticks - Right", rightMasterFalcon.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Encoder Rate (Normalized) - Left", (leftMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0)/Constants.MAX_SPEED_LOW_GEAR);
-    SmartDashboard.putNumber("Encoder Rate (Normalized) - Right", (rightMasterFalcon.getSelectedSensorVelocity()/ticks_per_foot*10.0)/Constants.MAX_SPEED_LOW_GEAR);
+    SmartDashboard.putNumber("Encoder Rate (Normalized) - Left", (leftMasterFalcon.getSelectedSensorVelocity()/max_ticks_per_hundred_milliseconds));
+    SmartDashboard.putNumber("Encoder Rate (Normalized) - Right", (rightMasterFalcon.getSelectedSensorVelocity()/max_ticks_per_hundred_milliseconds));
 
     SmartDashboard.putNumber("NavX Angle", gyro.getRotation2d().getDegrees());
+
+    SmartDashboard.putNumber("Right Master Current", rightMasterFalcon.getStatorCurrent());
+    SmartDashboard.putNumber("Right Slave Current", rightSlaveFalcon.getStatorCurrent());
+    SmartDashboard.putNumber("Left Master Current", leftMasterFalcon.getStatorCurrent());
+    SmartDashboard.putNumber("Left Slave Current", leftSlaveFalcon.getStatorCurrent());
 
     updateOdometry();
 
@@ -228,9 +230,6 @@ public class DrivetrainFalcon extends SubsystemBase {
   }
 
   public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {
-    speed = Math.abs(speed) <= 0.1? 0: speed;
-    rotation = Math.abs(rotation) <= 0.1? 0: rotation;
-    
     diffDrive.curvatureDrive(speed, rotation, isQuickTurn);
   }
 

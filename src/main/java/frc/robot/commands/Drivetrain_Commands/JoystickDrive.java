@@ -18,11 +18,22 @@ public class JoystickDrive extends CommandBase {
   private DrivetrainFalcon m_drivetrain;
   private DoubleSupplier joyY;
   private DoubleSupplier joyX;
+  private DoubleSupplier joyZ;
 
   public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX) {
+    // m_drivetrain = drivetrain;
+    // this.joyY = joyY;
+    // this.joyX = joyX;
+
+    // addRequirements(m_drivetrain);
+    this(drivetrain, joyY, joyX,  () -> 1.0);
+  }
+
+  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
     m_drivetrain = drivetrain;
     this.joyY = joyY;
     this.joyX = joyX;
+    this.joyZ = joyZ;
 
     addRequirements(m_drivetrain);
   }
@@ -33,11 +44,15 @@ public class JoystickDrive extends CommandBase {
 
   @Override
   public void execute() {
-    m_drivetrain.arcadeDrive(joyY.getAsDouble(), joyX.getAsDouble(), true);  // Someone should find out why these are negative...
+    double _joyY = joyY.getAsDouble();
+    double _joyX = joyX.getAsDouble();
+    double _joyZ = joyZ.getAsDouble();
+    m_drivetrain.curvatureDrive(_joyY * _joyZ, _joyX * _joyZ, true);
     // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
 
-    // SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
+    SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
     SmartDashboard.putNumber("JoyY", joyY.getAsDouble());
+    SmartDashboard.putNumber("JoyZ", joyZ.getAsDouble());
 
     // if (joyX.getAsDouble() < -.1) {
     //   m_drivetrain.driveLeft(.5);
