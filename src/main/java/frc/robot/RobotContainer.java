@@ -4,26 +4,12 @@
 
 package frc.robot;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import frc.robot.commands.Autonomous.AutonomousBarrelRace;
-import frc.robot.commands.Autonomous.DriveForward;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
@@ -32,8 +18,6 @@ import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
-import frc.robot.util.TrajectoryManager;
-import frc.robot.util.TrajectoryPacket;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -55,8 +39,6 @@ public class RobotContainer {
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
   private static JoystickButton button6 = new JoystickButton(stick, 6);
-  private static JoystickButton button7 = new JoystickButton(stick, 7);
-  private static JoystickButton button11 = new JoystickButton(stick, 11);
 
   // Subsystems
   private final Shooter shooter = new Shooter();
@@ -64,8 +46,6 @@ public class RobotContainer {
   private final Harm harm = new Harm();
 
   private final Compressor compressor = new Compressor();
-
-  private Trajectory m_trajectory;
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -75,7 +55,6 @@ public class RobotContainer {
     // Configure the button bindings
     
     // initializeTrajectory must come before configureButtonBindings
-    initializeTrajectory();
     configureButtonBindings();
     DriverStation.getInstance().silenceJoystickConnectionWarning(true);
 
@@ -143,7 +122,7 @@ public class RobotContainer {
 //            new ShootVelocity(shooter, harm, () -> !button6.get()).withTimeout(6),
 //            new RunCommand(() -> drivetrain.arcadeDrive(-0.4, 0), drivetrain).withTimeout(3)
 //    );
-    return new AutonomousBarrelRace(drivetrain, m_trajectory);
+    return new AutonomousBarrelRace(drivetrain);
 
     // return new DriveForward(drivetrain).withTimeout(60);
   }

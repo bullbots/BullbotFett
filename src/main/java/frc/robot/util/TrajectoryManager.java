@@ -4,10 +4,12 @@
 
 package frc.robot.util;
 
-import java.util.Arrays;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
@@ -21,10 +23,21 @@ public class TrajectoryManager {
     public static HashMap<String, Trajectory> generateTrajectories() {
         if (trajectories == null) {
             trajectories = new HashMap<>();
-            List<String> path_names = Arrays.asList("/BARREL", "/BOUNCE-1", "/BOUNCE-2", "/BOUNCE-3", "/SLALOM");
 
-            for (var path_name : path_names) {
-                var trajPack = TrajectoryPacket.generateTrajectoryPacket(path_name);
+            List<String> pathNames = new ArrayList<>();
+
+            File deployDirectory = Filesystem.getDeployDirectory();
+            File[] listOfFiles = deployDirectory.listFiles();
+
+            for (File file : listOfFiles) {
+                pathNames.add("/" + file.getName());
+                // No filter is needed for now since only files in deploy directory are path files.
+            }
+
+            // List<String> path_names = Arrays.asList("/BARREL", "/SLALOM");
+
+            for (var pathName : pathNames) {
+                var trajPack = TrajectoryPacket.generateTrajectoryPacket(pathName);
 
                 var trajectory =
                 TrajectoryGenerator.generateTrajectory(
@@ -33,7 +46,7 @@ public class TrajectoryManager {
                     new Pose2d(trajPack.lastX, trajPack.lastY, Rotation2d.fromDegrees(trajPack.end_angle)),
                     new TrajectoryConfig(3.0, 3.0));
 
-                trajectories.put(path_name, trajectory);
+                trajectories.put(pathName, trajectory);
             }
         }
         return trajectories;
