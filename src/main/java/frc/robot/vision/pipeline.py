@@ -382,15 +382,29 @@ if __name__ == "__main__":
         ntinst.startServer()
     else:
         print(f"Setting up NetworkTables client for team {team}")
-        ntinst.startClientTeam(team)
+        # ntinst.startClientTeam(team)
         # Replace with specific IP Address if not on roboRIO-like network
-        # ntinst.startClient("<IP ADDRESS>")
+        ntinst.startClient("192.168.1.101")
         ntinst.startDSClient()
 
     pipeline = rs.pipeline()
+    print(f"pipeline: {pipeline.__dir__()}")
     config = rs.config()
+
+    # Uncomment for D435 camera
+    # realsense = "D435"
+    # Uncomment for L515 camera
+    realsense = "L515"
+
+    if realsense == "D435":
+        max_width, max_height = 640, 480
+    elif realsense == "L515": 
+        max_width, max_height = 1280, 720
+
+    half_width, half_height = int(max_width * 0.5), int(max_height * 0.5)
+
+    config.enable_stream(rs.stream.color, max_width, max_height, rs.format.bgr8, 30)
     config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-    config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
     profile = pipeline.start(config)
 
@@ -413,7 +427,7 @@ if __name__ == "__main__":
     try:
         print("Getting OutputStream...")
         colorOutputStream = CameraServer.getInstance().putVideo("Color Image", 640, 480)
-        # depthOutputStream = CameraServer.getInstance().putVideo("Depth Image", 640, 480)
+        depthOutputStream = CameraServer.getInstance().putVideo("Depth Image", 640, 480)
         
         # CameraServer.getInstance().startAutomaticCapture()
 
@@ -443,16 +457,17 @@ if __name__ == "__main__":
                                             key=lambda c: cv2.contourArea(c))[0]
 
                 # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
-                x,y,w,h = cv2.boundingRect(largest_contour)
+                x, y, w, h = cv2.boundingRect(largest_contour)
 
                 center_x = (int) (x + w * 0.5)
                 center_y = (int) (y + h * 0.5)
 
-                center_x = center_x - 320
-                center_y = center_y - 240
+                center_x = center_x - half_width
+                center_y = center_y - half_height
 
-                color = (0, 0, 255) if abs(center_x) > 50 else (0, 255, 0)
-                source = cv2.rectangle(color_image, (x, y), (x+w, y+h),color, 3)
+                # Green if near the center else Red
+                color = (0, 255, 0) if abs(center_x) <= 300 else (0, 0, 255)
+                source = cv2.rectangle(color_image, (x, y), (x + w, y + h), color, 3)
 
                 print(f"CenterX: {center_x}, CenterY: {center_y}")
 
@@ -462,10 +477,10 @@ if __name__ == "__main__":
                 xEntry.setNumber(-9999)
                 distance.setNumber(-1)
 
-            # depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+            depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
 
             colorOutputStream.putFrame(color_image)
-            # depthOutputStream.putFrame(depth_colormap)
+            depthOutputStream.putFrame(depth_colormap)
 
     finally:
         print("Calling pipeline stop")
