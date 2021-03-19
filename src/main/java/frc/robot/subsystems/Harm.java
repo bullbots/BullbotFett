@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.Harm_Commands.LowerShooterHood;
@@ -40,9 +41,9 @@ public class Harm extends SubsystemBase {
 
     shooter_solenoid.set(Value.kForward);
 
-    setDefaultCommand(new ParallelCommandGroup(
-      new RaiseIntake(this),
-      new LowerShooterHood(this)
+    setDefaultCommand(new SequentialCommandGroup(
+      new LowerShooterHood(this),
+      new RaiseIntake(this)
     ));
   }
 

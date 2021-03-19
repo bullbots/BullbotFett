@@ -27,6 +27,7 @@ import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
 import frc.robot.commands.Harm_Commands.RaiseShooterHood;
+import frc.robot.commands.Shooter_Commands.ShootThrottle;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
@@ -101,7 +102,11 @@ public class RobotContainer {
       }
     });
 
-    button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
+    // button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
+    button2.whileHeld(new ShootThrottle(
+      shooter,
+      () -> (stick.getZ() - 1) / -2.0
+    ));
 
     button6.whenPressed(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
 
