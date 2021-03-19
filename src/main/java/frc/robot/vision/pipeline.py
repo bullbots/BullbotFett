@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-#----------------------------------------------------------------------------
-# Copyright (c) 2019 FIRST. All Rights Reserved.
-# Open Source Software - may be modified and shared by FRC teams. The code
-# must be accompanied by the FIRST BSD license file in the root directory of
-# the project.
-#----------------------------------------------------------------------------
+
+# Copyright (c) FIRST and other WPILib contributors.
+# Open Source Software; you can modify and/or share it under the terms of
+# the WPILib BSD license file in the root directory of this project.
 
 import json
 import time
@@ -12,12 +10,12 @@ import sys
 
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer, CvSink
 from networktables import NetworkTablesInstance
-import ntcore
+
 import numpy as np
 import cv2
 import math
 
-sys.path.append("/usr/local/lib")
+# sys.path.append("/usr/local/lib")
 import pyrealsense2 as rs
 
 class GreenContours:
@@ -361,9 +359,9 @@ def startSwitchedCamera(config):
 
     NetworkTablesInstance.getDefault().getEntry(config.key).addListener(
         listener,
-        ntcore.constants.NT_NOTIFY_IMMEDIATE |
-        ntcore.constants.NT_NOTIFY_NEW |
-        ntcore.constants.NT_NOTIFY_UPDATE)
+        NetworkTablesInstance.NotifyFlags.IMMEDIATE |
+        NetworkTablesInstance.NotifyFlags.NEW |
+        NetworkTablesInstance.NotifyFlags.UPDATE)
 
     return server
 
@@ -383,10 +381,11 @@ if __name__ == "__main__":
         print("Setting up NetworkTables server")
         ntinst.startServer()
     else:
-        print("Setting up NetworkTables client for team {}".format(team))
+        print(f"Setting up NetworkTables client for team {team}")
         ntinst.startClientTeam(team)
         # Replace with specific IP Address if not on roboRIO-like network
         # ntinst.startClient("<IP ADDRESS>")
+        ntinst.startDSClient()
 
     pipeline = rs.pipeline()
     config = rs.config()

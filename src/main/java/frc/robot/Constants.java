@@ -34,8 +34,8 @@ public final class Constants {
     // Pneumatic Channels
     // public static int CONTROL_PANEL_UP_CHANNEL = 0;
     // public static int CONTROL_PANEL_DOWN_CHANNEL = 1;
-    public static int INTAKE_UP = 0;
-    public static int INTAKE_DOWN = 1;
+    public static int INTAKE_UP = 1;
+    public static int INTAKE_DOWN = 0;
     public static int LOW_GEAR_CHANNEL = 2;
     public static int HIGH_GEAR_CHANNEL = 3;
     public static int LOW_ANGLE_CHANNEL = 4;
