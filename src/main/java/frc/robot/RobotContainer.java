@@ -38,7 +38,7 @@ public class RobotContainer {
   private static JoystickButton button1 = new JoystickButton(stick, 1);
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
-  private static JoystickButton button6 = new JoystickButton(stick, 6);
+  private static JoystickButton button6 = new JoystickButton(stick, 6);  
 
   // Subsystems
   private final Shooter shooter = new Shooter();

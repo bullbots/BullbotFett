@@ -26,7 +26,7 @@ public class AutonomousPathA extends CommandBase {
   private enum Color {
     RED,
     BLUE
-  } 
+  }
 
   public AutonomousPathA(DrivetrainFalcon drivetrain, Color color) {
     // Use addRequirements() here to declare subsystem dependencies.
