@@ -37,6 +37,7 @@ public class TrajectoryManager {
             // List<String> path_names = Arrays.asList("/BARREL", "/SLALOM");
 
             for (var pathName : pathNames) {
+                // System.out.println(String.format("Adding PathName: %s", pathName));
                 var trajPack = TrajectoryPacket.generateTrajectoryPacket(pathName);
 
                 var trajectory =

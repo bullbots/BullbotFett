@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.AutonomousBarrelRace;
 import frc.robot.commands.Autonomous.AutonomousBounce;
+import frc.robot.commands.Autonomous.DriveBackwardPath;
+import frc.robot.commands.Autonomous.DriveForwardPath;
+import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
@@ -59,7 +62,7 @@ public class RobotContainer {
     configureButtonBindings();
     DriverStation.getInstance().silenceJoystickConnectionWarning(true);
 
-    compressor.start();
+    compressor.stop();
     
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,
@@ -124,7 +127,11 @@ public class RobotContainer {
 //            new RunCommand(() -> drivetrain.arcadeDrive(-0.4, 0), drivetrain).withTimeout(3)
 //    );
 
-    return new AutonomousBounce(drivetrain);
+    // return new AutonomousBounce(drivetrain);
+    return new SequentialCommandGroup(
+      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true),
+      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false) // ... boolean isBackwards, boolean resetGyro
+    );
   }
 
   public void stopAllSubsystems(){

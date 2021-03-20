@@ -38,8 +38,8 @@ public class AutonomousBounce extends CommandBase {
 
     m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-1"));
     m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-2"));
-    m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-3"));
-    m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-4"));
+    // m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-3"));
+    // m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-4"));
   }
 
   // Called when the command is initially scheduled.
@@ -57,6 +57,8 @@ public class AutonomousBounce extends CommandBase {
   @Override
   public void execute() {
     double elapsed = m_timer.get();
+
+    // System.out.println("AutonomousBounce execute ran.");
 
     if (elapsed > m_trajectory_pieces.get(trajectory_counter).getTotalTimeSeconds()) {
       trajectory_counter++;
@@ -80,6 +82,8 @@ public class AutonomousBounce extends CommandBase {
 
       var normalized_ramsete_speed = ramsete_speed / Constants.MAX_SPEED_LOW_GEAR;
       var normalized_ramsete_rot = -ramsete_rot / Constants.MAX_ANGULAR_VELOCITY;
+
+      m_drivetrain.arcadeDrive(normalized_ramsete_speed, normalized_ramsete_rot, false);
 
       var t_pose = reference.poseMeters;
       var t_x = t_pose.getX();

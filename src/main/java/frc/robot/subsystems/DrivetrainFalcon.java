@@ -145,6 +145,10 @@ public class DrivetrainFalcon extends SubsystemBase {
     gyro.reset();
   }
 
+  public void resetGyro180() {
+    gyro.reset180();
+  }
+
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
   }
@@ -181,6 +185,7 @@ public class DrivetrainFalcon extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // System.out.println("DrivetrainFalcon periodic");
     SmartDashboard.putNumber("Encoder Ticks - Left", leftMasterFalcon.getSelectedSensorPosition());
     SmartDashboard.putNumber("Encoder Ticks - Right", rightMasterFalcon.getSelectedSensorPosition());
     SmartDashboard.putNumber("Encoder Rate (Normalized) - Left", (leftMasterFalcon.getSelectedSensorVelocity()/max_ticks_per_hundred_milliseconds));
