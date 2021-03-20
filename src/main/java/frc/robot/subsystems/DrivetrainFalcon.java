@@ -21,6 +21,7 @@ import com.ctre.phoenix.music.Orchestra;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -125,8 +126,12 @@ public class DrivetrainFalcon extends SubsystemBase {
     SmartDashboard.putNumber("Left Distance", m_leftDist);
     SmartDashboard.putNumber("Right Distance", m_rightDist);
 
-    m_odometry.update(
-        gyro.getRotation2d(), m_leftDist, m_rightDist);
+    var rotation2d = gyro.getRotation2d();
+    if (m_flippedOdometry) {
+      rotation2d.rotateBy(Rotation2d.fromDegrees(180));
+    }
+    
+    m_odometry.update(rotation2d, m_leftDist, m_rightDist);
   }
 
   public void resetOdometry(Pose2d pose) {

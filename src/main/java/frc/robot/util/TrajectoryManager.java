@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 
 /** Add your docs here. */
 public class TrajectoryManager {
-    public static HashMap<String, Trajectory> trajectories;
+    private static HashMap<String, Trajectory> trajectories;
 
     public static HashMap<String, Trajectory> generateTrajectories() {
         if (trajectories == null) {

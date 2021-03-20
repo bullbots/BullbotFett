@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.AutonomousBarrelRace;
+import frc.robot.commands.Autonomous.AutonomousBounce;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
@@ -122,9 +123,8 @@ public class RobotContainer {
 //            new ShootVelocity(shooter, harm, () -> !button6.get()).withTimeout(6),
 //            new RunCommand(() -> drivetrain.arcadeDrive(-0.4, 0), drivetrain).withTimeout(3)
 //    );
-    return new AutonomousBarrelRace(drivetrain);
 
-    // return new DriveForward(drivetrain).withTimeout(60);
+    return new AutonomousBounce(drivetrain);
   }
 
   public void stopAllSubsystems(){

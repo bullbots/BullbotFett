@@ -4,6 +4,8 @@
 
 package frc.robot.commands.Autonomous;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -20,7 +22,7 @@ public class AutonomousBounce extends CommandBase {
   /** Creates a new AutonomousBounce. */
 
   private DrivetrainFalcon m_drivetrain;
-  List<Trajectory> m_trajectory_pieces;
+  private List<Trajectory> m_trajectory_pieces = new ArrayList<>();
 
   private final Timer m_timer = new Timer();
 
@@ -66,37 +68,42 @@ public class AutonomousBounce extends CommandBase {
     } else {
       m_drivetrain.setOdometryDirection(false);
     }
-    Trajectory.State reference = m_trajectory_pieces.get(trajectory_counter).sample(elapsed);
-    
-    ChassisSpeeds speeds = m_ramsete.calculate(m_drivetrain.getPose(), reference);
 
-    // var ramsete_speed = speeds.vxMetersPerSecond/Constants.MAX_SPEED_LOW_GEAR;
-    var ramsete_speed = speeds.vxMetersPerSecond;
-    var ramsete_rot = speeds.omegaRadiansPerSecond;
+    if (trajectory_counter < m_trajectory_pieces.size()) {
+      Trajectory.State reference = m_trajectory_pieces.get(trajectory_counter).sample(elapsed);
+      
+      ChassisSpeeds speeds = m_ramsete.calculate(m_drivetrain.getPose(), reference);
 
-    var normalized_ramsete_speed = ramsete_speed / Constants.MAX_SPEED_LOW_GEAR;
-    var normalized_ramsete_rot = -ramsete_rot / Constants.MAX_ANGULAR_VELOCITY;
+      // var ramsete_speed = speeds.vxMetersPerSecond/Constants.MAX_SPEED_LOW_GEAR;
+      var ramsete_speed = speeds.vxMetersPerSecond;
+      var ramsete_rot = speeds.omegaRadiansPerSecond;
 
-    var t_pose = reference.poseMeters;
-    var t_x = t_pose.getX();
-    var t_y = t_pose.getY();
-    var t_rotation = t_pose.getRotation().getDegrees();
+      var normalized_ramsete_speed = ramsete_speed / Constants.MAX_SPEED_LOW_GEAR;
+      var normalized_ramsete_rot = -ramsete_rot / Constants.MAX_ANGULAR_VELOCITY;
 
-    var a_pose = m_drivetrain.getPose();
-    var a_x = a_pose.getX();
-    var a_y = a_pose.getY();
-    var a_rotation = a_pose.getRotation().getDegrees();
+      var t_pose = reference.poseMeters;
+      var t_x = t_pose.getX();
+      var t_y = t_pose.getY();
+      var t_rotation = t_pose.getRotation().getDegrees();
 
-    SmartDashboard.putNumber("Ramsete Speed - Normalized", normalized_ramsete_speed);
-    SmartDashboard.putNumber("Ramsete Rot - Normalized", normalized_ramsete_rot);
+      var a_pose = m_drivetrain.getPose();
+      var a_x = a_pose.getX();
+      var a_y = a_pose.getY();
+      var a_rotation = a_pose.getRotation().getDegrees();
 
-    SmartDashboard.putNumber("Pose X - Trajectory", t_x);
-    SmartDashboard.putNumber("Pose Y - Trajectory", t_y);
-    SmartDashboard.putNumber("Pose R - Trajectory", t_rotation);
+      SmartDashboard.putNumber("Ramsete Speed - Normalized", normalized_ramsete_speed);
+      SmartDashboard.putNumber("Ramsete Rot - Normalized", normalized_ramsete_rot);
 
-    SmartDashboard.putNumber("Pose X - Actual", a_x);
-    SmartDashboard.putNumber("Pose Y - Actual", a_y);
-    SmartDashboard.putNumber("Pose R - Actual", a_rotation);
+      SmartDashboard.putNumber("Pose X - Trajectory", t_x);
+      SmartDashboard.putNumber("Pose Y - Trajectory", t_y);
+      SmartDashboard.putNumber("Pose R - Trajectory", t_rotation);
+
+      SmartDashboard.putNumber("Pose X - Actual", a_x);
+      SmartDashboard.putNumber("Pose Y - Actual", a_y);
+      SmartDashboard.putNumber("Pose R - Actual", a_rotation);
+    } else {
+      cancel();
+    }
   }
 
   // Called once the command ends or is interrupted.
