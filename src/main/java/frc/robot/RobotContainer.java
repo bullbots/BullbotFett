@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import frc.robot.commands.Autonomous.AutonomousBarrelRace;
 import frc.robot.commands.Autonomous.DriveForward;
+import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
@@ -54,8 +55,7 @@ public class RobotContainer {
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
   private static JoystickButton button6 = new JoystickButton(stick, 6);
-  private static JoystickButton button7 = new JoystickButton(stick, 7);
-  private static JoystickButton button11 = new JoystickButton(stick, 11);
+  private static JoystickButton button10 = new JoystickButton(stick, 10);
 
   // Subsystems
   private final Shooter shooter = new Shooter();
@@ -122,6 +122,8 @@ public class RobotContainer {
         () -> stick.getX()
       )
     ));
+
+    button10.whileHeld(new AlignShooter(drivetrain));
 
     // button3.whileHeld(new JoystickDrive(
     //   drivetrain,
