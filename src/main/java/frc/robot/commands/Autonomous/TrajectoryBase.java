@@ -99,6 +99,8 @@ public class TrajectoryBase extends CommandBase {
     SmartDashboard.putNumber("Pose X - Actual", a_x);
     SmartDashboard.putNumber("Pose Y - Actual", a_y);
     SmartDashboard.putNumber("Pose R - Actual", a_rotation);
+
+    DrivetrainFalcon.m_fieldSim.setRobotPose(reference.poseMeters);
   }
 
   // Called once the command ends or is interrupted.

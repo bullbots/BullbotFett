@@ -129,8 +129,10 @@ public class RobotContainer {
 
     // return new AutonomousBounce(drivetrain);
     return new SequentialCommandGroup(
-      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true),
-      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false) // ... boolean isBackwards, boolean resetGyro
+      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
+      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
     );
   }
 

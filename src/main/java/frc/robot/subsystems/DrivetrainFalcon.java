@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -65,6 +66,8 @@ public class DrivetrainFalcon extends SubsystemBase {
   private boolean m_flippedOdometry;
 
   private final DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+
+  public static final Field2d m_fieldSim = new Field2d();
 
   // This gives a maximum value of 40 after 3 seconds of grabbing a value every robot period.
   // List<Double> simulationList = IntStream.rangeClosed(0, 50 * 2).mapToDouble((i)->i * 0.02 * 40.0 / 2.0).boxed().collect(Collectors.toList());
@@ -107,6 +110,8 @@ public class DrivetrainFalcon extends SubsystemBase {
     // configurePID();
     // configureMotionMagic();
     configureSmartDashboard();
+
+    SmartDashboard.putData("Field", m_fieldSim);
   }
 
   public void setOdometryDirection(boolean invert) {
