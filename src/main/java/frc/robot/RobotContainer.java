@@ -62,7 +62,7 @@ public class RobotContainer {
     configureButtonBindings();
     DriverStation.getInstance().silenceJoystickConnectionWarning(true);
 
-    compressor.stop();
+    compressor.start();
     
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,
