@@ -29,7 +29,12 @@ public class AutonomousBarrelRace extends CommandBase {
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
-    m_trajectory = TrajectoryManager.getTrajectories().get("/BARREL");
+  }
+
+  private void getTrajectory() {
+    if (m_trajectory == null && TrajectoryManager.getTrajectories() != null) {
+      m_trajectory = TrajectoryManager.getTrajectories().get("/BARREL");
+    }
   }
 
   // Called when the command is initially scheduled.
@@ -38,7 +43,12 @@ public class AutonomousBarrelRace extends CommandBase {
     m_timer.reset();
     m_timer.start();
     m_drivetrain.resetGyro();
-    m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
+    
+    getTrajectory();
+
+    if (m_trajectory != null) {
+      m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
+    }
 
     m_ramsete.setEnabled(true);
   }
@@ -47,6 +57,13 @@ public class AutonomousBarrelRace extends CommandBase {
   @Override
   public void execute() {
     double elapsed = m_timer.get();
+
+    getTrajectory();
+
+    if (m_trajectory == null) {
+      return;
+    }
+    
     Trajectory.State reference = m_trajectory.sample(elapsed);
     ChassisSpeeds speeds = m_ramsete.calculate(m_drivetrain.getPose(), reference);
 
