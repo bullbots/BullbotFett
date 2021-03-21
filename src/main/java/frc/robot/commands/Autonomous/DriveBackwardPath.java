@@ -14,22 +14,23 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.util.TrajectoryManager;
 
-public class AutonomousBarrelRace extends CommandBase {
-  /** Creates a new AutonomousBarrelRace. */
-
+public class DriveBackwardPath extends CommandBase {
+  /** Creates a new DriveBackwardPath. */
+  
   private DrivetrainFalcon m_drivetrain;
   private Trajectory m_trajectory;
 
   private final Timer m_timer = new Timer();
 
   private final RamseteController m_ramsete = new RamseteController();
-  
-  public AutonomousBarrelRace(DrivetrainFalcon drivetrain) {
+
+  public DriveBackwardPath(DrivetrainFalcon drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
-    m_trajectory = TrajectoryManager.generateTrajectories().get("/BARREL");
+
+    m_trajectory = TrajectoryManager.generateTrajectories().get("/FORWARD-DISTANCE");
   }
 
   // Called when the command is initially scheduled.
@@ -41,13 +42,17 @@ public class AutonomousBarrelRace extends CommandBase {
     m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
 
     m_ramsete.setEnabled(true);
+
+    m_drivetrain.setOdometryDirection(true);  
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     double elapsed = m_timer.get();
+
     Trajectory.State reference = m_trajectory.sample(elapsed);
+      
     ChassisSpeeds speeds = m_ramsete.calculate(m_drivetrain.getPose(), reference);
 
     // var ramsete_speed = speeds.vxMetersPerSecond/Constants.MAX_SPEED_LOW_GEAR;
@@ -57,7 +62,7 @@ public class AutonomousBarrelRace extends CommandBase {
     var normalized_ramsete_speed = ramsete_speed / Constants.MAX_SPEED_LOW_GEAR;
     var normalized_ramsete_rot = -ramsete_rot / Constants.MAX_ANGULAR_VELOCITY;
 
-    m_drivetrain.arcadeDrive(normalized_ramsete_speed, normalized_ramsete_rot, false);
+    m_drivetrain.arcadeDrive(-normalized_ramsete_speed, normalized_ramsete_rot, false);
 
     var t_pose = reference.poseMeters;
     var t_x = t_pose.getX();
@@ -79,15 +84,18 @@ public class AutonomousBarrelRace extends CommandBase {
     SmartDashboard.putNumber("Pose X - Actual", a_x);
     SmartDashboard.putNumber("Pose Y - Actual", a_y);
     SmartDashboard.putNumber("Pose R - Actual", a_rotation);
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_drivetrain.setOdometryDirection(false);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_timer.get() > m_trajectory.getTotalTimeSeconds();
   }
 }

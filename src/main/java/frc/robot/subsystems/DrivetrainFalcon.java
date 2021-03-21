@@ -21,9 +21,11 @@ import com.ctre.phoenix.music.Orchestra;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -61,7 +63,11 @@ public class DrivetrainFalcon extends SubsystemBase {
   private double m_leftDist;
   private double m_rightDist;
 
+  private boolean m_flippedOdometry;
+
   private final DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+
+  public static final Field2d m_fieldSim = new Field2d();
 
   // This gives a maximum value of 40 after 3 seconds of grabbing a value every robot period.
   // List<Double> simulationList = IntStream.rangeClosed(0, 50 * 2).mapToDouble((i)->i * 0.02 * 40.0 / 2.0).boxed().collect(Collectors.toList());
@@ -104,17 +110,33 @@ public class DrivetrainFalcon extends SubsystemBase {
     // configurePID();
     // configureMotionMagic();
     configureSmartDashboard();
+
+    SmartDashboard.putData("Field", m_fieldSim);
+  }
+
+  public void setOdometryDirection(boolean invert) {
+    m_flippedOdometry = invert;
   }
 
   public void updateOdometry() {
     m_leftDist = leftMasterFalcon.getSelectedSensorPosition() / ticks_per_foot;
     m_rightDist = rightMasterFalcon.getSelectedSensorPosition() / ticks_per_foot;
 
+    if (m_flippedOdometry) {
+      var temporary = -m_leftDist;
+      m_leftDist = -m_rightDist;
+      m_rightDist = temporary;
+    }
+
     SmartDashboard.putNumber("Left Distance", m_leftDist);
     SmartDashboard.putNumber("Right Distance", m_rightDist);
 
-    m_odometry.update(
-        gyro.getRotation2d(), m_leftDist, m_rightDist);
+    var rotation2d = gyro.getRotation2d();
+    if (m_flippedOdometry) {
+      rotation2d.rotateBy(Rotation2d.fromDegrees(180));
+    }
+    
+    m_odometry.update(rotation2d, m_leftDist, m_rightDist);
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -126,6 +148,10 @@ public class DrivetrainFalcon extends SubsystemBase {
 
   public void resetGyro() {
     gyro.reset();
+  }
+
+  public void resetGyro180() {
+    gyro.reset180();
   }
 
   public Pose2d getPose() {
@@ -164,6 +190,7 @@ public class DrivetrainFalcon extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // System.out.println("DrivetrainFalcon periodic");
     SmartDashboard.putNumber("Encoder Ticks - Left", leftMasterFalcon.getSelectedSensorPosition());
     SmartDashboard.putNumber("Encoder Ticks - Right", rightMasterFalcon.getSelectedSensorPosition());
     SmartDashboard.putNumber("Encoder Rate (Normalized) - Left", (leftMasterFalcon.getSelectedSensorVelocity()/max_ticks_per_hundred_milliseconds));
