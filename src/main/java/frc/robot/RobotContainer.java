@@ -139,15 +139,6 @@ public class RobotContainer {
   public void stopAllSubsystems(){
     drivetrain.stop();
   }
-  
-  // public void initializeTrajectory() {
-
-  //   var trajectories = TrajectoryManager.generateTrajectories();
-
-  //   for (var trajectoryName : trajectories.keySet()) {
-  //     var trajectory = trajectories.get(trajectoryName);
-  //   }
-  // }
 
   public void periodic() {
     drivetrain.periodic();

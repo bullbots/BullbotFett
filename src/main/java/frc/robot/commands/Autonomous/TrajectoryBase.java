@@ -37,7 +37,7 @@ public class TrajectoryBase extends CommandBase {
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
-    m_trajectory = TrajectoryManager.generateTrajectories().get(trajectory_name);
+    m_trajectory = TrajectoryManager.getTrajectories().get(trajectory_name);
     this.isBackwards = isBackwards;
     this.resetGyro = resetGyro;
   }

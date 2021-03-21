@@ -36,10 +36,10 @@ public class AutonomousBounce extends CommandBase {
 
     m_drivetrain = drivetrain;
 
-    m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-1"));
-    m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-2"));
-    // m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-3"));
-    // m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-4"));
+    m_trajectory_pieces.add(TrajectoryManager.getTrajectories().get("/BOUNCE-1"));
+    m_trajectory_pieces.add(TrajectoryManager.getTrajectories().get("/BOUNCE-2"));
+    // m_trajectory_pieces.add(TrajectoryManager.getTrajectories().get("/BOUNCE-3"));
+    // m_trajectory_pieces.add(TrajectoryManager.getTrajectories().get("/BOUNCE-4"));
   }
 
   // Called when the command is initially scheduled.

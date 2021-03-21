@@ -30,7 +30,7 @@ public class DriveForwardPath extends CommandBase {
 
     m_drivetrain = drivetrain;
 
-    m_trajectory = TrajectoryManager.generateTrajectories().get("/FORWARD-DISTANCE");
+    m_trajectory = TrajectoryManager.getTrajectories().get("/FORWARD-DISTANCE");
   }
 
   // Called when the command is initially scheduled.

@@ -29,7 +29,7 @@ public class AutonomousBarrelRace extends CommandBase {
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
-    m_trajectory = TrajectoryManager.generateTrajectories().get("/BARREL");
+    m_trajectory = TrajectoryManager.getTrajectories().get("/BARREL");
   }
 
   // Called when the command is initially scheduled.
