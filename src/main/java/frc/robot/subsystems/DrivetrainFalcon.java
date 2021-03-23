@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2021 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -45,7 +45,7 @@ public class DrivetrainFalcon extends SubsystemBase {
   private final NavX gyro = new NavX();
   public Orchestra orchestra;
 
-  public final Shifter shifter = new Shifter(Constants.LOW_GEAR_CHANNEL, Constants.HIGH_GEAR_CHANNEL);
+  // private final Shifter shifter = new Shifter(Constants.LOW_GEAR_CHANNEL, Constants.HIGH_GEAR_CHANNEL);
 
   private NetworkTableEntry leftCurrent;
   private NetworkTableEntry leftPosition;
@@ -105,7 +105,7 @@ public class DrivetrainFalcon extends SubsystemBase {
     diffDrive.setRightSideInverted(false);
     diffDrive.setSafetyEnabled(false);
 
-    shifter.shiftLow();
+    // shifter.shiftLow();
 
     // configurePID();
     // configureMotionMagic();
