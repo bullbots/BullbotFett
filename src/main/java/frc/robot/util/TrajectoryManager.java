@@ -30,6 +30,7 @@ public class TrajectoryManager {
         Thread genTrajectoriesThread = new Thread(() -> {
 
             if (trajectories == null) {
+                System.out.println("Info: Trajectories loading...");
                 trajectoriesLock.lock();
     
                 trajectories = new HashMap<>();
@@ -60,6 +61,7 @@ public class TrajectoryManager {
                     trajectories.put(pathName, trajectory);
                 }
                 trajectoriesLock.unlock();
+                System.out.println("Info: Trajectories loaded");
             }
 
         });

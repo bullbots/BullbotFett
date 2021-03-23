@@ -70,8 +70,6 @@ public class TrajectoryBase extends CommandBase {
       m_drivetrain.resetGyro180();
     }
 
-    inializeTrajectory();
-
     m_ramsete.setEnabled(true);
     m_drivetrain.setOdometryDirection(isBackwards);
   }
@@ -82,6 +80,8 @@ public class TrajectoryBase extends CommandBase {
     double elapsed = m_timer.get();
 
     inializeTrajectory();
+
+    if (!m_isInitialized) { return; }
 
     Trajectory.State reference = m_trajectory.sample(elapsed);
       

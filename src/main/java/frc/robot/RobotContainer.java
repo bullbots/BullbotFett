@@ -8,11 +8,8 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.Autonomous.AutonomousBarrelRace;
-import frc.robot.commands.Autonomous.AutonomousBounce;
-import frc.robot.commands.Autonomous.DriveBackwardPath;
-import frc.robot.commands.Autonomous.DriveForwardPath;
 import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
@@ -51,6 +48,9 @@ public class RobotContainer {
 
   private final Compressor compressor = new Compressor();
 
+  // A chooser for autonomous commands
+  SendableChooser<Command> m_chooser = new SendableChooser<>();
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -70,6 +70,20 @@ public class RobotContainer {
       () -> stick.getX(),
       () -> (stick.getZ() - 1)/-2.0
     ));
+
+    // Add commands to the autonomous command chooser
+    m_chooser.setDefaultOption("Bounce Path", new SequentialCommandGroup(
+      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
+      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
+    ));
+    m_chooser.addOption("Forward Then Backward Path", new SequentialCommandGroup(
+      new TrajectoryBase(drivetrain, "/FORWARD-DISTANCE", false, true), // ... boolean isBackwards, boolean resetGyro
+      new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
+    ));
+
+    SmartDashboard.putData(m_chooser);
   }
 
   /**
@@ -88,6 +102,11 @@ public class RobotContainer {
       public void initialize() {
         super.initialize();
         setName("Reset Encoders");
+      }
+
+      @Override
+      public boolean runsWhenDisabled() {
+        return true;
       }
     });
 
@@ -122,18 +141,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-//    return new SequentialCommandGroup(
-//            new ShootVelocity(shooter, harm, () -> !button6.get()).withTimeout(6),
-//            new RunCommand(() -> drivetrain.arcadeDrive(-0.4, 0), drivetrain).withTimeout(3)
-//    );
-
-    // return new AutonomousBounce(drivetrain);
-    return new SequentialCommandGroup(
-      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
-      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
-      new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
-      new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
-    );
+    return m_chooser.getSelected();
   }
 
   public void stopAllSubsystems(){
