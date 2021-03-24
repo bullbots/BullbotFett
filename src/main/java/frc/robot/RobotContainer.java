@@ -9,10 +9,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.Autonomous.AutonomousBarrelRace;
-import frc.robot.commands.Autonomous.AutonomousBounce;
-import frc.robot.commands.Autonomous.DriveBackwardPath;
-import frc.robot.commands.Autonomous.DriveForwardPath;
 import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
@@ -23,7 +19,7 @@ import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
-import frc.robot.util.Shifter;
+import frc.robot.subsystems.Shifter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -51,7 +47,7 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final DrivetrainFalcon drivetrain = new DrivetrainFalcon();
   private final Harm harm = new Harm();
-  private final Shifter shifter = new Shifter(Constants.LOW_GEAR_CHANNEL, Constants.HIGH_GEAR_CHANNEL);
+  private final Shifter shifter = new Shifter();
 
 
   private final Compressor compressor = new Compressor();

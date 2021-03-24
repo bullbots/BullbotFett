@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.SafeTalonFX;
-import frc.robot.util.Shifter;
 import frc.robot.util.DifferentialDriveDebug;
 import frc.robot.util.NavX;
 
