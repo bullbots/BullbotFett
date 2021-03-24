@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.TrajectoryBase;
+import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
@@ -39,7 +40,8 @@ public class RobotContainer {
   private static JoystickButton button1 = new JoystickButton(stick, 1);
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
-  private static JoystickButton button6 = new JoystickButton(stick, 6);  
+  private static JoystickButton button6 = new JoystickButton(stick, 6); 
+  private static JoystickButton button10 = new JoystickButton(stick, 10); 
 
   // Subsystems
   private final Shooter shooter = new Shooter();
@@ -78,6 +80,9 @@ public class RobotContainer {
       new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
       new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
     ));
+    m_chooser.addOption("Slalom Path",
+      new TrajectoryBase(drivetrain, "/SLALOM")
+    );
     m_chooser.addOption("Forward Then Backward Path", new SequentialCommandGroup(
       new TrajectoryBase(drivetrain, "/FORWARD-DISTANCE", false, true), // ... boolean isBackwards, boolean resetGyro
       new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
@@ -126,6 +131,8 @@ public class RobotContainer {
       )
     ));
 
+    button10.whileHeld(new AlignShooter(drivetrain));
+    
     // button3.whileHeld(new JoystickDrive(
     //   drivetrain,
     //   () -> stick.getY(),

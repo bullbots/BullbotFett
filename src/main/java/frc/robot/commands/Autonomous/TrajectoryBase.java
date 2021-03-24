@@ -55,6 +55,9 @@ public class TrajectoryBase extends CommandBase {
       if (m_trajectory != null) {
         m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
         m_isInitialized = true;
+        
+        m_timer.reset();
+        m_timer.start();
       }
     }
   }
@@ -62,8 +65,6 @@ public class TrajectoryBase extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_timer.reset();
-    m_timer.start();
     if (resetGyro) {
       m_drivetrain.resetGyro();
     } else {
