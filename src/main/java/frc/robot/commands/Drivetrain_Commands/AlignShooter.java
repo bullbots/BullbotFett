@@ -7,6 +7,8 @@
 
 package frc.robot.commands.Drivetrain_Commands;
 
+import java.security.Principal;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -18,12 +20,15 @@ public class AlignShooter extends CommandBase {
    * Creates a new AlignShooter.
    */
   private DrivetrainFalcon drivetrain;
-  private final double kP = 1. / 160;
+  private final double kP = 1. / 950.0;
 
   private double decay = -.5;
   private double prev_value = 0;
 
   private Timer timer = new Timer();
+
+  private int m_buffer = 0;
+  private boolean m_debugPrint = false;
 
   public AlignShooter(DrivetrainFalcon drivetrain) {
     this.drivetrain = drivetrain;
@@ -44,20 +49,40 @@ public class AlignShooter extends CommandBase {
 
     double value = x * kP;
 
+    boolean print_buffer = false;
+
+    if (m_debugPrint && m_buffer % 50 == 0) {
+      print_buffer = true;
+      m_buffer = 0;
+    }
+
     if (x != -9999) {
-      MathUtil.clamp(value, -.5, .5);
+      value = MathUtil.clamp(value, -.5, .5);
 
       SmartDashboard.putNumber("value (Saw Target)", value);
+      if (print_buffer) {
+        System.out.println(String.format("INFO: Saw target: %f", value));
+      }
     } else {
       double sign = Math.signum(prev_value);
 
-      value = (MathUtil.clamp(decay * timer.get(), 0, Math.abs(prev_value)) + Math.abs(prev_value))* sign;
+      double decay_val = decay * timer.get();
+      double abs_prev_val = Math.abs(prev_value);
+      value = (MathUtil.clamp(decay_val, -abs_prev_val, 0) + abs_prev_val) * sign;
+
       SmartDashboard.putNumber("value (Did not see Target)", value);
+      if (m_debugPrint && print_buffer) {
+        System.out.println(String.format("INFO: Did NOT See target decay: %f", decay_val));
+        System.out.println(String.format("INFO: Did NOT See target: %f", value));
+      }
     }
 
     drivetrain.arcadeDrive(0, value, false);
     prev_value = value;
     timer.reset();
+    if (m_debugPrint) {
+      m_buffer++;
+    }
   }
 
   // Called once the command ends or is interrupted.
