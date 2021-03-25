@@ -34,9 +34,9 @@ class GreenContours:
         self.normalize_output = None
 
         self.__hsv_threshold_input = self.normalize_output
-        self.__hsv_threshold_hue = [78, 113]
+        self.__hsv_threshold_hue = [70, 113]
         self.__hsv_threshold_saturation = [112, 255.0]
-        self.__hsv_threshold_value = [76, 255.0]
+        self.__hsv_threshold_value = [76, 148]
 
         self.hsv_threshold_output = None
 
@@ -457,28 +457,33 @@ if __name__ == "__main__":
                 largest_contour = sorted(grip_pipeline.find_contours_output, reverse=True,
                                             key=lambda c: cv2.contourArea(c))[0]
 
-                # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
-                x, y, w, h = cv2.boundingRect(largest_contour)
+                contourarea = cv2.contourArea(largest_contour)
+                print(f"info: area {contourarea}")
+                
+                if 450 <= contourarea <= 4500 :
 
-                center_x = (int) (x + w * 0.5)
-                center_y = (int) (y + h * 0.5)
+                    # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
+                    x, y, w, h = cv2.boundingRect(largest_contour)
 
-                center_x = center_x - half_width
-                center_y = center_y - half_height
+                    center_x = (int) (x + w * 0.5)
+                    center_y = (int) (y + h * 0.5)
 
-                # Green if near the center else Red
-                color = (0, 255, 0) if abs(center_x) <= near_center_threshold else (0, 0, 255)
-                source = cv2.rectangle(color_image, (x, y), (x + w, y + h), color, 3)
+                    center_x = center_x - half_width
+                    center_y = center_y - half_height
 
-                threshold_color = (128, 0, 128)
-                source = cv2.rectangle(color_image, (half_width - near_center_threshold, 0), 
-                                (half_width + near_center_threshold, max_height), threshold_color, 2)
+                    # Green if near the center else Red
+                    color = (0, 255, 0) if abs(center_x) <= near_center_threshold else (0, 0, 255)
+                    source = cv2.rectangle(color_image, (x, y), (x + w, y + h), color, 3)
 
-                print(f"CenterX: {center_x}, CenterY: {center_y}")
+                    threshold_color = (128, 0, 128)
+                    source = cv2.rectangle(color_image, (half_width - near_center_threshold, 0), 
+                                    (half_width + near_center_threshold, max_height), threshold_color, 2)
 
-                smartdashboard.putNumber("TargetX", center_x)
-                # This needs debug for the edge of the image
-                # distance.setNumber(depth_image[y+h+5][center_x])
+                    print(f"CenterX: {center_x}, CenterY: {center_y}")
+
+                    smartdashboard.putNumber("TargetX", center_x)
+                    # This needs debug for the edge of the image
+                    # distance.setNumber(depth_image[y+h+5][center_x])
             else:
                 smartdashboard.putNumber("TargetX", -9999)
                 distance.setNumber(-1)
