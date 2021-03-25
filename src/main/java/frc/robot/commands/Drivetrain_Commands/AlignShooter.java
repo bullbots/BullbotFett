@@ -16,7 +16,7 @@ public class AlignShooter extends CommandBase {
    * Creates a new AlignShooter.
    */
   private DrivetrainFalcon drivetrain;
-  private final double kP = 1. / 160;
+  private final double kP = 1. / 500;
 
   public AlignShooter(DrivetrainFalcon drivetrain) {
     this.drivetrain = drivetrain;
@@ -26,6 +26,7 @@ public class AlignShooter extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    System.out.println("Align Shooter was called.\n\n");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -33,8 +34,12 @@ public class AlignShooter extends CommandBase {
   public void execute() {
     double x = SmartDashboard.getNumber("TargetX", -9999);
 
+    System.out.println(x);
+
     if (x != -9999) {
       drivetrain.arcadeDrive(0, kP * x, false);
+    } else {
+      drivetrain.arcadeDrive(0, 0, false);
     }
   }
 
