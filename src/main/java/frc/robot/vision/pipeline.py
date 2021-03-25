@@ -34,9 +34,9 @@ class GreenContours:
         self.normalize_output = None
 
         self.__hsv_threshold_input = self.normalize_output
-        self.__hsv_threshold_hue = [43.70503597122302, 90.60606060606061]
-        self.__hsv_threshold_saturation = [64.20863309352518, 255.0]
-        self.__hsv_threshold_value = [162.81474820143885, 255.0]
+        self.__hsv_threshold_hue = [78, 113]
+        self.__hsv_threshold_saturation = [112, 255.0]
+        self.__hsv_threshold_value = [76, 255.0]
 
         self.hsv_threshold_output = None
 
@@ -382,9 +382,9 @@ if __name__ == "__main__":
         ntinst.startServer()
     else:
         print(f"Setting up NetworkTables client for team {team}")
-        # ntinst.startClientTeam(team)
+        ntinst.startClientTeam(team)
         # Replace with specific IP Address if not on roboRIO-like network
-        ntinst.startClient("192.168.1.105")
+        # ntinst.startClient("169.254.243.149")
         ntinst.startDSClient()
 
     pipeline = rs.pipeline()
@@ -393,7 +393,7 @@ if __name__ == "__main__":
     # Uncomment for D435 camera
     # realsense = "D435"
     # Uncomment for L515 camera
-    realsense = "L515"
+    realsense = "D435"
 
     if realsense == "D435":
         max_width, max_height = 640, 480
@@ -402,7 +402,7 @@ if __name__ == "__main__":
 
     half_width, half_height = int(max_width * 0.5), int(max_height * 0.5)
 
-    near_center_threshold = 30 * max_height / 480
+    near_center_threshold = int(60 * max_height / 480)
 
     config.enable_stream(rs.stream.color, max_width, max_height, rs.format.bgr8, 30)
     config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
@@ -421,9 +421,9 @@ if __name__ == "__main__":
 
     grip_pipeline = GreenContours()
 
-    table = ntinst.getTable("datatable")
-    xEntry = table.getEntry("TargetX")
-    distance = table.getEntry("Distance")
+    smartdashboard = ntinst.getTable("SmartDashboard")
+    # xEntry = table.getEntry("TargetX")
+    distance = smartdashboard.getEntry("Distance")
 
     try:
         print("Getting OutputStream...")
@@ -470,13 +470,17 @@ if __name__ == "__main__":
                 color = (0, 255, 0) if abs(center_x) <= near_center_threshold else (0, 0, 255)
                 source = cv2.rectangle(color_image, (x, y), (x + w, y + h), color, 3)
 
+                threshold_color = (128, 0, 128)
+                source = cv2.rectangle(color_image, (half_width - near_center_threshold, 0), 
+                                (half_width + near_center_threshold, max_height), threshold_color, 2)
+
                 print(f"CenterX: {center_x}, CenterY: {center_y}")
 
-                xEntry.setNumber(center_x)
+                smartdashboard.putNumber("TargetX", center_x)
                 # This needs debug for the edge of the image
                 # distance.setNumber(depth_image[y+h+5][center_x])
             else:
-                xEntry.setNumber(-9999)
+                smartdashboard.putNumber("TargetX", -9999)
                 distance.setNumber(-1)
 
             depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
