@@ -28,7 +28,7 @@ public class AutonomousSlalom extends CommandBase {
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
-    m_trajectory = TrajectoryManager.generateTrajectories().get("/SLALOM");
+    m_trajectory = TrajectoryManager.getTrajectories().get("/SLALOM");
   }
 
   // Called when the command is initially scheduled.

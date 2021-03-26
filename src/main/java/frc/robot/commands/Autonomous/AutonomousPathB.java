@@ -34,9 +34,9 @@ public class AutonomousPathB extends CommandBase {
 
     m_drivetrain = drivetrain;
     if (color == Color.BLUE) {
-      m_trajectory = TrajectoryManager.generateTrajectories().get("/BLUEPATH-B");
+      m_trajectory = TrajectoryManager.getTrajectories().get("/BLUEPATH-B");
     } else if (color == Color.RED) {
-      m_trajectory = TrajectoryManager.generateTrajectories().get("/REDPATH-B");
+      m_trajectory = TrajectoryManager.getTrajectories().get("/REDPATH-B");
     }
   }
 

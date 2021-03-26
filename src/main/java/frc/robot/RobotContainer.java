@@ -8,12 +8,11 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.Autonomous.AutonomousBarrelRace;
-import frc.robot.commands.Autonomous.AutonomousBounce;
-import frc.robot.commands.Autonomous.DriveBackwardPath;
-import frc.robot.commands.Autonomous.DriveForwardPath;
 import frc.robot.commands.Autonomous.TrajectoryBase;
+import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
@@ -26,7 +25,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpiutil.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
@@ -42,7 +43,8 @@ public class RobotContainer {
   private static JoystickButton button1 = new JoystickButton(stick, 1);
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
-  private static JoystickButton button6 = new JoystickButton(stick, 6);  
+  private static JoystickButton button6 = new JoystickButton(stick, 6); 
+  private static JoystickButton button10 = new JoystickButton(stick, 10); 
 
   // Subsystems
   private final Shooter shooter = new Shooter();
@@ -50,6 +52,9 @@ public class RobotContainer {
   private final Harm harm = new Harm();
 
   private final Compressor compressor = new Compressor();
+
+  // A chooser for autonomous commands
+  SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -70,6 +75,23 @@ public class RobotContainer {
       () -> stick.getX(),
       () -> (stick.getZ() - 1)/-2.0
     ));
+
+    // Add commands to the autonomous command chooser
+    m_chooser.setDefaultOption("Bounce Path", new SequentialCommandGroup(
+      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
+      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
+    ));
+    m_chooser.addOption("Slalom Path",
+      new TrajectoryBase(drivetrain, "/SLALOM")
+    );
+    m_chooser.addOption("Forward Then Backward Path", new SequentialCommandGroup(
+      new TrajectoryBase(drivetrain, "/FORWARD-DISTANCE", false, true), // ... boolean isBackwards, boolean resetGyro
+      new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
+    ));
+
+    SmartDashboard.putData(m_chooser);
   }
 
   /**
@@ -89,11 +111,16 @@ public class RobotContainer {
         super.initialize();
         setName("Reset Encoders");
       }
+
+      @Override
+      public boolean runsWhenDisabled() {
+        return true;
+      }
     });
 
     button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
 
-    button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
+    // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
     
     button1.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(
@@ -107,6 +134,26 @@ public class RobotContainer {
       )
     ));
 
+    PIDController pidcontroller = new PIDController(1.0 / 980.0, 1.0 / 1000.0, 0.0);
+    pidcontroller.setIntegratorRange(-0.2, 0.2);
+
+    button10.whileHeld(new AlignShooter(pidcontroller, 
+    () -> {
+        double x = SmartDashboard.getNumber("TargetX", -9999);
+        System.out.println(String.format("Info: x %f", x));
+        if (x == -9999) {
+          return 0;
+        } 
+        return x;
+      },
+    0.0,
+    (output) -> {
+        output = MathUtil.clamp(output, -.5, .5);
+        drivetrain.arcadeDrive(0, -output, false);
+        System.out.println(String.format("Info: output %f", output));
+      },
+    drivetrain));
+    
     // button3.whileHeld(new JoystickDrive(
     //   drivetrain,
     //   () -> stick.getY(),
@@ -122,32 +169,12 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-//    return new SequentialCommandGroup(
-//            new ShootVelocity(shooter, harm, () -> !button6.get()).withTimeout(6),
-//            new RunCommand(() -> drivetrain.arcadeDrive(-0.4, 0), drivetrain).withTimeout(3)
-//    );
-
-    // return new AutonomousBounce(drivetrain);
-    return new SequentialCommandGroup(
-      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
-      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
-      new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
-      new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
-    );
+    return m_chooser.getSelected();
   }
 
   public void stopAllSubsystems(){
     drivetrain.stop();
   }
-  
-  // public void initializeTrajectory() {
-
-  //   var trajectories = TrajectoryManager.generateTrajectories();
-
-  //   for (var trajectoryName : trajectories.keySet()) {
-  //     var trajectory = trajectories.get(trajectoryName);
-  //   }
-  // }
 
   public void periodic() {
     drivetrain.periodic();

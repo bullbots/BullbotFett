@@ -6,7 +6,6 @@ package frc.robot.commands.Autonomous;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
@@ -20,6 +19,7 @@ public class TrajectoryBase extends CommandBase {
     
   private DrivetrainFalcon m_drivetrain;
   private Trajectory m_trajectory;
+  private String m_trajectoryName;
 
   private final Timer m_timer = new Timer();
 
@@ -27,6 +27,7 @@ public class TrajectoryBase extends CommandBase {
 
   private boolean isBackwards;
   private boolean resetGyro;
+  private boolean m_isInitialized;
 
   public TrajectoryBase(DrivetrainFalcon drivetrain, String trajectory_name) {
     this(drivetrain, trajectory_name, false, true);
@@ -37,26 +38,40 @@ public class TrajectoryBase extends CommandBase {
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
-    m_trajectory = TrajectoryManager.generateTrajectories().get(trajectory_name);
+    this.m_trajectoryName = trajectory_name;
     this.isBackwards = isBackwards;
     this.resetGyro = resetGyro;
+  }
+
+  private void getTrajectory() {
+    if (m_trajectory == null && TrajectoryManager.getTrajectories() != null) {
+      m_trajectory = TrajectoryManager.getTrajectories().get(m_trajectoryName);
+    }
+  }
+
+  private void inializeTrajectory() {
+    if (!m_isInitialized) {
+      getTrajectory();
+      if (m_trajectory != null) {
+        m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
+        m_isInitialized = true;
+        
+        m_timer.reset();
+        m_timer.start();
+      }
+    }
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_timer.reset();
-    m_timer.start();
     if (resetGyro) {
       m_drivetrain.resetGyro();
     } else {
       m_drivetrain.resetGyro180();
     }
-    Pose2d initialPose = m_trajectory.getInitialPose();
-    m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
 
     m_ramsete.setEnabled(true);
-
     m_drivetrain.setOdometryDirection(isBackwards);
   }
 
@@ -64,6 +79,10 @@ public class TrajectoryBase extends CommandBase {
   @Override
   public void execute() {
     double elapsed = m_timer.get();
+
+    inializeTrajectory();
+
+    if (!m_isInitialized) { return; }
 
     Trajectory.State reference = m_trajectory.sample(elapsed);
       

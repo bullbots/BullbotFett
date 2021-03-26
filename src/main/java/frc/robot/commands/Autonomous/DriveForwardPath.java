@@ -24,13 +24,30 @@ public class DriveForwardPath extends CommandBase {
 
   private final RamseteController m_ramsete = new RamseteController();
 
+  private final String m_trajectoryName = "/FORWARD-DISTANCE";
+  private boolean m_isInitialized;
+
   public DriveForwardPath(DrivetrainFalcon drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
+  }
 
-    m_trajectory = TrajectoryManager.generateTrajectories().get("/FORWARD-DISTANCE");
+  private void getTrajectory() {
+    if (m_trajectory == null && TrajectoryManager.getTrajectories() != null) {
+      m_trajectory = TrajectoryManager.getTrajectories().get(m_trajectoryName);
+    }
+  }
+  
+  private void inializeTrajectory() {
+    if (!m_isInitialized) {
+      getTrajectory();
+      if (m_trajectory != null) {
+        m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
+        m_isInitialized = true;
+      }
+    }
   }
 
   // Called when the command is initially scheduled.
@@ -39,7 +56,6 @@ public class DriveForwardPath extends CommandBase {
     m_timer.reset();
     m_timer.start();
     m_drivetrain.resetGyro();
-    m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
 
     m_ramsete.setEnabled(true);
 
@@ -50,6 +66,10 @@ public class DriveForwardPath extends CommandBase {
   @Override
   public void execute() {
     double elapsed = m_timer.get();
+
+    inializeTrajectory();
+
+    if (!m_isInitialized) { return; }
 
     Trajectory.State reference = m_trajectory.sample(elapsed);
       
