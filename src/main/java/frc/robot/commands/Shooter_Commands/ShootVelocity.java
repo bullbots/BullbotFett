@@ -27,7 +27,7 @@ public class ShootVelocity extends CommandBase {
    private boolean servoState = false;
 
   public ShootVelocity(Shooter shooter, Harm harm, BooleanSupplier isLongShot) {
-    addRequirements(shooter);
+    addRequirements(shooter, harm);
     this.shooter = shooter;
     this.harm = harm;
     this.isLongShot = isLongShot;
