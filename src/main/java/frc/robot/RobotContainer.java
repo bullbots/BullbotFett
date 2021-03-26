@@ -21,6 +21,7 @@ import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
+import frc.robot.util.PIDControllerDebug;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -134,13 +135,17 @@ public class RobotContainer {
       )
     ));
 
-    PIDController pidcontroller = new PIDController(1.0 / 980.0, 1.0 / 1000.0, 0.0);
+    PIDController pidcontroller = new PIDControllerDebug(1.0 / 980.0, 1.0 / 1000.0, 0.0);
     pidcontroller.setIntegratorRange(-0.2, 0.2);
+
+    if (Robot.isSimulation()) {
+      SmartDashboard.putNumber("TargetX", 0);
+    }
 
     button10.whileHeld(new AlignShooter(pidcontroller, 
     () -> {
         double x = SmartDashboard.getNumber("TargetX", -9999);
-        System.out.println(String.format("Info: x %f", x));
+        // System.out.println(String.format("Info: x %f", x));
         if (x == -9999) {
           return 0;
         } 
@@ -150,18 +155,10 @@ public class RobotContainer {
     (output) -> {
         output = MathUtil.clamp(output, -.5, .5);
         drivetrain.arcadeDrive(0, -output, false);
-        System.out.println(String.format("Info: output %f", output));
+        // System.out.println(String.format("Info: output %f", output));
       },
     drivetrain));
-    
-    // button3.whileHeld(new JoystickDrive(
-    //   drivetrain,
-    //   () -> stick.getY(),
-    //   () -> stick.getX(),
-    //   () -> (stick.getZ() - 1) / -2.0
-    // ));
   }
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
