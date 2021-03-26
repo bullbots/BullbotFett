@@ -30,16 +30,24 @@ public class AutonomousBounce extends CommandBase {
 
   private int trajectory_counter = 0;
 
+  private boolean isInitialized = false;
+
   public AutonomousBounce(DrivetrainFalcon drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
 
-    m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-1"));
-    m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-2"));
-    // m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-3"));
-    // m_trajectory_pieces.add(TrajectoryManager.generateTrajectories().get("/BOUNCE-4"));
+    getTrajectories();
+  }
+
+  private void getTrajectories() {
+    if (m_trajectory_pieces.isEmpty() && TrajectoryManager.getTrajectories() != null) {
+      m_trajectory_pieces.add(TrajectoryManager.getTrajectories().get("/BOUNCE-1"));
+      m_trajectory_pieces.add(TrajectoryManager.getTrajectories().get("/BOUNCE-2"));
+      // m_trajectory_pieces.add(TrajectoryManager.getTrajectories().get("/BOUNCE-3"));
+      // m_trajectory_pieces.add(TrajectoryManager.getTrajectories().get("/BOUNCE-4"));
+    }
   }
 
   // Called when the command is initially scheduled.
@@ -48,8 +56,12 @@ public class AutonomousBounce extends CommandBase {
     m_timer.reset();
     m_timer.start();
     m_drivetrain.resetGyro();
-    m_drivetrain.resetOdometry(m_trajectory_pieces.get(0).getInitialPose());
 
+    if (!m_trajectory_pieces.isEmpty()) {
+      m_drivetrain.resetOdometry(m_trajectory_pieces.get(0).getInitialPose());
+      isInitialized = true;
+    }
+    
     m_ramsete.setEnabled(true);
   }
 
@@ -57,6 +69,13 @@ public class AutonomousBounce extends CommandBase {
   @Override
   public void execute() {
     double elapsed = m_timer.get();
+
+    getTrajectories();
+
+    if (!m_trajectory_pieces.isEmpty() && !isInitialized) {
+      m_drivetrain.resetOdometry(m_trajectory_pieces.get(0).getInitialPose());
+      isInitialized = true;
+    }
 
     // System.out.println("AutonomousBounce execute ran.");
 

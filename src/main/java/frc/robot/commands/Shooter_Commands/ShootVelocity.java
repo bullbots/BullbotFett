@@ -27,7 +27,7 @@ public class ShootVelocity extends CommandBase {
    private boolean servoState = false;
 
   public ShootVelocity(Shooter shooter, Harm harm, BooleanSupplier isLongShot) {
-    addRequirements(shooter, harm);
+    addRequirements(shooter);
     this.shooter = shooter;
     this.harm = harm;
     this.isLongShot = isLongShot;
@@ -40,14 +40,13 @@ public class ShootVelocity extends CommandBase {
     ball_release_delay.reset();
     ball_release_delay.start();
     if (isLongShot.getAsBoolean()) {
-      vel = .7;
       harm.raiseShooterHood();
-    }else {
+      vel = .6;
+    } else {
       vel = 0.32;
-      harm.lowerShooterHood();
     }
     shooter.set(vel, -vel);
-    shooter.ballReleaseServo.set(1);
+    shooter.ballReleaseServo.set(1.0);
     servoState = false;
   }
 
