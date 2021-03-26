@@ -14,43 +14,65 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.util.TrajectoryManager;
 
-public class AutonomousBarrelRace extends CommandBase {
-  /** Creates a new AutonomousBarrelRace. */
-
+public class TrajectoryBase extends CommandBase {
+  /** Creates a new TrajectoryBase. */
+    
   private DrivetrainFalcon m_drivetrain;
   private Trajectory m_trajectory;
+  private String m_trajectoryName;
 
   private final Timer m_timer = new Timer();
 
   private final RamseteController m_ramsete = new RamseteController();
+
+  private boolean isBackwards;
+  private boolean resetGyro;
+  private boolean m_isInitialized;
+
+  public TrajectoryBase(DrivetrainFalcon drivetrain, String trajectory_name) {
+    this(drivetrain, trajectory_name, false, true);
+  }
   
-  public AutonomousBarrelRace(DrivetrainFalcon drivetrain) {
+  public TrajectoryBase(DrivetrainFalcon drivetrain, String trajectory_name, boolean isBackwards, boolean resetGyro) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
+    this.m_trajectoryName = trajectory_name;
+    this.isBackwards = isBackwards;
+    this.resetGyro = resetGyro;
   }
 
   private void getTrajectory() {
     if (m_trajectory == null && TrajectoryManager.getTrajectories() != null) {
-      m_trajectory = TrajectoryManager.getTrajectories().get("/BARREL");
+      m_trajectory = TrajectoryManager.getTrajectories().get(m_trajectoryName);
+    }
+  }
+
+  private void inializeTrajectory() {
+    if (!m_isInitialized) {
+      getTrajectory();
+      if (m_trajectory != null) {
+        m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
+        m_isInitialized = true;
+        
+        m_timer.reset();
+        m_timer.start();
+      }
     }
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_timer.reset();
-    m_timer.start();
-    m_drivetrain.resetGyro();
-    
-    getTrajectory();
-
-    if (m_trajectory != null) {
-      m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
+    if (resetGyro) {
+      m_drivetrain.resetGyro();
+    } else {
+      m_drivetrain.resetGyro180();
     }
 
     m_ramsete.setEnabled(true);
+    m_drivetrain.setOdometryDirection(isBackwards);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -58,13 +80,12 @@ public class AutonomousBarrelRace extends CommandBase {
   public void execute() {
     double elapsed = m_timer.get();
 
-    getTrajectory();
+    inializeTrajectory();
 
-    if (m_trajectory == null) {
-      return;
-    }
-    
+    if (!m_isInitialized) { return; }
+
     Trajectory.State reference = m_trajectory.sample(elapsed);
+      
     ChassisSpeeds speeds = m_ramsete.calculate(m_drivetrain.getPose(), reference);
 
     // var ramsete_speed = speeds.vxMetersPerSecond/Constants.MAX_SPEED_LOW_GEAR;
@@ -74,7 +95,8 @@ public class AutonomousBarrelRace extends CommandBase {
     var normalized_ramsete_speed = ramsete_speed / Constants.MAX_SPEED_LOW_GEAR;
     var normalized_ramsete_rot = -ramsete_rot / Constants.MAX_ANGULAR_VELOCITY;
 
-    m_drivetrain.arcadeDrive(normalized_ramsete_speed, normalized_ramsete_rot, false);
+    var direction = isBackwards? -1.0 : 1.0;
+    m_drivetrain.arcadeDrive(normalized_ramsete_speed * direction, normalized_ramsete_rot, false);
 
     var t_pose = reference.poseMeters;
     var t_x = t_pose.getX();
@@ -96,15 +118,19 @@ public class AutonomousBarrelRace extends CommandBase {
     SmartDashboard.putNumber("Pose X - Actual", a_x);
     SmartDashboard.putNumber("Pose Y - Actual", a_y);
     SmartDashboard.putNumber("Pose R - Actual", a_rotation);
+
+    DrivetrainFalcon.m_fieldSim.setRobotPose(reference.poseMeters);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_drivetrain.setOdometryDirection(false);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_timer.get() > m_trajectory.getTotalTimeSeconds();
   }
 }

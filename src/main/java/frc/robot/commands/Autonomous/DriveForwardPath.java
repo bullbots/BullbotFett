@@ -14,8 +14,8 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.util.TrajectoryManager;
 
-public class AutonomousBarrelRace extends CommandBase {
-  /** Creates a new AutonomousBarrelRace. */
+public class DriveForwardPath extends CommandBase {
+  /** Creates a new DriveForwardPath. */
 
   private DrivetrainFalcon m_drivetrain;
   private Trajectory m_trajectory;
@@ -23,8 +23,11 @@ public class AutonomousBarrelRace extends CommandBase {
   private final Timer m_timer = new Timer();
 
   private final RamseteController m_ramsete = new RamseteController();
-  
-  public AutonomousBarrelRace(DrivetrainFalcon drivetrain) {
+
+  private final String m_trajectoryName = "/FORWARD-DISTANCE";
+  private boolean m_isInitialized;
+
+  public DriveForwardPath(DrivetrainFalcon drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drivetrain);
 
@@ -33,7 +36,17 @@ public class AutonomousBarrelRace extends CommandBase {
 
   private void getTrajectory() {
     if (m_trajectory == null && TrajectoryManager.getTrajectories() != null) {
-      m_trajectory = TrajectoryManager.getTrajectories().get("/BARREL");
+      m_trajectory = TrajectoryManager.getTrajectories().get(m_trajectoryName);
+    }
+  }
+  
+  private void inializeTrajectory() {
+    if (!m_isInitialized) {
+      getTrajectory();
+      if (m_trajectory != null) {
+        m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
+        m_isInitialized = true;
+      }
     }
   }
 
@@ -43,14 +56,10 @@ public class AutonomousBarrelRace extends CommandBase {
     m_timer.reset();
     m_timer.start();
     m_drivetrain.resetGyro();
-    
-    getTrajectory();
-
-    if (m_trajectory != null) {
-      m_drivetrain.resetOdometry(m_trajectory.getInitialPose());
-    }
 
     m_ramsete.setEnabled(true);
+
+    m_drivetrain.setOdometryDirection(false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -58,13 +67,12 @@ public class AutonomousBarrelRace extends CommandBase {
   public void execute() {
     double elapsed = m_timer.get();
 
-    getTrajectory();
+    inializeTrajectory();
 
-    if (m_trajectory == null) {
-      return;
-    }
-    
+    if (!m_isInitialized) { return; }
+
     Trajectory.State reference = m_trajectory.sample(elapsed);
+      
     ChassisSpeeds speeds = m_ramsete.calculate(m_drivetrain.getPose(), reference);
 
     // var ramsete_speed = speeds.vxMetersPerSecond/Constants.MAX_SPEED_LOW_GEAR;
@@ -105,6 +113,6 @@ public class AutonomousBarrelRace extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_timer.get() > m_trajectory.getTotalTimeSeconds();
   }
 }
