@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.TrajectoryBase;
@@ -24,7 +25,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpiutil.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
@@ -115,7 +118,7 @@ public class RobotContainer {
       }
     });
 
-    button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
+    button2.whileHeld(new ShootVelocity(shooter, () -> !button6.get()));
 
     button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
     
@@ -131,7 +134,25 @@ public class RobotContainer {
       )
     ));
 
-    button10.whileHeld(new AlignShooter(drivetrain));
+    PIDController pidcontroller = new PIDController(1.0 / 980.0, 1.0 / 1000.0, 0.0);
+    pidcontroller.setIntegratorRange(-0.2, 0.2);
+
+    button10.whileHeld(new AlignShooter(pidcontroller, 
+    () -> {
+        double x = SmartDashboard.getNumber("TargetX", -9999);
+        System.out.println(String.format("Info: x %f", x));
+        if (x == -9999) {
+          return 0;
+        } 
+        return x;
+      },
+    0.0,
+    (output) -> {
+        output = MathUtil.clamp(output, -.5, .5);
+        drivetrain.arcadeDrive(0, -output, false);
+        System.out.println(String.format("Info: output %f", output));
+      },
+    drivetrain));
     
     // button3.whileHeld(new JoystickDrive(
     //   drivetrain,

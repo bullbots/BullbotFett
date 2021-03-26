@@ -11,7 +11,6 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
 
 public class ShootVelocity extends CommandBase {
@@ -20,16 +19,14 @@ public class ShootVelocity extends CommandBase {
    */
 
    private Shooter shooter;
-   private Harm harm;
    private Timer ball_release_delay;
    private double vel = 0;
    private BooleanSupplier isLongShot;
    private boolean servoState = false;
 
-  public ShootVelocity(Shooter shooter, Harm harm, BooleanSupplier isLongShot) {
-    addRequirements(shooter, harm);
+  public ShootVelocity(Shooter shooter, BooleanSupplier isLongShot) {
+    addRequirements(shooter);
     this.shooter = shooter;
-    this.harm = harm;
     this.isLongShot = isLongShot;
     ball_release_delay = new Timer();
   }
@@ -40,14 +37,12 @@ public class ShootVelocity extends CommandBase {
     ball_release_delay.reset();
     ball_release_delay.start();
     if (isLongShot.getAsBoolean()) {
-      vel = .7;
-      harm.raiseShooterHood();
+      vel = .32;
     }else {
-      vel = 0.32;
-      harm.lowerShooterHood();
+      vel = 0.6;
     }
     shooter.set(vel, -vel);
-    shooter.ballReleaseServo.set(1);
+    shooter.ballReleaseServo.set(1.0);
     servoState = false;
   }
 
