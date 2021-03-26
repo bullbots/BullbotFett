@@ -118,9 +118,9 @@ public class RobotContainer {
       }
     });
 
-    button2.whileHeld(new ShootVelocity(shooter, () -> !button6.get()));
+    button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
 
-    button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
+    // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
     
     button1.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(
