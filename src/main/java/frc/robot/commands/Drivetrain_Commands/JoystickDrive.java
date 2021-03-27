@@ -46,7 +46,7 @@ public class JoystickDrive extends CommandBase {
   public void execute() {
     double _joyY = joyY.getAsDouble();
     double _joyX = joyX.getAsDouble();
-    boolean turnInPlace = false;
+    boolean turnInPlace = true;
     double _joyZ = joyZ.getAsDouble();
     m_drivetrain.curvatureDrive(_joyY, _joyX, turnInPlace);
     // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
