@@ -63,75 +63,75 @@ public class DifferentialDriveDebug extends DifferentialDrive {
         }
         }
 
-        SmartDashboard.putNumber("Left Motor - ArcadeDrive", MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
+        // SmartDashboard.putNumber("Left Motor - ArcadeDrive", MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
         double rightSideInvertMultiplier = isRightSideInverted() ? -1.0 : 1.0;
         double maxOutput = m_maxOutput * rightSideInvertMultiplier;
-        SmartDashboard.putNumber("Right Motor - ArcadeDrive", MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * maxOutput);
+        // SmartDashboard.putNumber("Right Motor - ArcadeDrive", MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * maxOutput);
     }
 
     @SuppressWarnings({"ParameterName", "PMD.CyclomaticComplexity"})
     public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
         super.curvatureDrive(xSpeed, zRotation, isQuickTurn);
      
-        xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
-        xSpeed = applyDeadband(xSpeed, m_deadband);
+        // xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
+        // xSpeed = applyDeadband(xSpeed, m_deadband);
 
-        zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
-        zRotation = applyDeadband(zRotation, m_deadband);
+        // zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
+        // zRotation = applyDeadband(zRotation, m_deadband);
 
-        double angularPower;
-        boolean overPower;
+        // double angularPower;
+        // boolean overPower;
 
-        if (isQuickTurn) {
-            if (Math.abs(xSpeed) < m_quickStopThreshold) {
-                m_quickStopAccumulator =
-                    (1 - m_quickStopAlpha) * m_quickStopAccumulator
-                        + m_quickStopAlpha * MathUtil.clamp(zRotation, -1.0, 1.0) * 2;
-            }
-            overPower = true;
-            angularPower = zRotation;
-        } else {
-            overPower = false;
-            angularPower = Math.abs(xSpeed) * zRotation - m_quickStopAccumulator;
+        // if (isQuickTurn) {
+        //     if (Math.abs(xSpeed) < m_quickStopThreshold) {
+        //         m_quickStopAccumulator =
+        //             (1 - m_quickStopAlpha) * m_quickStopAccumulator
+        //                 + m_quickStopAlpha * MathUtil.clamp(zRotation, -1.0, 1.0) * 2;
+        //     }
+        //     overPower = true;
+        //     angularPower = zRotation;
+        // } else {
+        //     overPower = false;
+        //     angularPower = Math.abs(xSpeed) * zRotation - m_quickStopAccumulator;
 
-            if (m_quickStopAccumulator > 1) {
-                m_quickStopAccumulator -= 1;
-            } else if (m_quickStopAccumulator < -1) {
-                m_quickStopAccumulator += 1;
-            } else {
-                m_quickStopAccumulator = 0.0;
-            }
-        }
+        //     if (m_quickStopAccumulator > 1) {
+        //         m_quickStopAccumulator -= 1;
+        //     } else if (m_quickStopAccumulator < -1) {
+        //         m_quickStopAccumulator += 1;
+        //     } else {
+        //         m_quickStopAccumulator = 0.0;
+        //     }
+        // }
 
-        double leftMotorOutput = xSpeed + angularPower;
-        double rightMotorOutput = xSpeed - angularPower;
+        // double leftMotorOutput = xSpeed + angularPower;
+        // double rightMotorOutput = xSpeed - angularPower;
 
-        // If rotation is overpowered, reduce both outputs to within acceptable range
-        if (overPower) {
-            if (leftMotorOutput > 1.0) {
-                rightMotorOutput -= leftMotorOutput - 1.0;
-                leftMotorOutput = 1.0;
-            } else if (rightMotorOutput > 1.0) {
-                leftMotorOutput -= rightMotorOutput - 1.0;
-                rightMotorOutput = 1.0;
-            } else if (leftMotorOutput < -1.0) {
-                rightMotorOutput -= leftMotorOutput + 1.0;
-                leftMotorOutput = -1.0;
-            } else if (rightMotorOutput < -1.0) {
-                leftMotorOutput -= rightMotorOutput + 1.0;
-                rightMotorOutput = -1.0;
-            }
-        }
+        // // If rotation is overpowered, reduce both outputs to within acceptable range
+        // if (overPower) {
+        //     if (leftMotorOutput > 1.0) {
+        //         rightMotorOutput -= leftMotorOutput - 1.0;
+        //         leftMotorOutput = 1.0;
+        //     } else if (rightMotorOutput > 1.0) {
+        //         leftMotorOutput -= rightMotorOutput - 1.0;
+        //         rightMotorOutput = 1.0;
+        //     } else if (leftMotorOutput < -1.0) {
+        //         rightMotorOutput -= leftMotorOutput + 1.0;
+        //         leftMotorOutput = -1.0;
+        //     } else if (rightMotorOutput < -1.0) {
+        //         leftMotorOutput -= rightMotorOutput + 1.0;
+        //         rightMotorOutput = -1.0;
+        //     }
+        // }
 
-        // Normalize the wheel speeds
-        double maxMagnitude = Math.max(Math.abs(leftMotorOutput), Math.abs(rightMotorOutput));
-        if (maxMagnitude > 1.0) {
-            leftMotorOutput /= maxMagnitude;
-            rightMotorOutput /= maxMagnitude;
-        }
+        // // Normalize the wheel speeds
+        // double maxMagnitude = Math.max(Math.abs(leftMotorOutput), Math.abs(rightMotorOutput));
+        // if (maxMagnitude > 1.0) {
+        //     leftMotorOutput /= maxMagnitude;
+        //     rightMotorOutput /= maxMagnitude;
+        // }
 
-        SmartDashboard.putNumber("Left Motor - CurvatureDrive", leftMotorOutput * m_maxOutput);
-        double rightSideInvertMultiplier = isRightSideInverted() ? -1.0 : 1.0;
-        SmartDashboard.putNumber("Right Motor - CurvatureDrive", rightMotorOutput * m_maxOutput * rightSideInvertMultiplier);
+        // SmartDashboard.putNumber("Left Motor - CurvatureDrive", leftMotorOutput * m_maxOutput);
+        // double rightSideInvertMultiplier = isRightSideInverted() ? -1.0 : 1.0;
+        // SmartDashboard.putNumber("Right Motor - CurvatureDrive", rightMotorOutput * m_maxOutput * rightSideInvertMultiplier);
     }
 }
