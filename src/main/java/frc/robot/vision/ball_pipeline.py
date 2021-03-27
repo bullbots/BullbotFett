@@ -31,9 +31,9 @@ class BallContours:
         self.normalize_output = None
 
         self.__hsv_threshold_input = self.normalize_output
-        self.__hsv_threshold_hue = [0.0, 21.80887335396466]
-        self.__hsv_threshold_saturation = [236.19604316546764, 255.0]
-        self.__hsv_threshold_value = [139.88309352517985, 255.0]
+        self.__hsv_threshold_hue = [10.0, 48.0]
+        self.__hsv_threshold_saturation = [190.0, 255.0]
+        self.__hsv_threshold_value = [18.0, 192.0]
 
         self.hsv_threshold_output = None
 
@@ -507,10 +507,10 @@ if __name__ == "__main__":
 
                     # Green if near the center else Red
                     color = (0, 255, 0) if abs(center_x) <= near_center_threshold else (0, 0, 255)
-                    source = cv2.rectangle(color_image, (x, y), (x + w, y + h), color, 3)
+                    source = cv2.rectangle(input_img, (x, y), (x + w, y + h), color, 3)
 
                     threshold_color = (128, 0, 128)
-                    source = cv2.rectangle(color_image, (half_width - near_center_threshold, 0), 
+                    source = cv2.rectangle(input_img, (half_width - near_center_threshold, 0), 
                                     (half_width + near_center_threshold, max_height), threshold_color, 2)
 
                     print(f"CenterX: {center_x}, CenterY: {center_y}")
