@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -23,6 +25,9 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  private AddressableLED m_led;
+  private AddressableLEDBuffer m_ledBuffer;
+
   private Field2d m_field;
 
   /**
@@ -35,6 +40,27 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     TrajectoryManager.generateTrajectories();
     m_robotContainer = new RobotContainer();
+
+    // sets up our adressable LED strip on PWM 4
+    m_led = new AddressableLED(9);
+
+    // Reuse buffer
+    // Default to a length of 30, start empty output
+    // Length is expensive to set, so only set it once, then just update data
+    m_ledBuffer = new AddressableLEDBuffer(30);
+    m_led.setLength(m_ledBuffer.getLength());
+
+    // Set the data
+    m_led.setData(m_ledBuffer);
+    m_led.start();
+
+    // Sets the RGB to yellow
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, 255, 255, 0);
+    }
+   
+    // Sets the strip to display
+    m_led.setData(m_ledBuffer);
 
     m_field = new Field2d();
     SmartDashboard.putData("Field", m_field);
