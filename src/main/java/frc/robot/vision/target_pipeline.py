@@ -382,9 +382,9 @@ if __name__ == "__main__":
         ntinst.startServer()
     else:
         print(f"Setting up NetworkTables client for team {team}")
-        ntinst.startClientTeam(team)
+        # ntinst.startClientTeam(team)
         # Replace with specific IP Address if not on roboRIO-like network
-        # ntinst.startClient("169.254.243.149")
+        ntinst.startClient("198.164.1.143")
         ntinst.startDSClient()
 
     pipeline = rs.pipeline()
@@ -423,14 +423,12 @@ if __name__ == "__main__":
 
     smartdashboard = ntinst.getTable("SmartDashboard")
     # xEntry = table.getEntry("TargetX")
-    distance = smartdashboard.getEntry("Distance")
+    # distance = smartdashboard.getEntry("Distance")
 
     try:
         print("Getting OutputStream...")
         colorOutputStream = CameraServer.getInstance().putVideo("Color Image", 640, 480)
         depthOutputStream = CameraServer.getInstance().putVideo("Depth Image", 640, 480)
-        
-        # CameraServer.getInstance().startAutomaticCapture()
 
         while True:
             frames = pipeline.wait_for_frames()
@@ -458,12 +456,15 @@ if __name__ == "__main__":
                                             key=lambda c: cv2.contourArea(c))[0]
 
                 contourarea = cv2.contourArea(largest_contour)
-                print(f"info: area {contourarea}")
+                # print(f"info: area {contourarea}")
                 
-                if 450 <= contourarea <= 4500 :
+                # if 450 <= contourarea <= 4500 :
+                if 0 <= contourarea <= 4500 :
 
                     # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
                     x, y, w, h = cv2.boundingRect(largest_contour)
+
+                    # print(f"Largest contour: x: {x}, y: {y}, w: {w}, h: {h}")
 
                     center_x = (int) (x + w * 0.5)
                     center_y = (int) (y + h * 0.5)
@@ -482,11 +483,20 @@ if __name__ == "__main__":
                     print(f"CenterX: {center_x}, CenterY: {center_y}")
 
                     smartdashboard.putNumber("TargetX", center_x)
-                    # This needs debug for the edge of the image
-                    # distance.setNumber(depth_image[y+h+5][center_x])
+
+                    if w > 0 and h > 0:
+                        roi_distance = depth_image[y:y+h, x:x+w]
+                        distance = np.median(roi_distance)
+                        distance_sample = depth_image[y+int(h*0.5), x+int(w*0.5)]
+                        smartdashboard.putNumber("Distance", distance)
+                        smartdashboard.putNumber("Distance Middle RIO", distance_sample)
+                        print(f"Distance Median: {distance}, Middle RIO: {distance_sample}")
+                    else:
+                        print(*f"Zero width: {w} or height: {h}")
+                        smartdashboard.putNumber("Distance", -9999)
             else:
                 smartdashboard.putNumber("TargetX", -9999)
-                distance.setNumber(-1)
+                smartdashboard.putNumber("Distance", -9999)
 
             depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
 
