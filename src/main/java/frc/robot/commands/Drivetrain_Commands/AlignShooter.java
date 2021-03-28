@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.subsystems.DrivetrainFalcon;
+import frc.robot.subsystems.DrivetrainFalcon.CoastMode;
 
 public class AlignShooter extends PIDCommand {
   /**
@@ -44,14 +45,14 @@ public class AlignShooter extends PIDCommand {
     addRequirements(drivetrain);
   }
 
-  // Called when the command is initially scheduled.
-  // @Override
-  // public void initialize() {
-  //   super.initialize();
+  @Override
+  public void initialize() {
+    super.initialize();
+    drivetrain.setCoastMode(CoastMode.Brake);
     // System.out.println("Info: line shooter initialize called");
     // timer.reset();
     // timer.start();
-  // }
+  }
 
   // // Called every time the scheduler runs while the command is scheduled.
   // @Override
@@ -96,11 +97,12 @@ public class AlignShooter extends PIDCommand {
   //   }
   // }
 
-  // // Called once the command ends or is interrupted.
-  // @Override
-  // public void end(boolean interrupted) {
-  //   drivetrain.arcadeDrive(0, 0, false);
-  // }
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    super.end(interrupted);
+    drivetrain.setCoastMode(CoastMode.Coast);
+  }
 
   // // Returns true when the command should end.
   // @Override

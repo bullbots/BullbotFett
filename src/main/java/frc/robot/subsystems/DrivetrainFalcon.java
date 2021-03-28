@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2021 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.SafeTalonFX;
-import frc.robot.util.Shifter;
 import frc.robot.util.DifferentialDriveDebug;
 import frc.robot.util.NavX;
 
@@ -45,7 +44,7 @@ public class DrivetrainFalcon extends SubsystemBase {
   private final NavX gyro = new NavX();
   public Orchestra orchestra;
 
-  public final Shifter shifter = new Shifter(Constants.LOW_GEAR_CHANNEL, Constants.HIGH_GEAR_CHANNEL);
+  // private final Shifter shifter = new Shifter(Constants.LOW_GEAR_CHANNEL, Constants.HIGH_GEAR_CHANNEL);
 
   private NetworkTableEntry leftCurrent;
   private NetworkTableEntry leftPosition;
@@ -69,6 +68,10 @@ public class DrivetrainFalcon extends SubsystemBase {
 
   public static final Field2d m_fieldSim = new Field2d();
 
+  public enum CoastMode {
+    Coast, Brake
+  }
+
   // This gives a maximum value of 40 after 3 seconds of grabbing a value every robot period.
   // List<Double> simulationList = IntStream.rangeClosed(0, 50 * 2).mapToDouble((i)->i * 0.02 * 40.0 / 2.0).boxed().collect(Collectors.toList());
   // Iterator<Double> simIter = simulationList.iterator();
@@ -84,10 +87,7 @@ public class DrivetrainFalcon extends SubsystemBase {
       leftMasterFalcon.setInverted(true);
       leftSlaveFalcon.setInverted(InvertType.FollowMaster);
 
-      rightMasterFalcon.setNeutralMode(NeutralMode.Coast);
-      rightSlaveFalcon.setNeutralMode(NeutralMode.Coast);
-      leftMasterFalcon.setNeutralMode(NeutralMode.Coast);
-      leftSlaveFalcon.setNeutralMode(NeutralMode.Coast);
+      setCoastMode(CoastMode.Coast);
 
       // leftMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
       // rightMasterFalcon.configClosedloopRamp(Constants.DRIVETRAIN_RAMP);
@@ -105,13 +105,26 @@ public class DrivetrainFalcon extends SubsystemBase {
     diffDrive.setRightSideInverted(false);
     diffDrive.setSafetyEnabled(false);
 
-    shifter.shiftLow();
+    // shifter.shiftLow();
 
     // configurePID();
     // configureMotionMagic();
     configureSmartDashboard();
 
     SmartDashboard.putData("Field", m_fieldSim);
+  }
+
+  public void setCoastMode(CoastMode coastMode) {
+    var neutralMode = NeutralMode.Coast;
+    if (coastMode == CoastMode.Coast) {
+      neutralMode = NeutralMode.Coast;
+    } else if (coastMode == CoastMode.Brake) {
+      neutralMode = NeutralMode.Brake;
+    }
+    rightMasterFalcon.setNeutralMode(neutralMode);
+    rightSlaveFalcon.setNeutralMode(neutralMode);
+    leftMasterFalcon.setNeutralMode(neutralMode);
+    leftSlaveFalcon.setNeutralMode(neutralMode);
   }
 
   public void setOdometryDirection(boolean invert) {
@@ -128,8 +141,8 @@ public class DrivetrainFalcon extends SubsystemBase {
       m_rightDist = temporary;
     }
 
-    SmartDashboard.putNumber("Left Distance", m_leftDist);
-    SmartDashboard.putNumber("Right Distance", m_rightDist);
+    // SmartDashboard.putNumber("Left Distance", m_leftDist);
+    // SmartDashboard.putNumber("Right Distance", m_rightDist);
 
     var rotation2d = gyro.getRotation2d();
     if (m_flippedOdometry) {
@@ -191,17 +204,17 @@ public class DrivetrainFalcon extends SubsystemBase {
   @Override
   public void periodic() {
     // System.out.println("DrivetrainFalcon periodic");
-    SmartDashboard.putNumber("Encoder Ticks - Left", leftMasterFalcon.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Encoder Ticks - Right", rightMasterFalcon.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Encoder Rate (Normalized) - Left", (leftMasterFalcon.getSelectedSensorVelocity()/max_ticks_per_hundred_milliseconds));
-    SmartDashboard.putNumber("Encoder Rate (Normalized) - Right", (rightMasterFalcon.getSelectedSensorVelocity()/max_ticks_per_hundred_milliseconds));
+    // SmartDashboard.putNumber("Encoder Ticks - Left", leftMasterFalcon.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Encoder Ticks - Right", rightMasterFalcon.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Encoder Rate (Normalized) - Left", (leftMasterFalcon.getSelectedSensorVelocity()/max_ticks_per_hundred_milliseconds));
+    // SmartDashboard.putNumber("Encoder Rate (Normalized) - Right", (rightMasterFalcon.getSelectedSensorVelocity()/max_ticks_per_hundred_milliseconds));
 
-    SmartDashboard.putNumber("NavX Angle", gyro.getRotation2d().getDegrees());
+    // SmartDashboard.putNumber("NavX Angle", gyro.getRotation2d().getDegrees());
 
-    SmartDashboard.putNumber("Right Master Current", rightMasterFalcon.getStatorCurrent());
-    SmartDashboard.putNumber("Right Slave Current", rightSlaveFalcon.getStatorCurrent());
-    SmartDashboard.putNumber("Left Master Current", leftMasterFalcon.getStatorCurrent());
-    SmartDashboard.putNumber("Left Slave Current", leftSlaveFalcon.getStatorCurrent());
+    // SmartDashboard.putNumber("Right Master Current", rightMasterFalcon.getStatorCurrent());
+    // SmartDashboard.putNumber("Right Slave Current", rightSlaveFalcon.getStatorCurrent());
+    // SmartDashboard.putNumber("Left Master Current", leftMasterFalcon.getStatorCurrent());
+    // SmartDashboard.putNumber("Left Slave Current", leftSlaveFalcon.getStatorCurrent());
 
     updateOdometry();
 

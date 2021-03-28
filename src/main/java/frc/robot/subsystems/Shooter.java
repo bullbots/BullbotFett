@@ -47,8 +47,8 @@ public class Shooter extends SubsystemBase {
         setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
 
         var inst = NetworkTableInstance.getDefault();
-        topVelocity = inst.getEntry("Shooter Top Velocity");
-        bottomVelocity = inst.getEntry("Shooter Bottom Velocity");
+        // topVelocity = inst.getEntry("Shooter Top Velocity");
+        // bottomVelocity = inst.getEntry("Shooter Bottom Velocity");
     }
 
     private void configurePID() {
@@ -150,9 +150,9 @@ public class Shooter extends SubsystemBase {
         // top_pid_controller.setP(newP);
         // top_pid_controller.setI(newI);
         // top_pid_controller.setD(newD);
-        SmartDashboard.putNumber("ServoValue", ballReleaseServo.getAngle());
+        // SmartDashboard.putNumber("ServoValue", ballReleaseServo.getAngle());
 
-        topVelocity.setDouble(getVelocity(MotorPlacement.TOP));
-        bottomVelocity.setDouble(getVelocity(MotorPlacement.BOTTOM));
+        // topVelocity.setDouble(getVelocity(MotorPlacement.TOP));
+        // bottomVelocity.setDouble(getVelocity(MotorPlacement.BOTTOM));
     }
 }
