@@ -382,9 +382,9 @@ if __name__ == "__main__":
         ntinst.startServer()
     else:
         print(f"Setting up NetworkTables client for team {team}")
-        # ntinst.startClientTeam(team)
+        ntinst.startClientTeam(team)
         # Replace with specific IP Address if not on roboRIO-like network
-        ntinst.startClient("198.164.1.143")
+        # ntinst.startClient("192.168.1.143")
         ntinst.startDSClient()
 
     pipeline = rs.pipeline()
@@ -480,17 +480,17 @@ if __name__ == "__main__":
                     source = cv2.rectangle(color_image, (half_width - near_center_threshold, 0), 
                                     (half_width + near_center_threshold, max_height), threshold_color, 2)
 
-                    print(f"CenterX: {center_x}, CenterY: {center_y}")
-
+                    print(f"TargetX: {center_x}, TargetY: {center_y}")
                     smartdashboard.putNumber("TargetX", center_x)
 
                     if w > 0 and h > 0:
                         roi_distance = depth_image[y:y+h, x:x+w]
                         distance = np.median(roi_distance)
-                        distance_sample = depth_image[y+int(h*0.5), x+int(w*0.5)]
+                        # distance_sample = depth_image[y+int(h*0.5), x+int(w*0.5)]
                         smartdashboard.putNumber("Distance", distance)
-                        smartdashboard.putNumber("Distance Middle RIO", distance_sample)
-                        print(f"Distance Median: {distance}, Middle RIO: {distance_sample}")
+                        # smartdashboard.putNumber("Distance Middle ROI", distance_sample)
+                        # print(f"Distance Median: {distance}, Middle ROI: {distance_sample}")
+                        print(f"Distance Median: {distance}")
                     else:
                         print(*f"Zero width: {w} or height: {h}")
                         smartdashboard.putNumber("Distance", -9999)
