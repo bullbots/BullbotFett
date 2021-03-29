@@ -54,10 +54,11 @@ public class DrivetrainFalcon extends SubsystemBase {
   private NetworkTableEntry rightPosition;
   private NetworkTableEntry rightVelocity;
 
-  private final double shiftThreshold = 0.8;
-  private final double firstGearSlope = 1 / shiftThreshold;
-  private final double secondGearSlope = ((21000 - 9240) / (1-shiftThreshold)) / 21000.;
-  private final double secondGearIntercept = 26000. / 21000.;
+  // Unless I misunderstand this, Devin never accounted for squared inputs (Unless it's in the 9240, 21000, or 26000).
+  // private final double shiftThreshold = 0.8;
+  // private final double firstGearSlope = 1 / shiftThreshold;
+  // private final double secondGearSlope = ((21000 - 9240) / (1-shiftThreshold)) / 21000.;
+  // private final double secondGearIntercept = 26000. / 21000.;
 
   private double m_leftDist;
   private double m_rightDist;

@@ -7,9 +7,9 @@
 
 package frc.robot.commands.Drivetrain_Commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainFalcon;
 
@@ -19,21 +19,18 @@ public class JoystickDrive extends CommandBase {
   private DoubleSupplier joyY;
   private DoubleSupplier joyX;
   private DoubleSupplier joyZ;
+  private BooleanSupplier useThrottle;
 
-  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX) {
-    // m_drivetrain = drivetrain;
-    // this.joyY = joyY;
-    // this.joyX = joyX;
-
-    // addRequirements(m_drivetrain);
-    this(drivetrain, joyY, joyX,  () -> 1.0);
+  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, BooleanSupplier useThrottle) {
+    this(drivetrain, joyY, joyX,  () -> 1.0, useThrottle);
   }
 
-  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
+  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ, BooleanSupplier useThrottle) {
     m_drivetrain = drivetrain;
     this.joyY = joyY;
     this.joyX = joyX;
     this.joyZ = joyZ;
+    this.useThrottle = useThrottle;
 
     addRequirements(m_drivetrain);
   }
@@ -46,9 +43,9 @@ public class JoystickDrive extends CommandBase {
   public void execute() {
     double _joyY = joyY.getAsDouble();
     double _joyX = joyX.getAsDouble();
-    boolean turnInPlace = true;
-    double _joyZ = joyZ.getAsDouble();
-    m_drivetrain.curvatureDrive(_joyY, _joyX, turnInPlace);
+    double _joyZ = useThrottle.getAsBoolean() ? joyZ.getAsDouble() : 1.0;
+    boolean isQuickTurn = true;
+    m_drivetrain.curvatureDrive(_joyY * _joyZ, _joyX * _joyZ, isQuickTurn);
     // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
 
     // SmartDashboard.putNumber("JoyX", joyX.getAsDouble());

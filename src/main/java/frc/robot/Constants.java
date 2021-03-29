@@ -48,6 +48,9 @@ public final class Constants {
 
     public static double MAX_ANGULAR_VELOCITY = 9.0; // wheelbase/2 (1.125) * MAX_SPEED_LOW_GEAR (8) - (omega=r*v)
 
+    public static double GEAR_RATIO_LOW = 1; // NOT ACTUAL VALUES!
+    public static double GEAR_RATIO_HIGH = 2;
+
     // public static double LEFT_VELOCITY_FF = 0.0455;
     public static double LEFT_VELOCITY_P = 0.05;
     public static double LEFT_VELOCITY_I = 0;
