@@ -21,8 +21,8 @@ public class JoystickDrive extends CommandBase {
   private DoubleSupplier joyZ;
   private BooleanSupplier useThrottle;
 
-  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, BooleanSupplier useThrottle) {
-    this(drivetrain, joyY, joyX,  () -> 1.0, useThrottle);
+  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX) {
+    this(drivetrain, joyY, joyX,  () -> 1.0, () -> false);
   }
 
   public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ, BooleanSupplier useThrottle) {

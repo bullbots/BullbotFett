@@ -12,12 +12,13 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Shifter;
 
-// public class JoystickDriveWithShifting extends JoystickDrive {  // Can't do this because it requires me to call super() as first line of constructor.
 public class JoystickDriveWithShifting extends CommandBase {
-  // Please check this math
+  // See https://www.desmos.com/calculator/1qyjhjgqu0 for math and visualization.
   private double shiftThreshold = .8;
-  private double lowGearSlope = 1.0/(Math.sqrt(Constants.GEAR_RATIO_LOW));
-  private double highGearSlope = (Math.pow(shiftThreshold/lowGearSlope, 2)) / (Math.pow(shiftThreshold, 2));
+  private double ratioOfRatios = Constants.GEAR_RATIO_HIGH/Constants.GEAR_RATIO_LOW;
+  private double lowGearSlope = shiftThreshold;
+  private double highGearSlope = (1-(lowGearSlope*shiftThreshold)/ratioOfRatios)/(1-shiftThreshold);
+  private double highGearIntercept = 1.0 - highGearSlope;
 
   private DrivetrainFalcon drivetrain;
   private Shifter shifter;
@@ -31,8 +32,8 @@ public class JoystickDriveWithShifting extends CommandBase {
   private boolean isQuickTurn = true;
 
 
-  public JoystickDriveWithShifting(DrivetrainFalcon drivetrain, Shifter shifter, DoubleSupplier joyY, DoubleSupplier joyX, BooleanSupplier isAutomatic, BooleanSupplier shifterButton, BooleanSupplier useThrottle) {
-    this(drivetrain, shifter, joyY, joyX, () -> 1.0, isAutomatic, shifterButton, useThrottle);
+  public JoystickDriveWithShifting(DrivetrainFalcon drivetrain, Shifter shifter, DoubleSupplier joyY, DoubleSupplier joyX, BooleanSupplier isAutomatic, BooleanSupplier shifterButton) {
+    this(drivetrain, shifter, joyY, joyX, () -> 1.0, isAutomatic, shifterButton, () -> false);
   }
 
   public JoystickDriveWithShifting(DrivetrainFalcon drivetrain, Shifter shifter, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ, BooleanSupplier isAutomatic, BooleanSupplier shifterButton, BooleanSupplier useThrottle) {
@@ -57,12 +58,13 @@ public class JoystickDriveWithShifting extends CommandBase {
     double _joyZ = useThrottle.getAsBoolean() ? joyZ.getAsDouble() : 1.0;
 
     if (isAutomatic.getAsBoolean()) {
+      // CurvatureDrive doesn't use squared inputs. It makes this a lot simpler.
       if (Math.abs(_joyY) <= shiftThreshold) {
         shifter.shiftLow();
-        _joyY *= lowGearSlope;
+        _joyY = lowGearSlope * _joyY;
       } else if (Math.abs(_joyY) > shiftThreshold) {
         shifter.shiftHigh();
-        _joyY *= highGearSlope;
+        _joyY = highGearSlope * _joyY + highGearIntercept;
       }
     } else {
       if (shifterButton.getAsBoolean()) {

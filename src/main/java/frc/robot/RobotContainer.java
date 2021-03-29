@@ -112,8 +112,7 @@ public class RobotContainer {
           () -> stick.getY() * (button3.get() ? -1.0 : 1.0),
           () -> stick.getX(),
           () -> isAutomatic,
-          () -> button4.get(),
-          () -> useThrottle
+          () -> button4.get()
         )
       );
     }
@@ -183,8 +182,8 @@ public class RobotContainer {
         () -> stick.getY(),
         () -> stick.getX(),
         () -> isAutomatic,
-        () -> button4.get(),
-        () -> useThrottle)
+        () -> button4.get()
+      )
     ));
 
     PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
