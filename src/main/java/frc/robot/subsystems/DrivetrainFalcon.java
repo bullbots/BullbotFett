@@ -35,7 +35,7 @@ public class DrivetrainFalcon extends SubsystemBase {
   private double ticks_per_foot = ticks_per_wheel_revolution/ (.5 * Math.PI); // .5 is diameter of wheel in feet
   private double max_ticks_per_hundred_milliseconds = ticks_per_foot*Constants.MAX_SPEED_LOW_GEAR/10;
 
-  public final SafeTalonFX leftMasterFalcon = new SafeTalonFX(Constants.LEFT_MASTER_PORT, false); // change to false for no PID?
+  public final SafeTalonFX leftMasterFalcon = new SafeTalonFX(Constants.LEFT_MASTER_PORT, false);
   public final SafeTalonFX rightMasterFalcon = new SafeTalonFX(Constants.RIGHT_MASTER_PORT, false);
   private final SafeTalonFX leftSlaveFalcon = new SafeTalonFX(Constants.LEFT_SLAVE_PORT, false);
   private final SafeTalonFX rightSlaveFalcon = new SafeTalonFX(Constants.RIGHT_SLAVE_PORT, false);

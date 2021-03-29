@@ -84,38 +84,18 @@ public class RobotContainer {
 
     compressor.start();
     
-    if (useThrottle) {
-      // drivetrain.setDefaultCommand(new JoystickDrive(
-      //   drivetrain,
-      //   () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
-      //   () -> stick.getX(),
-      //   () -> (stick.getZ() - 1)/-2.0
-      // ));
-
-      drivetrain.setDefaultCommand(
-        new JoystickDriveWithShifting(
-          drivetrain,
-          shifter,
-          () -> stick.getY() * (button3.get() ? -1.0 : 1.0),
-          () -> stick.getX(),
-          () -> stick.getZ(),
-          () -> isAutomatic,
-          () -> button4.get(),
-          () -> useThrottle
-        )
-      );
-    } else {
-      drivetrain.setDefaultCommand(
-        new JoystickDriveWithShifting(
-          drivetrain,
-          shifter,
-          () -> stick.getY() * (button3.get() ? -1.0 : 1.0),
-          () -> stick.getX(),
-          () -> isAutomatic,
-          () -> button4.get()
-        )
-      );
-    }
+    drivetrain.setDefaultCommand(
+      new JoystickDriveWithShifting(
+        drivetrain,
+        shifter,
+        () -> stick.getY() * (button3.get() ? -1.0 : 1.0),
+        () -> stick.getX(),
+        () -> stick.getZ(),
+        () -> isAutomatic,
+        () -> button4.get(),
+        () -> useThrottle
+      )
+    );
 
     // Add commands to the autonomous command chooser
     m_chooser.setDefaultOption("Bounce Path", new SequentialCommandGroup(

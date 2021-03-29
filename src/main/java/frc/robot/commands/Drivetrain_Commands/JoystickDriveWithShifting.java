@@ -13,7 +13,7 @@ import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Shifter;
 
 public class JoystickDriveWithShifting extends CommandBase {
-  // See https://www.desmos.com/calculator/1qyjhjgqu0 for math and visualization.
+  // See https://www.desmos.com/calculator/3vbd0wvoth for math and visualization.
   private double shiftThreshold = .8;
   private double ratioOfRatios = Constants.GEAR_RATIO_HIGH/Constants.GEAR_RATIO_LOW;
   private double lowGearSlope = shiftThreshold;
