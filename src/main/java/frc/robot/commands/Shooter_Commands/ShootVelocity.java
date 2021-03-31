@@ -10,7 +10,9 @@ package frc.robot.commands.Shooter_Commands;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
 
@@ -23,6 +25,7 @@ public class ShootVelocity extends CommandBase {
    private Harm harm;
    private Timer ball_release_delay;
    private double vel = 0;
+   private double backspin = 0;
    private BooleanSupplier isLongShot;
    private boolean servoState = false;
 
@@ -32,6 +35,12 @@ public class ShootVelocity extends CommandBase {
     this.harm = harm;
     this.isLongShot = isLongShot;
     ball_release_delay = new Timer();
+
+    SmartDashboard.putNumber("Shooter Velocity", vel);
+    SmartDashboard.putNumber("Backspin Factor", backspin);
+    var vels = shooter.getVelocities();
+    SmartDashboard.putNumber("Top Vel", vels[0]);
+    SmartDashboard.putNumber("Bottom Vel", -vels[1]);
   }
 
   // Called when the command is initially scheduled.
@@ -41,11 +50,21 @@ public class ShootVelocity extends CommandBase {
     ball_release_delay.start();
     if (isLongShot.getAsBoolean()) {
       harm.raiseShooterHood();
-      vel = .6;
-    } else {
-      vel = 0.32;
+    //   vel = .6;
+    // } else {
+    //   vel = 0.32;
     }
-    shooter.set(vel, -vel);
+    var vel = SmartDashboard.getNumber("Shooter Velocity", 0);
+    var backspin = SmartDashboard.getNumber("Backspin Factor", 0);
+
+    vel += vel * backspin;
+    double top_vel = vel - vel * backspin / 2;
+    double bottom_vel = vel + vel * backspin / 2;
+    MathUtil.clamp(top_vel, 0, 1);
+    MathUtil.clamp(bottom_vel, 0, 1);
+    // shooter.set(top_vel, -bottom_vel);
+    shooter.set(0.1, -bottom_vel);
+
     shooter.ballReleaseServo.set(1.0);
     servoState = false;
   }
@@ -57,6 +76,9 @@ public class ShootVelocity extends CommandBase {
       shooter.ballReleaseServo.set(0);
       servoState = true;
     }
+    var vels = shooter.getVelocities();
+    SmartDashboard.putNumber("Top Vel", vels[0]);
+    SmartDashboard.putNumber("Bottom Vel", -vels[1]);
   }
 
   // Called once the command ends or is interrupted.
