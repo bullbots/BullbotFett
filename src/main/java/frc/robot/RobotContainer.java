@@ -141,7 +141,8 @@ public class RobotContainer {
       )
     ));
 
-    PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
+    // PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
+    PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0007, 0.0);
     pidcontroller.setIntegratorRange(-0.2, 0.2);
 
     if (Robot.isSimulation()) {
