@@ -14,11 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
-import frc.robot.commands.Drivetrain_Commands.JoystickDriveWithShifting;
 import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.LowerIntake;
-import frc.robot.commands.Harm_Commands.RaiseShooterHood;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
@@ -29,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpiutil.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
@@ -55,21 +52,21 @@ public class RobotContainer {
   private static JoystickButton button10 = new JoystickButton(stick, 10);
   private static JoystickButton button11 = new JoystickButton(stick, 11);
 
+  // States
+  private boolean isAutomatic = false;
+  private boolean useThrottle = false;
+  
   // Subsystems
   private final Shooter shooter = new Shooter();
-  private final DrivetrainFalcon drivetrain = new DrivetrainFalcon();
-  private final Harm harm = new Harm();
   private final Shifter shifter = new Shifter();
+  private final DrivetrainFalcon drivetrain = new DrivetrainFalcon(shifter, () -> isAutomatic);
+  private final Harm harm = new Harm();
 
 
   private final Compressor compressor = new Compressor();
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
-
-  // States
-  private boolean isAutomatic = false;
-  private boolean useThrottle = false;
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -85,14 +82,11 @@ public class RobotContainer {
     compressor.start();
     
     drivetrain.setDefaultCommand(
-      new JoystickDriveWithShifting(
+      new JoystickDrive(
         drivetrain,
-        shifter,
         () -> stick.getY() * (button3.get() ? -1.0 : 1.0),
         () -> stick.getX(),
         () -> stick.getZ(),
-        () -> isAutomatic,
-        () -> button4.get(),
         () -> useThrottle
       )
     );
@@ -139,32 +133,28 @@ public class RobotContainer {
       }
     });
 
-    button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
-
-    // button4.whileHeld(new ShiftHigh(shifter));
-
-    // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
-    
     button1.whileHeld(new ParallelCommandGroup(
       new SequentialCommandGroup(
         new LowerIntake(harm).withTimeout(.5),
         new IntakeBalls(harm)
       ),
-      // new JoystickDrive(
-      //   drivetrain,
-      //   () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
-      //   () -> stick.getX(),
-      //   () -> stick.getZ()
-      // )
-      new JoystickDriveWithShifting(
+      new JoystickDrive(
         drivetrain,
-        shifter,
-        () -> stick.getY(),
+        () -> stick.getY() * (button3.get() ? -1.0 : 1.0),
         () -> stick.getX(),
-        () -> isAutomatic,
-        () -> button4.get()
+        () -> stick.getZ(),
+        () -> useThrottle
       )
     ));
+
+    button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
+
+    button4.whileHeld(new ShiftHigh(
+      shifter,
+      () -> isAutomatic
+    ));
+
+    // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
 
     PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
     pidcontroller.setIntegratorRange(-0.2, 0.2);

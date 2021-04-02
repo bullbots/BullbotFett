@@ -9,9 +9,12 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.Shifter.Gear;
 import frc.robot.util.SafeTalonFX;
 import frc.robot.util.DifferentialDriveDebug;
 import frc.robot.util.NavX;
+
+import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -35,6 +38,9 @@ public class DrivetrainFalcon extends SubsystemBase {
   private double ticks_per_foot = ticks_per_wheel_revolution/ (.5 * Math.PI); // .5 is diameter of wheel in feet
   private double max_ticks_per_hundred_milliseconds = ticks_per_foot*Constants.MAX_SPEED_LOW_GEAR/10;
 
+  private double secondGearSlopeCoefficient = Constants.GEAR_RATIO_HIGH/Constants.GEAR_RATIO_LOW;
+  private double shiftThreshold = Constants.MAX_SPEED_LOW_GEAR * .8;
+
   public final SafeTalonFX leftMasterFalcon = new SafeTalonFX(Constants.LEFT_MASTER_PORT, false);
   public final SafeTalonFX rightMasterFalcon = new SafeTalonFX(Constants.RIGHT_MASTER_PORT, false);
   private final SafeTalonFX leftSlaveFalcon = new SafeTalonFX(Constants.LEFT_SLAVE_PORT, false);
@@ -42,6 +48,8 @@ public class DrivetrainFalcon extends SubsystemBase {
 
   private final DifferentialDriveDebug diffDrive = new DifferentialDriveDebug(leftMasterFalcon, rightMasterFalcon);
   private final NavX gyro = new NavX();
+  private Shifter shifter;
+  private BooleanSupplier isAutomatic;
   public Orchestra orchestra;
 
   // private final Shifter shifter = new Shifter(Constants.LOW_GEAR_CHANNEL, Constants.HIGH_GEAR_CHANNEL);
@@ -78,6 +86,9 @@ public class DrivetrainFalcon extends SubsystemBase {
   // Iterator<Double> simIter = simulationList.iterator();
 
   public DrivetrainFalcon() {
+    this(null, () -> false);
+  }
+  public DrivetrainFalcon(Shifter shifter, BooleanSupplier isAutomaticShifting) {
     if (Robot.isReal()) {
 
       leftSlaveFalcon.follow(leftMasterFalcon);
@@ -101,6 +112,9 @@ public class DrivetrainFalcon extends SubsystemBase {
 
       // orchestra.loadMusic("test.chrp");
       diffDrive.setDeadband(0.05);
+      
+      this.shifter = shifter;
+      this.isAutomatic = isAutomaticShifting;
     }
 
     diffDrive.setRightSideInverted(false);
@@ -271,6 +285,25 @@ public class DrivetrainFalcon extends SubsystemBase {
   }
 
   public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {
+    Gear currGear = (shifter != null) ? shifter.getGear() : Gear.LOW;
+    double avgVelocity = Math.abs(getVelocities()[0] + getVelocities()[1])/2.0;
+
+    if (isAutomatic.getAsBoolean()) {
+      if (currGear == Gear.LOW) {
+        if (avgVelocity > shiftThreshold && shifter != null) {
+          shifter.shiftHigh();
+          speed /= secondGearSlopeCoefficient;
+          rotation /= secondGearSlopeCoefficient;
+        }
+      } else if (currGear == Gear.HIGH) {
+        if (avgVelocity < shiftThreshold / secondGearSlopeCoefficient) {
+          shifter.shiftLow();
+        } else {
+          speed /= secondGearSlopeCoefficient;
+          rotation /= secondGearSlopeCoefficient; 
+        }
+      }
+    }
     diffDrive.curvatureDrive(speed, rotation, isQuickTurn);
   }
 
