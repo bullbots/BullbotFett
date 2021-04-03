@@ -430,6 +430,7 @@ if __name__ == "__main__":
         max_width, max_height = 1280, 720
 
     half_width, half_height = int(max_width * 0.5), int(max_height * 0.5)
+    shifted_center = half_width + 40
 
     near_center_threshold = int(60 * max_height / 480)
 
@@ -498,16 +499,16 @@ if __name__ == "__main__":
                     center_x = x + half_target_width
                     center_y = y + half_target_height
 
-                    center_x = center_x - half_width
-                    center_y = center_y - half_height
+                    center_x -= shifted_center
+                    center_y -= half_height
 
                     # Green if near the center else Red
                     color = (0, 255, 0) if abs(center_x) <= near_center_threshold else (0, 0, 255)
                     source = cv2.rectangle(color_image, (x, y), (x + w, y + h), color, 3)
 
                     threshold_color = (128, 0, 128)
-                    source = cv2.rectangle(color_image, (half_width - near_center_threshold, 0), 
-                                    (half_width + near_center_threshold, max_height), threshold_color, 2)
+                    source = cv2.rectangle(color_image, (shifted_center - near_center_threshold, 0), 
+                                    (shifted_center + near_center_threshold, max_height), threshold_color, 2)
 
                     print(f"TargetX: {center_x}, TargetY: {center_y}")
                     smartdashboard.putNumber("TargetX", center_x)
