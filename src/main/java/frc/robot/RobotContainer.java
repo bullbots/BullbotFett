@@ -84,7 +84,13 @@ public class RobotContainer {
     ));
 
     // Add commands to the autonomous command chooser
-    m_chooser.setDefaultOption("Bounce Path", new SequentialCommandGroup(
+    m_chooser.setDefaultOption("Bounce Piece", new SequentialCommandGroup(
+      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
+      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
+    ));
+    m_chooser.addOption("Bounce Path", new SequentialCommandGroup(
       new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
       new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
       new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
