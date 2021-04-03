@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpiutil.math.MathUtil;
+import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.DrivetrainFalcon.CoastMode;
 
@@ -127,7 +128,7 @@ public class AlignShooter extends PIDCommand {
     }
 
     public double calculate(double targetX, double notAcceleration) {
-      if (Math.abs(targetX) <= 80) {
+      if (Math.abs(targetX) <= Constants.VISION_ALIGN_THRESHOLD) {
         targetX = 0.0;
       }
       var ksOut = ks * -Math.signum(targetX);

@@ -368,37 +368,37 @@ def startSwitchedCamera(config):
 
 MM_TO_FT =  math.cos(0.51487) / (10 * 12 * 2.54)
 
-# Our signal handler
-def signal_handler(signum, frame): 
-    global pipeline
-    global device
-    print("Calling pipeline stop")
-    pipeline.stop()
+# # Our signal handler
+# def signal_handler(signum, frame): 
+#     global pipeline
+#     global device
+#     print("Calling pipeline stop")
+#     pipeline.stop()
 
-    # Sometimes the system won't come back up without a complete hardware reset.
-    device.hardware_reset()  
+#     # Sometimes the system won't come back up without a complete hardware reset.
+#     device.hardware_reset()  
  
-def exit_handler(signum, frame):
-    global pipeline
-    global device
-    print("Calling pipeline stop")
-    pipeline.stop()
+# def exit_handler(signum, frame):
+#     global pipeline
+#     global device
+#     print("Calling pipeline stop")
+#     pipeline.stop()
 
-    # Sometimes the system won't come back up without a complete hardware reset.
-    device.hardware_reset()
-    print('Exiting....') 
-    exit(0)
+#     # Sometimes the system won't come back up without a complete hardware reset.
+#     device.hardware_reset()
+#     print('Exiting....') 
+#     exit(0)
 
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
         configFile = sys.argv[1]
 
-    # Register our signal handler with `SIGINT`(CTRL + C)
-    signal.signal(signal.SIGINT, signal_handler)
+    # # Register our signal handler with `SIGINT`(CTRL + C)
+    # signal.signal(signal.SIGINT, signal_handler)
 
-    # Register the exit handler with `SIGTSTP` (Ctrl + Z)
-    signal.signal(signal.SIGTSTP, exit_handler)
+    # # Register the exit handler with `SIGTSTP` (Ctrl + Z)
+    # signal.signal(signal.SIGTSTP, exit_handler)
 
     # read configuration
     if not readConfig():
@@ -430,7 +430,7 @@ if __name__ == "__main__":
         max_width, max_height = 1280, 720
 
     half_width, half_height = int(max_width * 0.5), int(max_height * 0.5)
-    shifted_center = half_width + 40
+    shifted_center = half_width + 15
 
     near_center_threshold = int(60 * max_height / 480)
 

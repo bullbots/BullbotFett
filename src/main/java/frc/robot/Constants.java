@@ -102,4 +102,5 @@ public final class Constants {
       */
 
     public static int kTIMEOUT_MS = 0;
+    public static int VISION_ALIGN_THRESHOLD = 100;
 }
