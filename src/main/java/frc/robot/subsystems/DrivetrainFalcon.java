@@ -88,7 +88,8 @@ public class DrivetrainFalcon extends SubsystemBase {
   public DrivetrainFalcon() {
     this(null, () -> false);
   }
-  public DrivetrainFalcon(Shifter shifter, BooleanSupplier isAutomaticShifting) {
+
+  public DrivetrainFalcon(Shifter shifter, BooleanSupplier isAutomatic) {
     if (Robot.isReal()) {
 
       leftSlaveFalcon.follow(leftMasterFalcon);
@@ -112,10 +113,10 @@ public class DrivetrainFalcon extends SubsystemBase {
 
       // orchestra.loadMusic("test.chrp");
       diffDrive.setDeadband(0.05);
-      
-      this.shifter = shifter;
-      this.isAutomatic = isAutomaticShifting;
     }
+
+    this.shifter = shifter;
+    this.isAutomatic = isAutomatic;
 
     diffDrive.setRightSideInverted(false);
     diffDrive.setSafetyEnabled(false);
@@ -304,6 +305,7 @@ public class DrivetrainFalcon extends SubsystemBase {
         }
       }
     }
+    SmartDashboard.putNumber("Motor RPMs (avg)", avgVelocity);
     diffDrive.curvatureDrive(speed, rotation, isQuickTurn);
   }
 
