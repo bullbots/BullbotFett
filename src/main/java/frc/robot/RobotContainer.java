@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.TrajectoryBase;
@@ -142,7 +143,7 @@ public class RobotContainer {
     ));
 
     // PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
-    PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0007, 0.0);
+    PIDController pidcontroller = new PIDControllerDebug(0.0, 0.0, 0.0);
     pidcontroller.setIntegratorRange(-0.2, 0.2);
 
     if (Robot.isSimulation()) {
@@ -161,6 +162,7 @@ public class RobotContainer {
     0.0,
     (output) -> {
         output = MathUtil.clamp(output, -.5, .5);
+        
         drivetrain.arcadeDrive(0, -output, false);
         // System.out.println(String.format("Info: output %f", output));
       },

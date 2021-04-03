@@ -29,19 +29,19 @@ public class ShootVelocity extends CommandBase {
    private Harm harm;
    private Timer ball_release_delay;
    private double vel = 0;
-   private double backspin = 0;
+   private double backspin = 0.3;
    private BooleanSupplier isLongShot;
    private boolean servoState = false;
    private List<Pair<Integer, Double>> distanceToPower = new ArrayList<>(
     Arrays.asList(
-      new Pair<> (99999, 0.0),
+      new Pair<> (99999, 0.1),
       new Pair<> (9300, .45),
       new Pair<> (7100, .39),
       new Pair<> (5800, .38),
       new Pair<> (4100, .4),
       new Pair<> (2700, .22),
-      new Pair<> (0, 0.0),
-      new Pair<> (-10000, 0.0)));
+      new Pair<> (0, 0.1),
+      new Pair<> (-10000, 0.1)));
 
   public ShootVelocity(Shooter shooter, Harm harm, BooleanSupplier isLongShot) {
     addRequirements(shooter, harm);
@@ -70,7 +70,6 @@ public class ShootVelocity extends CommandBase {
     }
     // var vel = SmartDashboard.getNumber("Shooter Velocity", 0);
     // var backspin = SmartDashboard.getNumber("Backspin Factor", 0);
-    var backspin = 0.3;
     
     var vel = 0.0;
     var cameraDist = SmartDashboard.getNumber("Distance", 0);
@@ -103,6 +102,15 @@ public class ShootVelocity extends CommandBase {
     if (!servoState && ball_release_delay.hasElapsed(1)) {
       shooter.ballReleaseServo.set(0);
       servoState = true;
+    }
+
+    if (isLongShot.getAsBoolean()) {
+      harm.raiseShooterHood();
+    //   vel = .6;
+    // } else {
+    //   vel = 0.32;
+    } else {
+      harm.lowerShooterHood();
     }
 
     var vels = shooter.getVelocities();
