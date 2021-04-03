@@ -7,6 +7,7 @@
 import json
 import time
 import sys
+import signal
 
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer, CvSink
 from networktables import NetworkTablesInstance
@@ -367,9 +368,37 @@ def startSwitchedCamera(config):
 
 MM_TO_FT =  math.cos(0.51487) / (10 * 12 * 2.54)
 
+# Our signal handler
+def signal_handler(signum, frame): 
+    global pipeline
+    global device
+    print("Calling pipeline stop")
+    pipeline.stop()
+
+    # Sometimes the system won't come back up without a complete hardware reset.
+    device.hardware_reset()  
+ 
+def exit_handler(signum, frame):
+    global pipeline
+    global device
+    print("Calling pipeline stop")
+    pipeline.stop()
+
+    # Sometimes the system won't come back up without a complete hardware reset.
+    device.hardware_reset()
+    print('Exiting....') 
+    exit(0)
+
+
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
         configFile = sys.argv[1]
+
+    # Register our signal handler with `SIGINT`(CTRL + C)
+    signal.signal(signal.SIGINT, signal_handler)
+
+    # Register the exit handler with `SIGTSTP` (Ctrl + Z)
+    signal.signal(signal.SIGTSTP, exit_handler)
 
     # read configuration
     if not readConfig():
@@ -401,6 +430,7 @@ if __name__ == "__main__":
         max_width, max_height = 1280, 720
 
     half_width, half_height = int(max_width * 0.5), int(max_height * 0.5)
+    shifted_center = half_width + 40
 
     near_center_threshold = int(60 * max_height / 480)
 
@@ -463,28 +493,28 @@ if __name__ == "__main__":
 
                     # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
                     x, y, w, h = cv2.boundingRect(largest_contour)
+                    half_target_width = int(w * 0.5)
+                    half_target_height = int(h * 0.5)
 
-                    # print(f"Largest contour: x: {x}, y: {y}, w: {w}, h: {h}")
+                    center_x = x + half_target_width
+                    center_y = y + half_target_height
 
-                    center_x = (int) (x + w * 0.5)
-                    center_y = (int) (y + h * 0.5)
-
-                    center_x = center_x - half_width
-                    center_y = center_y - half_height
+                    center_x -= shifted_center
+                    center_y -= half_height
 
                     # Green if near the center else Red
                     color = (0, 255, 0) if abs(center_x) <= near_center_threshold else (0, 0, 255)
                     source = cv2.rectangle(color_image, (x, y), (x + w, y + h), color, 3)
 
                     threshold_color = (128, 0, 128)
-                    source = cv2.rectangle(color_image, (half_width - near_center_threshold, 0), 
-                                    (half_width + near_center_threshold, max_height), threshold_color, 2)
+                    source = cv2.rectangle(color_image, (shifted_center - near_center_threshold, 0), 
+                                    (shifted_center + near_center_threshold, max_height), threshold_color, 2)
 
                     print(f"TargetX: {center_x}, TargetY: {center_y}")
                     smartdashboard.putNumber("TargetX", center_x)
 
-                    if w > 0 and h > 0:
-                        roi_distance = depth_image[y:y+h, x:x+w]
+                    if w > 2 and h > 2:
+                        roi_distance = depth_image[y+half_target_height:y+h, x:x+w]
                         distance = np.median(roi_distance)
                         # distance_sample = depth_image[y+int(h*0.5), x+int(w*0.5)]
                         smartdashboard.putNumber("Distance", distance)
