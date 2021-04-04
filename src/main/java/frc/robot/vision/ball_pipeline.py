@@ -31,9 +31,9 @@ class BallContours:
         self.normalize_output = None
 
         self.__hsv_threshold_input = self.normalize_output
-        self.__hsv_threshold_hue = [10.0, 48.0]
-        self.__hsv_threshold_saturation = [190.0, 255.0]
-        self.__hsv_threshold_value = [18.0, 192.0]
+        self.__hsv_threshold_hue = [20.0, 30.0]
+        self.__hsv_threshold_saturation = [170.0, 225.0]
+        self.__hsv_threshold_value = [60.0, 185.0]
 
         self.hsv_threshold_output = None
 
@@ -451,7 +451,6 @@ if __name__ == "__main__":
 
     smartdashboard = ntinst.getTable("SmartDashboard")
     # xEntry = table.getEntry("TargetX")
-    distance = smartdashboard.getEntry("Distance")
 
     try:
         print("Getting CameraServer Stream...")
@@ -471,6 +470,8 @@ if __name__ == "__main__":
 
         input_img = np.empty((640, 480), dtype=int)
 
+        smartdashboard.putNumber("isRed", 0)
+
         while True:
             time, input_img = sink.grabFrame(input_img)
 
@@ -485,45 +486,85 @@ if __name__ == "__main__":
             grip_pipeline.process(input_img)
             num_contours = len(grip_pipeline.find_contours_output)
 
-            if num_contours > 0:
+            if num_contours > 1:
                 print(f"Number of contours found: {num_contours}")
 
-                largest_contour = sorted(grip_pipeline.find_contours_output, reverse=True,
-                                            key=lambda c: cv2.contourArea(c))[0]
+
+                largest_contour, second_largest_contour = sorted(grip_pipeline.find_contours_output, reverse=True,
+                                            key=lambda c: cv2.contourArea(c))[:2]
 
                 contourarea = cv2.contourArea(largest_contour)
                 print(f"info: area {contourarea}")
                 
-                if 450 <= contourarea <= 4500 :
+                if 0 <= contourarea <= 10000 :
 
                     # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
                     x, y, w, h = cv2.boundingRect(largest_contour)
 
-                    center_x = (int) (x + w * 0.5)
-                    center_y = (int) (y + h * 0.5)
+                    center_x1 = (int) (x + w * 0.5)
+                    center_y1 = (int) (y + h * 0.5)
 
-                    center_x = center_x - half_width
-                    center_y = center_y - half_height
+                    center_x1 = center_x1 - half_width
+                    center_y1 = center_y1 - half_height
 
-                    # Green if near the center else Red
-                    color = (0, 255, 0) if abs(center_x) <= near_center_threshold else (0, 0, 255)
+                    color = (0, 255, 0)
                     source = cv2.rectangle(input_img, (x, y), (x + w, y + h), color, 3)
 
-                    threshold_color = (128, 0, 128)
-                    source = cv2.rectangle(input_img, (half_width - near_center_threshold, 0), 
-                                    (half_width + near_center_threshold, max_height), threshold_color, 2)
+                    print(f"CenterX 1: {center_x1}, CenterY 1: {center_y1}")
 
-                    print(f"CenterX: {center_x}, CenterY: {center_y}")
-
-                    smartdashboard.putNumber("TargetX", center_x)
+                    smartdashboard.putNumber("CenterX 1", center_x1)
+                    smartdashboard.putNumber("Width 1", w)
                     # This needs debug for the edge of the image
-                    # distance.setNumber(depth_image[y+h+5][center_x])
+                    if w > 0:
+                        red_or_blue = 1
+                    else:
+                        red_or_blue = 2
+                    smartdashboard.putNumber("isRed", red_or_blue)
             else:
-                smartdashboard.putNumber("TargetX", -9999)
-                distance.setNumber(-1)
+                print(f"Contours found: {num_contours}")
+                smartdashboard.putNumber("isRed", 0)
 
-            target_video.putFrame(input_img)
+            if num_contours > 1:
+                contourarea = cv2.contourArea(second_largest_contour)
+                print(f"info: area {contourarea}")
+                
+                if 0 <= contourarea <= 10000 :
+
+                    # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
+                    x, y, w, h = cv2.boundingRect(second_largest_contour)
+
+                    center_x2 = (int) (x + w * 0.5)
+                    center_y2 = (int) (y + h * 0.5)
+
+                    center_x2 = center_x2 - half_width
+                    center_y2 = center_y2 - half_height
+
+                    color = (0, 0, 255)
+                    source = cv2.rectangle(input_img, (x, y), (x + w, y + h), color, 3)
+
+                    print(f"CenterX: {center_x2}, CenterY: {center_y2}")
+
+                    smartdashboard.putNumber("CenterX 2", center_x2)
+                    smartdashboard.putNumber("Width 2", w)
+                    # This needs debug for the edge of the image
+                    if red_or_blue == 1: # is red
+                        threshold = 0
+                    elif red_or_blue == 2:
+                        threshold = 0
+                    else:
+                        smartdashboard.putNumber("isPathA", 0)
+                        continue
+
+                    if center_x2 < threshold:
+                        patha_or_pathb = 1
+                    else:
+                        patha_or_pathb = 2
+                    
+                    smartdashboard.putNumber("isPathA", patha_or_pathb)
+                else:
+                    smartdashboard.putNumber("isPathA", 0)
+
+                target_video.putFrame(input_img)
 
     finally:
-        print("ERROR: not sure why")
-        
+        print("ERROR: not sure why")   

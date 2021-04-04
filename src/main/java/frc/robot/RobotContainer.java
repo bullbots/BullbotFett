@@ -19,8 +19,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.Autonomous.AutonomousGSC_A;
-import frc.robot.commands.Autonomous.AutonomousGSC_B;
+import frc.robot.commands.Autonomous.AutonomousGSC;
 import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
@@ -101,7 +100,37 @@ public class RobotContainer {
       return value;
     }
   }
+
   private static AtomicReference<Color> pathColor = new AtomicReference<>(Color.UNLOADED);
+
+  private enum Letter {
+    UNLOADED(0),
+    A(1),
+    B(2);
+
+    private int value;
+    private static Map map = new HashMap<Integer, Color>();
+
+    private Letter(int value) {
+      this.value = value;
+    }
+
+    static {
+      for (Letter letter : Letter.values()) {
+        map.put(letter.value, letter);
+      }
+    }
+
+    public static Letter valueOf(int letter) {
+      return (Letter) map.get(letter);
+    }
+
+    public int getValue() {
+      return value;
+    }
+  }
+
+  private static AtomicReference<Letter> pathLetter = new AtomicReference<>(Letter.UNLOADED);  
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -140,19 +169,20 @@ public class RobotContainer {
       new TrajectoryBase(drivetrain, "/SLALOM")
     );
 
-    m_chooser.addOption("Galactic Search Challenge A", new AutonomousGSC_A(
+    m_chooser.addOption("Galactic Search Challenge", new AutonomousGSC(
       drivetrain,
       harm,
-      () -> (pathColor.get() != Color.UNLOADED),
-      () -> (pathColor.get() == Color.RED)
+      () -> (pathColor.get() != Color.UNLOADED && pathLetter.get() != Letter.UNLOADED),
+      () -> (pathColor.get() == Color.RED),
+      () -> (pathLetter.get() == Letter.A)
     ));
 
-    m_chooser.addOption("Galactic Search Challenge B", new AutonomousGSC_B(
-      drivetrain,
-      harm,
-      () -> (pathColor.get() != Color.UNLOADED),
-      () -> (pathColor.get() == Color.RED)
-    ));
+    // m_chooser.addOption("Galactic Search Challenge B", new AutonomousGSC_B(
+    //   drivetrain,
+    //   harm,
+    //   () -> (pathColor.get() != Color.UNLOADED),
+    //   () -> (pathColor.get() == Color.RED)
+    // ));
 
     m_chooser.addOption("Forward Then Backward Path", new SequentialCommandGroup(
       new TrajectoryBase(drivetrain, "/FORWARD-DISTANCE", false, true), // ... boolean isBackwards, boolean resetGyro
