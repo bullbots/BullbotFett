@@ -128,10 +128,16 @@ public class AlignShooter extends PIDCommand {
     }
 
     public double calculate(double targetX, double notAcceleration) {
-      if (Math.abs(targetX) <= Constants.VISION_ALIGN_THRESHOLD) {
+      
+      if (Math.abs(targetX) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
         targetX = 0.0;
       }
       var ksOut = ks * -Math.signum(targetX);
+      // if (Math.abs(targetX) <= Constants.VISION_INNER_ALIGN_THRESHOLD && 
+      //   Math.abs(targetX) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
+      //   ksOut *= 0.5;
+      // }
+      
       return ksOut + kv * targetX + ka * notAcceleration;
     }
   }

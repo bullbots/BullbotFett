@@ -38,7 +38,7 @@ public class PIDControllerDebug extends PIDController {
 
     public double calculate(double measurement) {
         var output = 0.0;
-        if(Math.abs(measurement) <= Constants.VISION_ALIGN_THRESHOLD) {
+        if(Math.abs(measurement) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
             if (!m_prev) {
                 reset();
             }

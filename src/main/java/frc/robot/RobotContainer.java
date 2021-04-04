@@ -131,7 +131,7 @@ public class RobotContainer {
       }
     });
 
-    button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
+    button2.whileHeld(new ShootVelocity(shooter, compressor, harm, () -> !button6.get()));
 
     button4.whileHeld(new ShiftHigh(shifter));
     // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
@@ -149,7 +149,7 @@ public class RobotContainer {
     ));
 
     // PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
-    PIDController pidcontroller = new PIDControllerDebug(0.0, 0.001, 0.0);
+    PIDController pidcontroller = new PIDControllerDebug(0.0003, 0.0, 0.0);
     pidcontroller.setIntegratorRange(-0.2, 0.2);
 
     if (Robot.isSimulation()) {

@@ -51,7 +51,7 @@ public class JoystickDrive extends CommandBase {
     m_drivetrain.curvatureDrive(_joyY, _joyX, turnInPlace);
     // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
 
-    // SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
+    SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
     // SmartDashboard.putNumber("JoyY", joyY.getAsDouble());
     // SmartDashboard.putNumber("JoyZ", joyZ.getAsDouble());
 

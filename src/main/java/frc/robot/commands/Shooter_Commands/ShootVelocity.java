@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -26,6 +27,7 @@ public class ShootVelocity extends CommandBase {
    */
 
    private Shooter shooter;
+   private Compressor compressor;
    private Harm harm;
    private Timer ball_release_delay;
    private double vel = 0;
@@ -43,9 +45,10 @@ public class ShootVelocity extends CommandBase {
       new Pair<> (0, 0.1),
       new Pair<> (-10000, 0.1)));
 
-  public ShootVelocity(Shooter shooter, Harm harm, BooleanSupplier isLongShot) {
+  public ShootVelocity(Shooter shooter, Compressor compressor, Harm harm, BooleanSupplier isLongShot) {
     addRequirements(shooter, harm);
     this.shooter = shooter;
+    this.compressor = compressor;
     this.harm = harm;
     this.isLongShot = isLongShot;
     ball_release_delay = new Timer();
@@ -60,6 +63,7 @@ public class ShootVelocity extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    compressor.stop();
     ball_release_delay.reset();
     ball_release_delay.start();
     if (isLongShot.getAsBoolean()) {
@@ -122,6 +126,7 @@ public class ShootVelocity extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     shooter.set(0, 0);
+    compressor.start();
   }
 
   @Override

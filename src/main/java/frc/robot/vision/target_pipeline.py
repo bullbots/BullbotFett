@@ -534,8 +534,9 @@ if __name__ == "__main__":
             depthOutputStream.putFrame(depth_colormap)
 
     finally:
-        print("Calling pipeline stop")
+        print("Calling pipeline stop...")
         pipeline.stop()
 
         # Sometimes the system won't come back up without a complete hardware reset.
+        print("Skipping Calling hardware reset...")
         device.hardware_reset()
