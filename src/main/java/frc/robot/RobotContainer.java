@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.AutonomousGSC;
@@ -24,10 +23,7 @@ import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
-import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.IntakeGroup;
-import frc.robot.commands.Harm_Commands.LowerIntake;
-import frc.robot.commands.Harm_Commands.RaiseShooterHood;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
@@ -35,12 +31,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shifter;
 import frc.robot.util.PIDControllerDebug;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpiutil.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
@@ -80,7 +72,7 @@ public class RobotContainer {
     BLUE(2);
 
     private int value;
-    private static Map map = new HashMap<Integer, Color>();
+    private static Map<Integer, Color> map = new HashMap<>();
 
     private Color(int value) {
       this.value = value;
@@ -109,7 +101,7 @@ public class RobotContainer {
     B(2);
 
     private int value;
-    private static Map map = new HashMap<Integer, Color>();
+    private static Map<Integer, Letter> map = new HashMap<>();
 
     private Letter(int value) {
       this.value = value;
