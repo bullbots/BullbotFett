@@ -46,13 +46,14 @@ public class JoystickDrive extends CommandBase {
   public void execute() {
     double _joyY = joyY.getAsDouble();
     double _joyX = joyX.getAsDouble();
+    boolean turnInPlace = true;
     double _joyZ = joyZ.getAsDouble();
-    m_drivetrain.curvatureDrive(_joyY * _joyZ, _joyX * _joyZ, true);
+    m_drivetrain.curvatureDrive(_joyY, _joyX, turnInPlace);
     // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
 
-    SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
-    SmartDashboard.putNumber("JoyY", joyY.getAsDouble());
-    SmartDashboard.putNumber("JoyZ", joyZ.getAsDouble());
+    // SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
+    // SmartDashboard.putNumber("JoyY", joyY.getAsDouble());
+    // SmartDashboard.putNumber("JoyZ", joyZ.getAsDouble());
 
     // if (joyX.getAsDouble() < -.1) {
     //   m_drivetrain.driveLeft(.5);

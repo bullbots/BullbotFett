@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.AutonomousGSC_A;
@@ -23,6 +24,7 @@ import frc.robot.commands.Autonomous.AutonomousGSC_B;
 import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
+import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
 import frc.robot.commands.Harm_Commands.IntakeBalls;
 import frc.robot.commands.Harm_Commands.IntakeGroup;
 import frc.robot.commands.Harm_Commands.LowerIntake;
@@ -31,6 +33,8 @@ import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Shifter;
+import frc.robot.util.PIDControllerDebug;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -55,13 +59,16 @@ public class RobotContainer {
   private static JoystickButton button1 = new JoystickButton(stick, 1);
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
-  private static JoystickButton button6 = new JoystickButton(stick, 6); 
+  private static JoystickButton button4 = new JoystickButton(stick, 4);
+  private static JoystickButton button6 = new JoystickButton(stick, 6);  
   private static JoystickButton button10 = new JoystickButton(stick, 10); 
 
   // Subsystems
   private final Shooter shooter = new Shooter();
   private final DrivetrainFalcon drivetrain = new DrivetrainFalcon();
   private final Harm harm = new Harm();
+  private final Shifter shifter = new Shifter();
+
 
   private final Compressor compressor = new Compressor();
 
@@ -117,7 +124,13 @@ public class RobotContainer {
     ));
 
     // Add commands to the autonomous command chooser
-    m_chooser.setDefaultOption("Bounce Path", new SequentialCommandGroup(
+    m_chooser.setDefaultOption("Bounce Piece", new SequentialCommandGroup(
+      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
+      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
+    ));
+    m_chooser.addOption("Bounce Path", new SequentialCommandGroup(
       new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
       new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
       new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
@@ -186,17 +199,23 @@ public class RobotContainer {
 
     button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
 
+    button4.whileHeld(new ShiftHigh(shifter));
     // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
     
     button1.whileHeld(new IntakeGroup(harm));
 
-    PIDController pidcontroller = new PIDController(1.0 / 980.0, 1.0 / 1000.0, 0.0);
+    // PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
+    PIDController pidcontroller = new PIDControllerDebug(0.0, 0.001, 0.0);
     pidcontroller.setIntegratorRange(-0.2, 0.2);
+
+    if (Robot.isSimulation()) {
+      SmartDashboard.putNumber("TargetX", 0);
+    }
 
     button10.whileHeld(new AlignShooter(pidcontroller, 
     () -> {
         double x = SmartDashboard.getNumber("TargetX", -9999);
-        System.out.println(String.format("Info: x %f", x));
+        // System.out.println(String.format("Info: x %f", x));
         if (x == -9999) {
           return 0;
         } 
@@ -205,19 +224,12 @@ public class RobotContainer {
     0.0,
     (output) -> {
         output = MathUtil.clamp(output, -.5, .5);
+        
         drivetrain.arcadeDrive(0, -output, false);
-        System.out.println(String.format("Info: output %f", output));
+        // System.out.println(String.format("Info: output %f", output));
       },
     drivetrain));
-    
-    // button3.whileHeld(new JoystickDrive(
-    //   drivetrain,
-    //   () -> stick.getY(),
-    //   () -> stick.getX(),
-    //   () -> (stick.getZ() - 1) / -2.0
-    // ));
   }
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
