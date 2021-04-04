@@ -163,36 +163,39 @@ public class RobotContainer {
       SmartDashboard.putNumber("TargetX", 0);
     }
 
-    button9.whileHeld(new AlignShooter(pidcontroller, 
-    () -> {
-        double x = SmartDashboard.getNumber("TargetX", -9999);
-        // System.out.println(String.format("Info: x %f", x));
-        if (x == -9999) {
-          return 0;
-        } 
-        return x;
-      },
-    0.0,
-    (output) -> {
-        output = MathUtil.clamp(output, -.5, .5);
-        drivetrain.arcadeDrive(0, -output, false);
-        // System.out.println(String.format("Info: output %f", output));
-      },
-    drivetrain));
+    button9.whileHeld(new AlignShooter(
+      pidcontroller, 
+      () -> {
+          double x = SmartDashboard.getNumber("TargetX", -9999);
+          // System.out.println(String.format("Info: x %f", x));
+          if (x == -9999) {
+            return 0;
+          } 
+          return x;
+        },
+      0.0,
+      (output) -> {
+          output = MathUtil.clamp(output, -.5, .5);
+          drivetrain.arcadeDrive(0, -output, false);
+          // System.out.println(String.format("Info: output %f", output));
+        },
+      drivetrain
+    ));
 
     button10.whenPressed(
       () -> {
         useThrottle = !useThrottle;
-      },
-      shifter // Doesn't need shifter, but required for signature.
-      );
+      }
+    );
 
     button11.whenPressed(
       () -> {
         isAutomatic = !isAutomatic;
-      },
-      shifter // Doesn't need shifter, but required for signature.
-      );
+      }
+    );
+    
+    SmartDashboard.putBoolean("isAutomatic", isAutomatic);
+    SmartDashboard.putBoolean("useThrottle", useThrottle);
   }
 
   /**

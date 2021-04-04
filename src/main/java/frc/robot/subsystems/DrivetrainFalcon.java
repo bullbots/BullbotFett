@@ -266,37 +266,17 @@ public class DrivetrainFalcon extends SubsystemBase {
    * @param rotation double
    */
   public void arcadeDrive(double speed, double rotation, boolean squareInputs){
-
-    // if (Math.abs(speed) <= shiftThreshold) {
-    //   SmartDashboard.putString("State", "Low");
-    //   shifter.shiftLow();
-    //   SmartDashboard.putNumber("Before", speed);
-    //   speed = firstGearSlope * speed;
-
-    //   SmartDashboard.putNumber("After", speed);
-    // } else {
-    //   SmartDashboard.putNumber("Before", speed);
-    //   SmartDashboard.putString("State", "High");
-    //   shifter.shiftHigh();
-    //   speed = secondGearSlope * (speed - 1) + secondGearIntercept;
-    //   SmartDashboard.putNumber("After", speed);
-    // }
-
-    diffDrive.arcadeDrive(speed, rotation, squareInputs);
-  }
-
-  public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {
     Gear currGear = (shifter != null) ? shifter.getGear() : Gear.LOW;
     double avgVelocity = Math.abs(getVelocities()[0] + getVelocities()[1])/2.0;
 
-    if (isAutomatic.getAsBoolean()) {
+    if (isAutomatic.getAsBoolean() && shifter != null) {
       if (currGear == Gear.LOW) {
-        if (avgVelocity > shiftThreshold && shifter != null) {
+        if (avgVelocity > shiftThreshold) {
           shifter.shiftHigh();
-          speed /= secondGearSlopeCoefficient;
-          rotation /= secondGearSlopeCoefficient;
+          currGear = Gear.HIGH;
         }
-      } else if (currGear == Gear.HIGH) {
+      }
+      if (currGear == Gear.HIGH) {
         if (avgVelocity < shiftThreshold / secondGearSlopeCoefficient) {
           shifter.shiftLow();
         } else {
@@ -305,6 +285,32 @@ public class DrivetrainFalcon extends SubsystemBase {
         }
       }
     }
+    
+    SmartDashboard.putNumber("Motor RPMs (avg)", avgVelocity);
+    diffDrive.arcadeDrive(speed, rotation, squareInputs);
+  }
+
+  public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {
+    Gear currGear = (shifter != null) ? shifter.getGear() : Gear.LOW;
+    double avgVelocity = Math.abs(getVelocities()[0] + getVelocities()[1])/2.0;
+
+    if (isAutomatic.getAsBoolean() && shifter != null) {
+      if (currGear == Gear.LOW) {
+        if (avgVelocity > shiftThreshold) {
+          shifter.shiftHigh();
+          currGear = Gear.HIGH;
+        }
+      }
+      if (currGear == Gear.HIGH) {
+        if (avgVelocity < shiftThreshold / secondGearSlopeCoefficient) {
+          shifter.shiftLow();
+        } else {
+          speed /= secondGearSlopeCoefficient;
+          rotation /= secondGearSlopeCoefficient; 
+        }
+      }
+    }
+
     SmartDashboard.putNumber("Motor RPMs (avg)", avgVelocity);
     diffDrive.curvatureDrive(speed, rotation, isQuickTurn);
   }
