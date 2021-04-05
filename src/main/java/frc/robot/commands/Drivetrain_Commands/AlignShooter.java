@@ -7,7 +7,6 @@
 
 package frc.robot.commands.Drivetrain_Commands;
 
-import java.security.Principal;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
@@ -65,49 +64,6 @@ public class AlignShooter extends PIDCommand {
     m_useOutput.accept(pidOut + ffOut);
   }
 
-  // // Called every time the scheduler runs while the command is scheduled.
-  // @Override
-  // public void execute() {
-  //   double x = SmartDashboard.getNumber("TargetX", -9999);
-
-  //   double value = x * kP;
-
-  //   boolean print_buffer = false;
-
-  //   if (m_debugPrint && m_buffer % 50 == 0) {
-  //     print_buffer = true;
-  //     m_buffer = 0;
-  //   }
-
-  //   if (x != -9999) {
-  //     value = MathUtil.clamp(value, -.5, .5);
-
-  //     SmartDashboard.putNumber("value (Saw Target)", value);
-  //     if (print_buffer) {
-  //       System.out.println(String.format("INFO: Saw target: %f", value));
-  //     }
-  //   } else {
-  //     double sign = Math.signum(prev_value);
-
-  //     double decay_val = decay * timer.get();
-  //     double abs_prev_val = Math.abs(prev_value);
-  //     value = (MathUtil.clamp(decay_val, -abs_prev_val, 0) + abs_prev_val) * sign;
-
-  //     SmartDashboard.putNumber("value (Did not see Target)", value);
-  //     if (m_debugPrint && print_buffer) {
-  //       System.out.println(String.format("INFO: Did NOT See target decay: %f", decay_val));
-  //       System.out.println(String.format("INFO: Did NOT See target: %f", value));
-  //     }
-  //   }
-
-  //   drivetrain.arcadeDrive(0, value, false);
-  //   prev_value = value;
-  //   timer.reset();
-  //   if (m_debugPrint) {
-  //     m_buffer++;
-  //   }
-  // }
-
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
@@ -121,6 +77,48 @@ public class AlignShooter extends PIDCommand {
   //   return false;
   // }
 
+  private void execute_debug() {
+    // Called every time the scheduler runs while the command is scheduled.
+    double x = SmartDashboard.getNumber("TargetX", -9999);
+
+    double value = x * kP;
+
+    boolean print_buffer = false;
+
+    if (m_debugPrint && m_buffer % 50 == 0) {
+      print_buffer = true;
+      m_buffer = 0;
+    }
+
+    if (x != -9999) {
+      value = MathUtil.clamp(value, -.5, .5);
+
+      SmartDashboard.putNumber("value (Saw Target)", value);
+      if (print_buffer) {
+        System.out.println(String.format("INFO: Saw target: %f", value));
+      }
+    } else {
+      double sign = Math.signum(prev_value);
+
+      double decay_val = decay * timer.get();
+      double abs_prev_val = Math.abs(prev_value);
+      value = (MathUtil.clamp(decay_val, -abs_prev_val, 0) + abs_prev_val) * sign;
+
+      SmartDashboard.putNumber("value (Did not see Target)", value);
+      if (m_debugPrint && print_buffer) {
+        System.out.println(String.format("INFO: Did NOT See target decay: %f", decay_val));
+        System.out.println(String.format("INFO: Did NOT See target: %f", value));
+      }
+    }
+
+    drivetrain.arcadeDrive(0, value, false);
+    prev_value = value;
+    timer.reset();
+    if (m_debugPrint) {
+      m_buffer++;
+    }
+  }
+
   private class AlignMotorFeedforward extends SimpleMotorFeedforward {
 
     public AlignMotorFeedforward(double ks, double kv) {
@@ -128,15 +126,18 @@ public class AlignShooter extends PIDCommand {
     }
 
     public double calculate(double targetX, double notAcceleration) {
-      
+      int outputRegion = 1;
       if (Math.abs(targetX) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
         targetX = 0.0;
+        outputRegion = 0;
       }
       var ksOut = ks * -Math.signum(targetX);
       // if (Math.abs(targetX) <= Constants.VISION_INNER_ALIGN_THRESHOLD && 
       //   Math.abs(targetX) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
       //   ksOut *= 0.5;
       // }
+
+      SmartDashboard.putNumber("FF Region", outputRegion);
       
       return ksOut + kv * targetX + ka * notAcceleration;
     }

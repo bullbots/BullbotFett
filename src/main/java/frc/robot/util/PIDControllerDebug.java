@@ -38,16 +38,22 @@ public class PIDControllerDebug extends PIDController {
 
     public double calculate(double measurement) {
         var output = 0.0;
+        int outputRegion = 1;
         if(Math.abs(measurement) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
             if (!m_prev) {
+                System.out.println("INFO: Calling PID reset");
                 reset();
             }
             output = super.calculate(measurement);
             m_prev = true;
+            outputRegion = 0;
         } else {
             m_prev = false;
         }
 
+        SmartDashboard.putNumber("PID Region", outputRegion);
+
+        /*
         // m_measurement = measurement;
         // m_prevError = m_positionError;
 
@@ -70,6 +76,7 @@ public class PIDControllerDebug extends PIDController {
         // }
 
         // return m_kp * m_positionError + m_ki * m_totalError + m_kd * m_velocityError;
+        */
 
         double totalError = 0;
         try {
