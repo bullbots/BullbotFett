@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.TrajectoryBase;
@@ -83,7 +84,13 @@ public class RobotContainer {
     ));
 
     // Add commands to the autonomous command chooser
-    m_chooser.setDefaultOption("Bounce Path", new SequentialCommandGroup(
+    m_chooser.setDefaultOption("Bounce Piece", new SequentialCommandGroup(
+      new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
+      new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
+      new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
+    ));
+    m_chooser.addOption("Bounce Path", new SequentialCommandGroup(
       new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
       new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
       new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
@@ -124,7 +131,7 @@ public class RobotContainer {
       }
     });
 
-    button2.whileHeld(new ShootVelocity(shooter, harm, () -> !button6.get()));
+    button2.whileHeld(new ShootVelocity(shooter, compressor, harm, () -> !button6.get()));
 
     button4.whileHeld(new ShiftHigh(shifter));
     // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
@@ -141,7 +148,8 @@ public class RobotContainer {
       )
     ));
 
-    PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
+    // PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
+    PIDController pidcontroller = new PIDControllerDebug(0.0003, 0.0, 0.0);
     pidcontroller.setIntegratorRange(-0.2, 0.2);
 
     if (Robot.isSimulation()) {
@@ -160,6 +168,7 @@ public class RobotContainer {
     0.0,
     (output) -> {
         output = MathUtil.clamp(output, -.5, .5);
+        
         drivetrain.arcadeDrive(0, -output, false);
         // System.out.println(String.format("Info: output %f", output));
       },

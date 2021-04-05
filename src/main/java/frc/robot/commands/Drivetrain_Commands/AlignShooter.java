@@ -13,10 +13,12 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpiutil.math.MathUtil;
+import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.DrivetrainFalcon.CoastMode;
 
@@ -35,6 +37,8 @@ public class AlignShooter extends PIDCommand {
   private int m_buffer = 0;
   private boolean m_debugPrint = false;
 
+  private AlignMotorFeedforward m_ff = new AlignMotorFeedforward(0.18, 0.0);
+
   public AlignShooter(PIDController controller,
   DoubleSupplier measurementSource,
   double setpointSource,
@@ -52,6 +56,13 @@ public class AlignShooter extends PIDCommand {
     // System.out.println("Info: line shooter initialize called");
     // timer.reset();
     // timer.start();
+  }
+
+  @Override
+  public void execute() {
+    var pidOut = m_controller.calculate(m_measurement.getAsDouble(), m_setpoint.getAsDouble());
+    var ffOut = m_ff.calculate(m_measurement.getAsDouble());
+    m_useOutput.accept(pidOut + ffOut);
   }
 
   // // Called every time the scheduler runs while the command is scheduled.
@@ -109,4 +120,25 @@ public class AlignShooter extends PIDCommand {
   // public boolean isFinished() {
   //   return false;
   // }
+
+  private class AlignMotorFeedforward extends SimpleMotorFeedforward {
+
+    public AlignMotorFeedforward(double ks, double kv) {
+      super(ks, kv);
+    }
+
+    public double calculate(double targetX, double notAcceleration) {
+      
+      if (Math.abs(targetX) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
+        targetX = 0.0;
+      }
+      var ksOut = ks * -Math.signum(targetX);
+      // if (Math.abs(targetX) <= Constants.VISION_INNER_ALIGN_THRESHOLD && 
+      //   Math.abs(targetX) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
+      //   ksOut *= 0.5;
+      // }
+      
+      return ksOut + kv * targetX + ka * notAcceleration;
+    }
+  }
 }

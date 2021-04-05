@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 
 /** Add your docs here. */
 public class PIDControllerDebug extends PIDController {
@@ -15,6 +16,7 @@ public class PIDControllerDebug extends PIDController {
     private double m_kp;
     private double m_ki;
     Field m_totalErrorField;
+    private boolean m_prev;
 
     public PIDControllerDebug(double kp, double ki, double kd) {
         super(kp, ki, kd);
@@ -35,7 +37,16 @@ public class PIDControllerDebug extends PIDController {
     }
 
     public double calculate(double measurement) {
-        double output = super.calculate(measurement);
+        var output = 0.0;
+        if(Math.abs(measurement) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
+            if (!m_prev) {
+                reset();
+            }
+            output = super.calculate(measurement);
+            m_prev = true;
+        } else {
+            m_prev = false;
+        }
 
         // m_measurement = measurement;
         // m_prevError = m_positionError;

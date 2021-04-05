@@ -7,6 +7,7 @@
 import json
 import time
 import sys
+import signal
 
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer, CvSink
 from networktables import NetworkTablesInstance
@@ -17,6 +18,8 @@ import math
 
 # sys.path.append("/usr/local/lib")
 import pyrealsense2 as rs
+
+DEBUG = False
     
 class GreenContours:
     """
@@ -300,13 +303,13 @@ def readConfig():
 
     # ntmode (optional)
     if "ntmode" in j:
-        str = j["ntmode"]
-        if str.lower() == "client":
+        net_str = j["ntmode"]
+        if net_str.lower() == "client":
             server = False
-        elif str.lower() == "server":
+        elif net_str.lower() == "server":
             server = True
         else:
-            parseError("could not understand ntmode value '{}'".format(str))
+            parseError(f"could not understand ntmode value '{net_str}'")
 
     # cameras
     try:
@@ -367,9 +370,39 @@ def startSwitchedCamera(config):
 
 MM_TO_FT =  math.cos(0.51487) / (10 * 12 * 2.54)
 
+# Our signal handler
+def signal_handler(signum, frame): 
+    print("Signal Handler called")
+    # global pipeline
+    # global device
+    # print("Calling pipeline stop")
+    # pipeline.stop()
+
+    # # Sometimes the system won't come back up without a complete hardware reset.
+    # device.hardware_reset()  
+ 
+def exit_handler(signum, frame):
+    print("Exit Handler called")
+    # global pipeline
+    # global device
+    # print("Calling pipeline stop")
+    # pipeline.stop()
+
+    # # Sometimes the system won't come back up without a complete hardware reset.
+    # device.hardware_reset()
+    # print('Exiting....') 
+    exit(0)
+
+
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
         configFile = sys.argv[1]
+
+    # Register our signal handler with `SIGINT`(CTRL + C)
+    signal.signal(signal.SIGINT, signal_handler)
+
+    # Register the exit handler with `SIGTSTP` (Ctrl + Z)
+    signal.signal(signal.SIGTSTP, exit_handler)
 
     # read configuration
     if not readConfig():
@@ -401,6 +434,7 @@ if __name__ == "__main__":
         max_width, max_height = 1280, 720
 
     half_width, half_height = int(max_width * 0.5), int(max_height * 0.5)
+    shifted_center = half_width + 15
 
     near_center_threshold = int(60 * max_height / 480)
 
@@ -411,7 +445,8 @@ if __name__ == "__main__":
 
     device = profile.get_device()
     print(f"Device: {device}")
-    # print(f"Device: {device.__dir__()}")
+    if DEBUG:
+        print(f"Device: {device.__dir__()}")
 
     # Create an align object
     # rs.align allows us to perform alignment of depth frames to others frames
@@ -422,14 +457,15 @@ if __name__ == "__main__":
     grip_pipeline = GreenContours()
 
     smartdashboard = ntinst.getTable("SmartDashboard")
-    # xEntry = table.getEntry("TargetX")
-    # distance = smartdashboard.getEntry("Distance")
 
     try:
         print("Getting OutputStream...")
-        colorOutputStream = CameraServer.getInstance().putVideo("Color Image", 640, 480)
-        depthOutputStream = CameraServer.getInstance().putVideo("Depth Image", 640, 480)
+        colorOutputStream = CameraServer.getInstance().putVideo("Color Image", 320, 240)
+        # colorOutputStream = CameraServer.getInstance().putVideo("Color Image", 640, 480)
+        # depthOutputStream = CameraServer.getInstance().putVideo("Depth Image", 640, 480)
+        depthOutputStream = CameraServer.getInstance().putVideo("Depth Image", 320, 240)
 
+        print("Running pipeline...")
         while True:
             frames = pipeline.wait_for_frames()
 
@@ -440,7 +476,8 @@ if __name__ == "__main__":
             color_frame = aligned_frames.get_color_frame()
 
             if not depth_frame or not color_frame:
-                print("No frames found!!!")
+                if DEBUG:
+                    print("No frames found!!!")
                 continue
 
             depth_image = np.asanyarray(depth_frame.get_data())
@@ -450,7 +487,8 @@ if __name__ == "__main__":
             num_contours = len(grip_pipeline.find_contours_output)
 
             if num_contours > 0:
-                print(f"Number of contours found: {num_contours}")
+                if DEBUG:
+                    print(f"Number of contours found: {num_contours}")
 
                 largest_contour = sorted(grip_pipeline.find_contours_output, reverse=True,
                                             key=lambda c: cv2.contourArea(c))[0]
@@ -463,36 +501,41 @@ if __name__ == "__main__":
 
                     # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
                     x, y, w, h = cv2.boundingRect(largest_contour)
+                    half_target_width = int(w * 0.5)
+                    half_target_height = int(h * 0.5)
 
-                    # print(f"Largest contour: x: {x}, y: {y}, w: {w}, h: {h}")
+                    center_x = x + half_target_width
+                    center_y = y + half_target_height
 
-                    center_x = (int) (x + w * 0.5)
-                    center_y = (int) (y + h * 0.5)
-
-                    center_x = center_x - half_width
-                    center_y = center_y - half_height
+                    center_x -= shifted_center
+                    center_y -= half_height
 
                     # Green if near the center else Red
                     color = (0, 255, 0) if abs(center_x) <= near_center_threshold else (0, 0, 255)
                     source = cv2.rectangle(color_image, (x, y), (x + w, y + h), color, 3)
+                    # source = cv2.drawContours(color_image, largest_contour, -1, color, 3)
 
                     threshold_color = (128, 0, 128)
-                    source = cv2.rectangle(color_image, (half_width - near_center_threshold, 0), 
-                                    (half_width + near_center_threshold, max_height), threshold_color, 2)
+                    source = cv2.rectangle(color_image, (shifted_center - near_center_threshold, 0), 
+                                    (shifted_center + near_center_threshold, max_height), threshold_color, 2)
 
-                    print(f"TargetX: {center_x}, TargetY: {center_y}")
+                    if DEBUG:
+                        print(f"TargetX: {center_x}, TargetY: {center_y}")
                     smartdashboard.putNumber("TargetX", center_x)
 
-                    if w > 0 and h > 0:
-                        roi_distance = depth_image[y:y+h, x:x+w]
-                        distance = np.median(roi_distance)
+                    if w > 2 and h > 2:
+                        # roi_distance = depth_image[y+half_target_height:y+h, x:x+w]
+                        contour_points = [[yx[0][1], yx[0][1]]for yx in largest_contour]
+                        # print(f"Contour points: {contour_points}")
+                        distance = np.median([depth_image[xy] for xy in contour_points])
                         # distance_sample = depth_image[y+int(h*0.5), x+int(w*0.5)]
                         smartdashboard.putNumber("Distance", distance)
                         # smartdashboard.putNumber("Distance Middle ROI", distance_sample)
                         # print(f"Distance Median: {distance}, Middle ROI: {distance_sample}")
-                        print(f"Distance Median: {distance}")
+                        if DEBUG:
+                            print(f"Distance Median: {distance}")
                     else:
-                        print(*f"Zero width: {w} or height: {h}")
+                        print(f"Zero width: {w} or height: {h}")
                         smartdashboard.putNumber("Distance", -9999)
             else:
                 smartdashboard.putNumber("TargetX", -9999)
@@ -500,12 +543,14 @@ if __name__ == "__main__":
 
             depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
 
-            colorOutputStream.putFrame(color_image)
-            depthOutputStream.putFrame(depth_colormap)
+            # Cut the output stream to 1/4 size for huge networking efficiency.
+            colorOutputStream.putFrame(color_image[::2, ::2, :])
+            depthOutputStream.putFrame(depth_colormap[::2, ::2, :])
 
     finally:
-        print("Calling pipeline stop")
+        print("Calling pipeline stop...")
         pipeline.stop()
 
         # Sometimes the system won't come back up without a complete hardware reset.
+        print("Calling hardware reset...")
         device.hardware_reset()
