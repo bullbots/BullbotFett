@@ -149,8 +149,8 @@ public class RobotContainer {
     ));
 
     // PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
-    PIDController pidcontroller = new PIDControllerDebug(0.002, 0.0001, 0.0);
-    pidcontroller.setIntegratorRange(-0.1, 0.1);
+    PIDController pidcontroller = new PIDControllerDebug(0.002, 0.001, 0.0);
+    pidcontroller.setIntegratorRange(-0.15, 0.15);
 
     if (Robot.isSimulation()) {
       SmartDashboard.putNumber("TargetX", 0);

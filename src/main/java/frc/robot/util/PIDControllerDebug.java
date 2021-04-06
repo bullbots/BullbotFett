@@ -38,7 +38,7 @@ public class PIDControllerDebug extends PIDController {
 
     public double calculate(double measurement) {
         var output = 0.0;
-        int outputRegion = 1;
+        int outputRegion = 0;
         if(Math.abs(measurement) <= Constants.VISION_OUTER_ALIGN_THRESHOLD) {
             if (!m_prev) {
                 System.out.println("INFO: Calling PID reset");
@@ -46,7 +46,7 @@ public class PIDControllerDebug extends PIDController {
             }
             output = super.calculate(measurement);
             m_prev = true;
-            outputRegion = 0;
+            outputRegion = 1;
         } else {
             m_prev = false;
         }
