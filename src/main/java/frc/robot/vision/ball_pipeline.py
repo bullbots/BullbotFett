@@ -455,7 +455,7 @@ if __name__ == "__main__":
 
     try:
         print("Getting CameraServer Stream...")
-        cs = CameraServer.getInstance()
+        cs = CameraServer.getInstance().putVideo("Ball Image", 320, 240)
         
         # Creates UsbCamera and MjpegServer [1] and connects them
         camera = cs.startAutomaticCapture()
@@ -523,6 +523,7 @@ if __name__ == "__main__":
                 distance.setNumber(-1)
 
             target_video.putFrame(input_img)
+            colorOutputStream.putFrame(input_img[::2, ::2, :])
 
     finally:
         print("ERROR: not sure why")
