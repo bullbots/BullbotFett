@@ -463,7 +463,7 @@ if __name__ == "__main__":
         colorOutputStream = CameraServer.getInstance().putVideo("Color Image", 320, 240)
         # colorOutputStream = CameraServer.getInstance().putVideo("Color Image", 640, 480)
         # depthOutputStream = CameraServer.getInstance().putVideo("Depth Image", 640, 480)
-        depthOutputStream = CameraServer.getInstance().putVideo("Depth Image", 320, 240)
+        # depthOutputStream = CameraServer.getInstance().putVideo("Depth Image", 320, 240)
 
         print("Running pipeline...")
         while True:
@@ -535,7 +535,8 @@ if __name__ == "__main__":
                         if DEBUG:
                             print(f"Distance Median: {distance}")
                     else:
-                        print(f"Zero width: {w} or height: {h}")
+                        if DEBUG:
+                            print(f"Zero width: {w} or height: {h}")
                         smartdashboard.putNumber("Distance", -9999)
             else:
                 smartdashboard.putNumber("TargetX", -9999)
@@ -545,7 +546,7 @@ if __name__ == "__main__":
 
             # Cut the output stream to 1/4 size for huge networking efficiency.
             colorOutputStream.putFrame(color_image[::2, ::2, :])
-            depthOutputStream.putFrame(depth_colormap[::2, ::2, :])
+            # depthOutputStream.putFrame(depth_colormap[::2, ::2, :])
 
     finally:
         print("Calling pipeline stop...")

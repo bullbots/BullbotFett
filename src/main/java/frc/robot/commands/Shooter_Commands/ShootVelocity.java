@@ -31,17 +31,17 @@ public class ShootVelocity extends CommandBase {
    private Harm harm;
    private Timer ball_release_delay;
    private double vel = 0;
-   private double backspin = 0.3;
+   private double backspin = 0.4;
    private BooleanSupplier isLongShot;
    private boolean servoState = false;
    private List<Pair<Integer, Double>> distanceToPower = new ArrayList<>(
     Arrays.asList(
       new Pair<> (99999, 0.1),
-      new Pair<> (9300, .45),
-      new Pair<> (7100, .39),
-      new Pair<> (5800, .38),
-      new Pair<> (4100, .4),
-      new Pair<> (2700, .22),
+      new Pair<> (9300, .40),
+      new Pair<> (7100, .36),
+      new Pair<> (5800, .35),
+      new Pair<> (4100, .34),
+      new Pair<> (3000, .20),
       new Pair<> (0, 0.1),
       new Pair<> (-10000, 0.1)));
 
