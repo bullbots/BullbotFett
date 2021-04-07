@@ -454,19 +454,21 @@ if __name__ == "__main__":
 
     try:
         print("Getting CameraServer Stream...")
-        cs = CameraServer.getInstance().putVideo("Ball Image", 320, 240)
+        inst = CameraServer.getInstance()
+
+        # cs = inst.putVideo("Ball Image", 320, 240)
         
         # Creates UsbCamera and MjpegServer [1] and connects them
-        camera = cs.startAutomaticCapture()
+        # camera = cs.startAutomaticCapture()
 
-        camera.setResolution(max_width, max_height)
+        startCamera(cameraConfigs[0])
 
         # Creates the CvSink and connects it to the UsbCamera
-        sink = cs.getVideo()
+        sink = inst.getVideo()
 
         # Creates the CvSource and MjpegServer [2] and connects them
         # input_video = cs.putVideo("USB Input", max_width, max_height)
-        target_video = cs.putVideo("Target", max_width, max_height)
+        target_video = inst.putVideo("Target", max_width, max_height)
 
         input_img = np.empty((640, 480), dtype=int)
 
@@ -564,8 +566,8 @@ if __name__ == "__main__":
                 else:
                     smartdashboard.putNumber("isPathA", 0)
 
-                target_video.putFrame(input_img)
-                colorOutputStream.putFrame(input_img[::2, ::2, :])
+            target_video.putFrame(input_img[::2, ::2, :])
+            # target_video.putFrame(input_img)
 
     finally:
         print("ERROR: not sure why")   

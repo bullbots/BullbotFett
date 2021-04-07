@@ -32,6 +32,7 @@ import frc.robot.subsystems.Shifter;
 import frc.robot.util.PIDControllerDebug;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -168,6 +169,13 @@ public class RobotContainer {
       () -> (pathColor.get() == Color.RED),
       () -> (pathLetter.get() == Letter.A)
     ));
+
+    m_chooser.addOption("Galactic Red",
+      new ParallelCommandGroup(
+        new TrajectoryBase(drivetrain, "/RED-COMBINED", true, false),
+        new IntakeGroup(harm)
+      )
+    );
 
     // m_chooser.addOption("Galactic Search Challenge B", new AutonomousGSC_B(
     //   drivetrain,
