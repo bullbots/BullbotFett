@@ -31,16 +31,16 @@ class BallContours:
         self.normalize_output = None
 
         self.__hsv_threshold_input = self.normalize_output
-        self.__hsv_threshold_hue = [20.0, 30.0]
-        self.__hsv_threshold_saturation = [170.0, 225.0]
-        self.__hsv_threshold_value = [60.0, 185.0]
+        self.__hsv_threshold_hue = [10.0, 20.0]
+        self.__hsv_threshold_saturation = [186.0, 255.0]
+        self.__hsv_threshold_value = [55.0, 255.0]
 
         self.hsv_threshold_output = None
 
         self.__cv_erode_src = self.hsv_threshold_output
         self.__cv_erode_kernel = None
         self.__cv_erode_anchor = (-1, -1)
-        self.__cv_erode_iterations = 4.0
+        self.__cv_erode_iterations = 1.0
         self.__cv_erode_bordertype = cv2.BORDER_CONSTANT
         self.__cv_erode_bordervalue = (-1)
 
@@ -49,7 +49,7 @@ class BallContours:
         self.__cv_dilate_src = self.cv_erode_output
         self.__cv_dilate_kernel = None
         self.__cv_dilate_anchor = (-1, -1)
-        self.__cv_dilate_iterations = 4.0
+        self.__cv_dilate_iterations = 1.0
         self.__cv_dilate_bordertype = cv2.BORDER_CONSTANT
         self.__cv_dilate_bordervalue = (-1)
 
@@ -517,11 +517,12 @@ if __name__ == "__main__":
                     smartdashboard.putNumber("CenterX 1", center_x1)
                     smartdashboard.putNumber("Width 1", w)
                     # This needs debug for the edge of the image
-                    if w > 0:
+                    if w > 10:
                         red_or_blue = 1
                     else:
                         red_or_blue = 2
                     smartdashboard.putNumber("isRed", red_or_blue)
+                    
             else:
                 print(f"Contours found: {num_contours}")
                 smartdashboard.putNumber("isRed", 0)

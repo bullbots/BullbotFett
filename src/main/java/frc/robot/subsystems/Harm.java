@@ -58,7 +58,7 @@ public class Harm extends SubsystemBase {
  */
 
   public void intake() {
-    set(0.8, 0.3);
+    set(0.9, 0.3);
   }
 
   public void raiseIntakeArm() {

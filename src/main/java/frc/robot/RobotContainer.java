@@ -162,18 +162,22 @@ public class RobotContainer {
       new TrajectoryBase(drivetrain, "/SLALOM")
     );
 
-    m_chooser.addOption("Galactic Search Challenge", new AutonomousGSC(
-      drivetrain,
-      harm,
-      () -> (pathColor.get() != Color.UNLOADED && pathLetter.get() != Letter.UNLOADED),
-      () -> (pathColor.get() == Color.RED),
-      () -> (pathLetter.get() == Letter.A)
+    System.out.println("Path Color: " + pathColor.get());
+    m_chooser.addOption("Galactic Search Challenge",
+      new ParallelCommandGroup(
+        new AutonomousGSC(
+        drivetrain,
+        harm,
+        () -> ((int) SmartDashboard.getNumber("isRed", 0) != 0), //&& pathLetter.get() != Letter.UNLOADED),
+        () -> ((int) SmartDashboard.getNumber("isRed", 0) == 1),
+        () -> (pathLetter.get() == Letter.A)
+      )
     ));
 
     m_chooser.addOption("Galactic Red",
       new ParallelCommandGroup(
-        new TrajectoryBase(drivetrain, "/RED-COMBINED", true, false),
-        new IntakeGroup(harm)
+        new TrajectoryBase(drivetrain, "/RED-COMBINED", true, false).deadlineWith(
+        new IntakeGroup(harm))
       )
     );
 
@@ -191,16 +195,16 @@ public class RobotContainer {
 
     SmartDashboard.putData(m_chooser);
 
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    // NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
-    NetworkTable table = inst.getTable("SmartDashboard");
+    // NetworkTable table = inst.getTable("SmartDashboard");
 
-    table.addEntryListener("Detected Ball",
-      (local_table, key, entry, value, flags) -> {
-        pathColor.set(Color.valueOf((int) value.getValue()));
-      },
-      EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-    );
+    // table.addEntryListener("isRed",
+    //   (local_table, key, entry, value, flags) -> {
+    //     pathColor.set(Color.valueOf((int) value.getValue()));
+    //   },
+    //   EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+    // );
   }
 
   /**

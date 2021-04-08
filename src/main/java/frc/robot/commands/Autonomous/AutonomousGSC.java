@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.commands.Harm_Commands.IntakeGroup;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
 
@@ -21,24 +22,30 @@ public class AutonomousGSC extends SequentialCommandGroup {
   public AutonomousGSC(DrivetrainFalcon drivetrain, Harm harm, BooleanSupplier isLoaded, BooleanSupplier isRed, BooleanSupplier isA) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
+    // System.out.println("started running " + isLoaded.getAsBoolean() + " " + isRed.getAsBoolean() + " " + isA.getAsBoolean());
     addCommands(
       new WaitUntilCommand(isLoaded),
       new ParallelCommandGroup(
         new ConditionalCommand(
-          // new AutonomousGSC_A(drivetrain, harm, isLoaded, isRed),
-          // new AutonomousGSC_B(drivetrain, harm, isLoaded, isRed),
-          new ConditionalCommand( // True is red, false is blue
-            new TrajectoryBase(drivetrain, "/REDPATH-A", true, true),
-            new TrajectoryBase(drivetrain, "/BLUEPATH-A", true, true),
-            isRed
-          ),
-          new ConditionalCommand( // True is red, false is blue
-            new TrajectoryBase(drivetrain, "/REDPATH-B", true, true),
-            new TrajectoryBase(drivetrain, "/BLUEPATH-B", true, true),
-            isRed
-          ),
-          isA
-        )
+          // // new AutonomousGSC_A(drivetrain, harm, isLoaded, isRed),
+          // // new AutonomousGSC_B(drivetrain, harm, isLoaded, isRed),
+          // new ConditionalCommand( // True is red, false is blue
+          //   new TrajectoryBase(drivetrain, "/RED-COMBINED", true, true),
+          //   new TrajectoryBase(drivetrain, "/BLUE-COMBINED", true, true),
+          //   isRed
+          // ),
+          // new ConditionalCommand( // True is red, false is blue
+          //   new TrajectoryBase(drivetrain, "/RED-COMBINED", true, true),
+          //   new TrajectoryBase(drivetrain, "/BLUE-COMBINED", true, true),
+          //   isRed
+          // ),
+          // isA
+          new TrajectoryBase(drivetrain, "/RED-COMBINED", true, true),
+          new TrajectoryBase(drivetrain, "/BLUE-COMBINED", true, true),
+          isRed
+
+        ),
+        new IntakeGroup(harm)
       )
     );
   }
