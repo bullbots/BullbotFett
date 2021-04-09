@@ -31,8 +31,8 @@ class BallContours:
         self.normalize_output = None
 
         self.__hsv_threshold_input = self.normalize_output
-        self.__hsv_threshold_hue = [10.0, 20.0]
-        self.__hsv_threshold_saturation = [186.0, 255.0]
+        self.__hsv_threshold_hue = [10.0, 40.0]
+        self.__hsv_threshold_saturation = [170.0, 255.0]
         self.__hsv_threshold_value = [55.0, 255.0]
 
         self.hsv_threshold_output = None
