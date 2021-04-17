@@ -4,21 +4,26 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.Autonomous.AutonomousGSC;
 import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
-import frc.robot.commands.Harm_Commands.IntakeBalls;
-import frc.robot.commands.Harm_Commands.LowerIntake;
-import frc.robot.commands.Harm_Commands.RaiseShooterHood;
+import frc.robot.commands.Harm_Commands.IntakeGroup;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
@@ -29,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpiutil.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
@@ -62,6 +66,64 @@ public class RobotContainer {
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
+
+  private enum Color {
+    UNLOADED(0),
+    RED(1),
+    BLUE(2);
+
+    private int value;
+    private static Map<Integer, Color> map = new HashMap<>();
+
+    private Color(int value) {
+      this.value = value;
+    }
+
+    static {
+      for (Color color : Color.values()) {
+        map.put(color.value, color);
+      }
+    }
+
+    public static Color valueOf(int color) {
+      return (Color) map.get(color);
+    }
+
+    public int getValue() {
+      return value;
+    }
+  }
+
+  private static AtomicReference<Color> pathColor = new AtomicReference<>(Color.UNLOADED);
+
+  private enum Letter {
+    UNLOADED(0),
+    A(1),
+    B(2);
+
+    private int value;
+    private static Map<Integer, Letter> map = new HashMap<>();
+
+    private Letter(int value) {
+      this.value = value;
+    }
+
+    static {
+      for (Letter letter : Letter.values()) {
+        map.put(letter.value, letter);
+      }
+    }
+
+    public static Letter valueOf(int letter) {
+      return (Letter) map.get(letter);
+    }
+
+    public int getValue() {
+      return value;
+    }
+  }
+
+  private static AtomicReference<Letter> pathLetter = new AtomicReference<>(Letter.UNLOADED);  
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -99,12 +161,50 @@ public class RobotContainer {
     m_chooser.addOption("Slalom Path",
       new TrajectoryBase(drivetrain, "/SLALOM")
     );
+
+    System.out.println("Path Color: " + pathColor.get());
+    m_chooser.addOption("Galactic Search Challenge",
+      new ParallelCommandGroup(
+        new AutonomousGSC(
+        drivetrain,
+        harm,
+        () -> ((int) SmartDashboard.getNumber("isRed", 0) != 0), //&& pathLetter.get() != Letter.UNLOADED),
+        () -> ((int) SmartDashboard.getNumber("isRed", 0) == 1),
+        () -> (pathLetter.get() == Letter.A)
+      )
+    ));
+
+    m_chooser.addOption("Galactic Red",
+      new ParallelCommandGroup(
+        new TrajectoryBase(drivetrain, "/RED-COMBINED", true, false).deadlineWith(
+        new IntakeGroup(harm))
+      )
+    );
+
+    // m_chooser.addOption("Galactic Search Challenge B", new AutonomousGSC_B(
+    //   drivetrain,
+    //   harm,
+    //   () -> (pathColor.get() != Color.UNLOADED),
+    //   () -> (pathColor.get() == Color.RED)
+    // ));
+
     m_chooser.addOption("Forward Then Backward Path", new SequentialCommandGroup(
       new TrajectoryBase(drivetrain, "/FORWARD-DISTANCE", false, true), // ... boolean isBackwards, boolean resetGyro
       new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
     ));
 
     SmartDashboard.putData(m_chooser);
+
+    // NetworkTableInstance inst = NetworkTableInstance.getDefault();
+
+    // NetworkTable table = inst.getTable("SmartDashboard");
+
+    // table.addEntryListener("isRed",
+    //   (local_table, key, entry, value, flags) -> {
+    //     pathColor.set(Color.valueOf((int) value.getValue()));
+    //   },
+    //   EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+    // );
   }
 
   /**
@@ -136,21 +236,11 @@ public class RobotContainer {
     button4.whileHeld(new ShiftHigh(shifter));
     // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
     
-    button1.whileHeld(new ParallelCommandGroup(
-      new SequentialCommandGroup(
-        new LowerIntake(harm).withTimeout(.5),
-        new IntakeBalls(harm)
-      ),
-      new JoystickDrive(
-        drivetrain,
-        () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
-        () -> stick.getX()
-      )
-    ));
+    button1.whileHeld(new IntakeGroup(harm));
 
     // PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
-    PIDController pidcontroller = new PIDControllerDebug(0.0003, 0.0, 0.0);
-    pidcontroller.setIntegratorRange(-0.2, 0.2);
+    PIDController pidcontroller = new PIDControllerDebug(0.002, 0.001, 0.0);
+    pidcontroller.setIntegratorRange(-0.15, 0.15);
 
     if (Robot.isSimulation()) {
       SmartDashboard.putNumber("TargetX", 0);
