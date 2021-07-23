@@ -59,7 +59,7 @@ public class RobotContainer {
   private static JoystickButton stick10 = new JoystickButton(stick, 10); 
 
   private static JoystickButton buttonBoard1 = new JoystickButton(buttonBoard, 1);
-  private static JoystickButton buttonBoard2 = mew JoystickButton(buttonBoard, 2);
+  private static JoystickButton buttonBoard2 = new JoystickButton(buttonBoard, 2);
 
   // Subsystems
   private final Shooter shooter = new Shooter();
