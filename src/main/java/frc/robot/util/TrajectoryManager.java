@@ -56,7 +56,7 @@ public class TrajectoryManager {
                         new Pose2d(trajPack.firstX, trajPack.firstY, Rotation2d.fromDegrees(trajPack.start_angle)),
                         trajPack.path_read,
                         new Pose2d(trajPack.lastX, trajPack.lastY, Rotation2d.fromDegrees(trajPack.end_angle)),
-                        new TrajectoryConfig(3.0, 3.0));
+                        new TrajectoryConfig(2.0, 4.0));
     
                     trajectories.put(pathName, trajectory);
                 }
