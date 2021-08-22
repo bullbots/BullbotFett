@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.AutonomousGSC;
+import frc.robot.commands.Autonomous.CompetitionAutonomous;
 import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
@@ -64,6 +65,8 @@ public class RobotContainer {
 
 
   private final Compressor compressor = new Compressor();
+
+  private final PIDController pidcontroller = new PIDControllerDebug(0.002, 0.001, 0.0);
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -194,6 +197,22 @@ public class RobotContainer {
       new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
     ));
 
+    m_chooser.addOption("CompAuto", new CompetitionAutonomous(drivetrain, harm, pidcontroller,  () -> {
+      double x = SmartDashboard.getNumber("TargetX", -9999);
+      // System.out.println(String.format("Info: x %f", x));
+      if (x == -9999) {
+        return 0;
+      } 
+      return x;
+    },
+  0.0,
+  (output) -> {
+      output = MathUtil.clamp(output, -.5, .5);
+      
+      drivetrain.arcadeDrive(0, -output, false);
+      // System.out.println(String.format("Info: output %f", output));
+    }, shooter, compressor, () -> !button6.get())
+    );
     SmartDashboard.putData(m_chooser);
 
     // NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -241,7 +260,7 @@ public class RobotContainer {
     button1.whileHeld(new IntakeGroup(harm));
 
     // PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
-    PIDController pidcontroller = new PIDControllerDebug(0.002, 0.001, 0.0);
+    
     pidcontroller.setIntegratorRange(-0.15, 0.15);
 
     if (Robot.isSimulation()) {
