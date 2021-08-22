@@ -26,20 +26,24 @@ public class CompetitionAutonomous extends SequentialCommandGroup {
    * 
    * 
    */
-  public CompetitionAutonomous(DrivetrainFalcon drivetrain, Harm harm, PIDController controller,
-      DoubleSupplier measurementSource,
-  double setpointSource, DoubleConsumer useOutput, Shooter shooter, Compressor compressor, BooleanSupplier isLongShot) {
+  public CompetitionAutonomous(
+    DrivetrainFalcon drivetrain,
+    Harm harm,
+    PIDController controller,
+    DoubleSupplier measurementSource,
+    double setpointSource,
+    DoubleConsumer useOutput,
+    Shooter shooter,
+    Compressor compressor,
+    BooleanSupplier isLongShot
+  ) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     addCommands(
-    
-
     // Aligns the robot
     new AlignShooter(controller, measurementSource, setpointSource, useOutput, drivetrain).withTimeout(5), // Runs this for 5 seconds hopefully
     // Shoots the ball after the robot is aligned
-    new ShootVelocity(shooter, compressor, harm, isLongShot)
-
-    
+    new ShootVelocity(shooter, compressor, harm, isLongShot).withTimeout(5)
     );
   }
 
