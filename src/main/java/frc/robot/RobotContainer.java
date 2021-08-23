@@ -32,6 +32,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shifter;
 import frc.robot.util.PIDControllerDebug;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -124,7 +125,14 @@ public class RobotContainer {
     }
   }
 
-  private static AtomicReference<Letter> pathLetter = new AtomicReference<>(Letter.UNLOADED);  
+  private static AtomicReference<Letter> pathLetter = new AtomicReference<>(Letter.UNLOADED);
+
+  private static enum ShooterMode {
+    COMPETITION,
+    DEMO
+  }
+
+  private static SendableChooser<ShooterMode> shooterMode = new SendableChooser<>();
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -146,6 +154,15 @@ public class RobotContainer {
       () -> (stick.getZ() - 1)/-2.0
     ));
 
+    initializeAutonomousOptions();
+
+    shooterMode.setDefaultOption("Competition Shooting", ShooterMode.COMPETITION);
+    shooterMode.addOption("Demo Shooting", ShooterMode.DEMO);
+    SmartDashboard.putData(shooterMode);
+  }
+
+  private void initializeAutonomousOptions() {
+    
     // Add commands to the autonomous command chooser
     m_chooser.setDefaultOption("Bounce Piece", new SequentialCommandGroup(
       new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
@@ -232,8 +249,12 @@ public class RobotContainer {
       }
     });
 
-    button2.whileHeld(new ShootVelocity(shooter, compressor, harm, () -> !button6.get()));
-    // button2.whileHeld(new ShootDemo(shooter, compressor, harm));
+    // Shooter: Determines shooting mode based on SmartDashboard chooser
+    button2.whileHeld(new ConditionalCommand(
+      new ShootVelocity(shooter, compressor, harm, () -> !button6.get()),
+      new ShootDemo(shooter, compressor, harm),
+      () -> (shooterMode.getSelected() == ShooterMode.COMPETITION)
+    ));
 
     button4.whileHeld(new ShiftHigh(shifter));
     // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
