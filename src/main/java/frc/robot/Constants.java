@@ -96,6 +96,9 @@ public final class Constants {
      * ALL CLIMB RELATED CONSTANTS GO HERE
      */
 
+    // Need to change port number
+     public static int CLIMBER_PORT = 0;
+
 
      /**
       * MISCELLANEOUS CONSTANTS

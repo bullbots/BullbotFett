@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -20,12 +17,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.AutonomousGSC;
 import frc.robot.commands.Autonomous.TrajectoryBase;
+import frc.robot.commands.Climber_Commands.ClimberDown;
+import frc.robot.commands.Climber_Commands.ClimberUp;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
 import frc.robot.commands.Harm_Commands.IntakeGroup;
 import frc.robot.commands.Shooter_Commands.ShootDemo;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
@@ -44,23 +44,29 @@ import edu.wpi.first.wpilibj.Joystick;
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
+ * 
  */
 public class RobotContainer {
   // User Input
   private static Joystick stick = new Joystick(0);
+  private static Joystick buttonBoard = new Joystick(1);
   
-  private static JoystickButton button1 = new JoystickButton(stick, 1);
-  private static JoystickButton button2 = new JoystickButton(stick, 2);
-  private static JoystickButton button3 = new JoystickButton(stick, 3);
-  private static JoystickButton button4 = new JoystickButton(stick, 4);
-  private static JoystickButton button6 = new JoystickButton(stick, 6);  
-  private static JoystickButton button10 = new JoystickButton(stick, 10); 
+  private static JoystickButton stick1 = new JoystickButton(stick, 1);
+  private static JoystickButton stick2 = new JoystickButton(stick, 2);
+  private static JoystickButton stick3 = new JoystickButton(stick, 3);
+  private static JoystickButton stick4 = new JoystickButton(stick, 4);
+  private static JoystickButton stick6 = new JoystickButton(stick, 6);  
+  private static JoystickButton stick10 = new JoystickButton(stick, 10); 
+
+  private static JoystickButton buttonBoard1 = new JoystickButton(buttonBoard, 1);
+  private static JoystickButton buttonBoard2 = new JoystickButton(buttonBoard, 2);
 
   // Subsystems
   private final Shooter shooter = new Shooter();
   private final DrivetrainFalcon drivetrain = new DrivetrainFalcon();
   private final Harm harm = new Harm();
   private final Shifter shifter = new Shifter();
+  private final Climber climber = new Climber();
 
 
   private final Compressor compressor = new Compressor();
@@ -141,7 +147,7 @@ public class RobotContainer {
     
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,
-      () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
+      () -> -stick.getY() * (stick3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
       () -> stick.getX(),
       () -> (stick.getZ() - 1)/-2.0
     ));
@@ -169,7 +175,7 @@ public class RobotContainer {
         new AutonomousGSC(
         drivetrain,
         harm,
-        () -> ((int) SmartDashboard.getNumber("isRed", 0) != 0), //&& pathLetter.get() != Letter.UNLOADED),
+        () -> ((int) SmartDashboard.getNumber("isRed", 0) != 0), // && pathLetter.get() != Letter.UNLOADED),
         () -> ((int) SmartDashboard.getNumber("isRed", 0) == 1),
         () -> (pathLetter.get() == Letter.A)
       )
@@ -232,13 +238,12 @@ public class RobotContainer {
       }
     });
 
-    button2.whileHeld(new ShootVelocity(shooter, compressor, harm, () -> !button6.get()));
-    // button2.whileHeld(new ShootDemo(shooter, compressor, harm));
+    stick2.whileHeld(new ShootVelocity(shooter, compressor, harm, () -> !stick6.get()));
 
-    button4.whileHeld(new ShiftHigh(shifter));
-    // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
+    stick4.whileHeld(new ShiftHigh(shifter));
+    // stick6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
     
-    button1.whileHeld(new IntakeGroup(harm));
+    stick1.whileHeld(new IntakeGroup(harm));
 
     // PIDController pidcontroller = new PIDControllerDebug(0.0006, 0.0005, 0.0);
     PIDController pidcontroller = new PIDControllerDebug(0.002, 0.001, 0.0);
@@ -248,7 +253,7 @@ public class RobotContainer {
       SmartDashboard.putNumber("TargetX", 0);
     }
 
-    button10.whileHeld(new AlignShooter(pidcontroller, 
+    stick10.whileHeld(new AlignShooter(pidcontroller, 
     () -> {
         double x = SmartDashboard.getNumber("TargetX", -9999);
         // System.out.println(String.format("Info: x %f", x));
@@ -265,6 +270,10 @@ public class RobotContainer {
         // System.out.println(String.format("Info: output %f", output));
       },
     drivetrain));
+
+
+    buttonBoard1.whileHeld(new ClimberUp(climber));
+    buttonBoard2.whileHeld(new ClimberDown(climber));
   }
 
   /**
