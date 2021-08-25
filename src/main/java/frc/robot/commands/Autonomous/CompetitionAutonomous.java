@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
+import frc.robot.commands.Drivetrain_Commands.MoveDistance;
+import frc.robot.commands.Drivetrain_Commands.TurnDistance;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
@@ -40,10 +42,12 @@ public class CompetitionAutonomous extends SequentialCommandGroup {
     // Use addRequirements() here to declare subsystem dependencies.
 
     addCommands(
-    // Aligns the robot
-    new AlignShooter(controller, measurementSource, setpointSource, useOutput, drivetrain).withTimeout(5), // Runs this for 5 seconds hopefully
-    // Shoots the ball after the robot is aligned
-    new ShootVelocity(shooter, compressor, harm, isLongShot).withTimeout(5)
+      // Aligns the robot
+      new AlignShooter(controller, measurementSource, setpointSource, useOutput, drivetrain).withTimeout(2), // Runs this for 5 seconds hopefully
+      // Shoots the ball after the robot is aligned
+      new ShootVelocity(shooter, compressor, harm, isLongShot).withTimeout(5) // TODO don't shoot if target not found
+      // new TurnDistance(drivetrain, targetDistance)
+      // new MoveDistance(drivetrain, 5)
     );
   }
 

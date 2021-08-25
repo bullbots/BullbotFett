@@ -44,6 +44,8 @@ public final class Constants {
     /**
      * ALL DRIVETRAIN RELATED CONSTANTS GO HERE
      */
+    public static double WHEEL_TO_ROBOT_CENTER_DISTANCE = 12.8705;
+    
     public static double MAX_SPEED_LOW_GEAR = 8.0;
 
     public static double MAX_ANGULAR_VELOCITY = 9.0; // wheelbase/2 (1.125) * MAX_SPEED_LOW_GEAR (8) - (omega=r*v)

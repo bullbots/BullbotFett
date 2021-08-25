@@ -167,6 +167,10 @@ public class DrivetrainFalcon extends SubsystemBase {
     gyro.reset180();
   }
 
+  public double getGyroAngle() {
+    return gyro.getRotation2d().getDegrees();
+  }
+
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
   }
