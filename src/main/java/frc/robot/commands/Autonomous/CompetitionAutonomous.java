@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.MoveDistance;
+import frc.robot.commands.Drivetrain_Commands.TurnAngle;
 import frc.robot.commands.Drivetrain_Commands.TurnDistance;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
@@ -45,9 +46,18 @@ public class CompetitionAutonomous extends SequentialCommandGroup {
       // Aligns the robot
       new AlignShooter(controller, measurementSource, setpointSource, useOutput, drivetrain).withTimeout(2), // Runs this for 5 seconds hopefully
       // Shoots the ball after the robot is aligned
-      new ShootVelocity(shooter, compressor, harm, isLongShot).withTimeout(5) // TODO don't shoot if target not found
-      // new TurnDistance(drivetrain, targetDistance)
-      // new MoveDistance(drivetrain, 5)
+      new ShootVelocity(shooter, compressor, harm, isLongShot).withTimeout(5), // TODO don't shoot if target not found
+      // Figures out how far the robots needs to move to cross over the line
+      new TurnDistance(drivetrain, ()->{
+        double i = measurementSource.getAsDouble(); // TOOD Freeze this data point
+        // Distance of initiation line to goal vertically at a 90 degree angle
+        double j = 10.0; 
+        // The degree of the robot to the initiation line
+        double k = Math.asin(j / i);
+        // How many degrees the robot needs to turn to become perpendicular to the initiation line
+        double l = 90.0 - Math.toDegrees(k);
+        return (int) Math.round(l);
+      })
     );
   }
 

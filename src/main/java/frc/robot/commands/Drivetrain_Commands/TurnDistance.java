@@ -8,6 +8,9 @@
 package frc.robot.commands.Drivetrain_Commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
+import java.util.function.IntSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import frc.robot.subsystems.DrivetrainFalcon;
 
@@ -16,16 +19,22 @@ public class TurnDistance extends CommandBase {
    * Creates a new TurnDistance.
    */
   private DrivetrainFalcon drivetrain;
-  private int targetDistance;
+  private IntSupplier turnDistanceSupplier;
+  private int turnDistance = 0;
   private double currentPosition;
 
   private int allowedError = 100;
 
-  public TurnDistance(DrivetrainFalcon drivetrain, int targetDistance) {
+  public TurnDistance(DrivetrainFalcon drivetrain, int turnDistance) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.drivetrain = drivetrain;
-    this.targetDistance =  targetDistance;
+    this(drivetrain, ()->turnDistance);
 
+    addRequirements(drivetrain);
+  }
+
+  public TurnDistance(DrivetrainFalcon drivetrain, IntSupplier turnDistanceSupplier) {
+    this.drivetrain = drivetrain;
+    this.turnDistanceSupplier = turnDistanceSupplier;
     addRequirements(drivetrain);
   }
 
@@ -33,12 +42,13 @@ public class TurnDistance extends CommandBase {
   @Override
   public void initialize() {
     drivetrain.resetEncoders();
+    turnDistance = turnDistanceSupplier.getAsInt();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivetrain.set(ControlMode.MotionMagic, targetDistance, targetDistance);
+    drivetrain.set(ControlMode.MotionMagic, turnDistance, turnDistance);
   }
 
   // Called once the command ends or is interrupted.
@@ -52,6 +62,6 @@ public class TurnDistance extends CommandBase {
   public boolean isFinished() {
     double[] positions = drivetrain.getPositions();
 
-    return Math.abs(positions[0] - targetDistance) <= allowedError && Math.abs(positions[1] - targetDistance) <= allowedError;
+    return Math.abs(positions[0] - turnDistance) <= allowedError && Math.abs(positions[1] - turnDistance) <= allowedError;
   }
 }

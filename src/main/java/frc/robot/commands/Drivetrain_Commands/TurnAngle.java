@@ -23,8 +23,9 @@ public class TurnAngle extends PIDCommand {
    * Angle is measured from the front of the robot, going counterclockwise
   */
   private DrivetrainFalcon drivetrain;
+  // kp = The Porprotional Constant
   private final double kP = 1.0; // Value needs tuned
-
+  // decay is used as a safety stop
   private double decay = -.5; // Value needs tuned
   private double prev_value = 0;
 
@@ -46,7 +47,9 @@ public class TurnAngle extends PIDCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // pidOut tells what value motors to use
     var pidOut = m_controller.calculate(m_measurement.getAsDouble(), m_setpoint.getAsDouble());
+    // ff = Feed Forward / Open loop term. if deserved value is within the bounds it multiples values
     var ffOut = m_ff.calculate(m_measurement.getAsDouble());
     m_useOutput.accept(pidOut + ffOut);
   }
