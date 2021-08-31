@@ -39,7 +39,7 @@ public class AlignShooter extends PIDCommand {
 
   public AlignShooter(PIDController controller,
   DoubleSupplier measurementSource,
-  double setpointSource,
+  DoubleSupplier setpointSource,
   DoubleConsumer useOutput,
   DrivetrainFalcon drivetrain) {
     super(controller, measurementSource, setpointSource, useOutput, drivetrain);

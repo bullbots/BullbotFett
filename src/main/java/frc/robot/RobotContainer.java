@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.AutonomousGSC;
 import frc.robot.commands.Autonomous.CompetitionAutonomous;
 import frc.robot.commands.Autonomous.TrajectoryBase;
+import frc.robot.commands.Autonomous.CompetitionAutonomous.RightOrLeft;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
@@ -36,6 +37,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpiutil.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
+
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -67,7 +70,10 @@ public class RobotContainer {
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
+  SendableChooser<RightOrLeft> turnDirection_chooser = new SendableChooser<>();
 
+  
+  
   private enum Color {
     UNLOADED(0),
     RED(1),
@@ -163,6 +169,12 @@ public class RobotContainer {
       new TrajectoryBase(drivetrain, "/SLALOM")
     );
 
+    // Tells the robot whether it starts left or right of the goal
+    turnDirection_chooser.setDefaultOption("Left", RightOrLeft.LEFT);
+    turnDirection_chooser.addOption("Right", RightOrLeft.RIGHT);
+    
+
+
     System.out.println("Path Color: " + pathColor.get());
     m_chooser.addOption("Galactic Search Challenge",
       new ParallelCommandGroup(
@@ -202,13 +214,13 @@ public class RobotContainer {
       } 
       return x;
     },
-  0.0,
+  ()->0.0,
   (output) -> {
       output = MathUtil.clamp(output, -.5, .5);
       
       drivetrain.arcadeDrive(0, -output, false);
       // System.out.println(String.format("Info: output %f", output));
-    }, shooter, compressor, () -> !button6.get())
+    }, shooter, compressor, () -> !button6.get(), turnDirection_chooser.getSelected())
     );
     SmartDashboard.putData(m_chooser);
 
@@ -273,7 +285,7 @@ public class RobotContainer {
         } 
         return x;
       },
-    0.0,
+    ()->0.0,
     (output) -> {
         output = MathUtil.clamp(output, -.5, .5);
         
