@@ -25,6 +25,7 @@ import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
 import frc.robot.commands.Harm_Commands.IntakeGroup;
 import frc.robot.commands.Shooter_Commands.ShootDemo;
+import frc.robot.commands.Shooter_Commands.ShootThrottle;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
@@ -251,7 +252,7 @@ public class RobotContainer {
 
     // Shooter: Determines shooting mode based on SmartDashboard chooser
     button2.whileHeld(new ConditionalCommand(
-      new ShootVelocity(shooter, compressor, harm, () -> !button6.get()),
+      new ShootThrottle(shooter, harm, () -> (stick.getZ() - 1.) / -2., () -> !button6.get()),
       new ShootDemo(shooter, compressor, harm),
       () -> (shooterMode.getSelected() == ShooterMode.COMPETITION)
     ));
@@ -269,23 +270,23 @@ public class RobotContainer {
       SmartDashboard.putNumber("TargetX", 0);
     }
 
-    button10.whileHeld(new AlignShooter(pidcontroller, 
-    () -> {
-        double x = SmartDashboard.getNumber("TargetX", -9999);
-        // System.out.println(String.format("Info: x %f", x));
-        if (x == -9999) {
-          return 0;
-        } 
-        return x;
-      },
-    0.0,
-    (output) -> {
-        output = MathUtil.clamp(output, -.5, .5);
+    // button10.whileHeld(new AlignShooter(pidcontroller, 
+    // () -> {
+    //     double x = SmartDashboard.getNumber("TargetX", -9999);
+    //     // System.out.println(String.format("Info: x %f", x));
+    //     if (x == -9999) {
+    //       return 0;
+    //     } 
+    //     return x;
+    //   },
+    // 0.0,
+    // (output) -> {
+    //     output = MathUtil.clamp(output, -.5, .5);
         
-        drivetrain.arcadeDrive(0, -output, false);
-        // System.out.println(String.format("Info: output %f", output));
-      },
-    drivetrain));
+    //     drivetrain.arcadeDrive(0, -output, false);
+    //     // System.out.println(String.format("Info: output %f", output));
+    //   },
+    // drivetrain));
   }
 
   /**
