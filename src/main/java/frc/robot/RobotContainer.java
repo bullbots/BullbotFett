@@ -129,7 +129,8 @@ public class RobotContainer {
   private static AtomicReference<Letter> pathLetter = new AtomicReference<>(Letter.UNLOADED);
 
   private static enum ShooterMode {
-    COMPETITION,
+    SMART,
+    THROTTLE,
     DEMO
   }
 
@@ -157,7 +158,8 @@ public class RobotContainer {
 
     initializeAutonomousOptions();
 
-    shooterMode.setDefaultOption("Competition Shooting", ShooterMode.COMPETITION);
+    shooterMode.setDefaultOption("Smart Distance Shooting", ShooterMode.SMART);
+    shooterMode.addOption("Throttle Shooting", ShooterMode.THROTTLE);;
     shooterMode.addOption("Demo Shooting", ShooterMode.DEMO);
     SmartDashboard.putData(shooterMode);
   }
@@ -250,12 +252,20 @@ public class RobotContainer {
       }
     });
 
-    // Shooter: Determines shooting mode based on SmartDashboard chooser
+    // // Shooter: Determines shooting mode based on SmartDashboard chooser
+    // button2.whileHeld(new ConditionalCommand(
+    //   new ShootThrottle(shooter, harm, () -> (stick.getZ() - 1.) / -2., () -> !button6.get()),
+    //   new ShootDemo(shooter, compressor, harm),
+    //   () -> (shooterMode.getSelected() == ShooterMode.SMART)
+    // ));
     button2.whileHeld(new ConditionalCommand(
-      new ShootThrottle(shooter, harm, () -> (stick.getZ() - 1.) / -2., () -> !button6.get()),
       new ShootDemo(shooter, compressor, harm),
-      () -> (shooterMode.getSelected() == ShooterMode.COMPETITION)
-    ));
+      new ConditionalCommand(
+        new ShootVelocity(shooter, compressor, harm, () -> !button6.get()),
+        new ShootThrottle(shooter, harm,  () -> (stick.getZ() - 1.) / -2., () -> !button6.get()), 
+        () -> shooterMode.getSelected() == ShooterMode.SMART),
+      () -> shooterMode.getSelected() == ShooterMode.DEMO)
+    );
 
     button4.whileHeld(new ShiftHigh(shifter));
     // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
