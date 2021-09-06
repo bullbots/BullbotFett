@@ -270,23 +270,23 @@ public class RobotContainer {
       SmartDashboard.putNumber("TargetX", 0);
     }
 
-    // button10.whileHeld(new AlignShooter(pidcontroller, 
-    // () -> {
-    //     double x = SmartDashboard.getNumber("TargetX", -9999);
-    //     // System.out.println(String.format("Info: x %f", x));
-    //     if (x == -9999) {
-    //       return 0;
-    //     } 
-    //     return x;
-    //   },
-    // 0.0,
-    // (output) -> {
-    //     output = MathUtil.clamp(output, -.5, .5);
+    button10.whileHeld(new AlignShooter(pidcontroller, 
+    () -> {
+        double x = SmartDashboard.getNumber("TargetX", -9999);
+        // System.out.println(String.format("Info: x %f", x));
+        if (x == -9999) {
+          return 0;
+        } 
+        return x;
+      },
+    0.0,
+    (output) -> {
+        output = MathUtil.clamp(output, -.5, .5);
         
-    //     drivetrain.arcadeDrive(0, -output, false);
-    //     // System.out.println(String.format("Info: output %f", output));
-    //   },
-    // drivetrain));
+        drivetrain.arcadeDrive(0, -output, false);
+        // System.out.println(String.format("Info: output %f", output));
+      },
+    drivetrain));
   }
 
   /**
