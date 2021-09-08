@@ -158,10 +158,10 @@ public class RobotContainer {
 
     initializeAutonomousOptions();
 
-    shooterMode.setDefaultOption("Smart Distance Shooting", ShooterMode.SMART);
-    shooterMode.addOption("Throttle Shooting", ShooterMode.THROTTLE);;
+    shooterMode.setDefaultOption("Throttle Shooting", ShooterMode.THROTTLE);
+    shooterMode.addOption("Smart Distance Shooting", ShooterMode.SMART);;
     shooterMode.addOption("Demo Shooting", ShooterMode.DEMO);
-    SmartDashboard.putData(shooterMode);
+    SmartDashboard.putData("Shooter Mode", shooterMode);
   }
 
   private void initializeAutonomousOptions() {
@@ -214,7 +214,7 @@ public class RobotContainer {
       new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
     ));
 
-    SmartDashboard.putData(m_chooser);
+    SmartDashboard.putData("Autonomous Path", m_chooser);
 
     // NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
@@ -262,7 +262,7 @@ public class RobotContainer {
       new ShootDemo(shooter, compressor, harm),
       new ConditionalCommand(
         new ShootVelocity(shooter, compressor, harm, () -> !button6.get()),
-        new ShootThrottle(shooter, harm,  () -> (stick.getZ() - 1.) / -2., () -> !button6.get()), 
+        new ShootThrottle(shooter, harm,  () -> ((stick.getZ() - 1.) / -2.), () -> !button6.get()), 
         () -> shooterMode.getSelected() == ShooterMode.SMART),
       () -> shooterMode.getSelected() == ShooterMode.DEMO)
     );

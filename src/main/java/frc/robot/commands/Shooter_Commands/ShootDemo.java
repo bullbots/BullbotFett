@@ -35,6 +35,7 @@ public class ShootDemo extends CommandBase {
   }
 
   // Called when the command is initially scheduled.
+  
   @Override
   public void initialize() {
     compressor.stop();
