@@ -4,6 +4,8 @@
 # Open Source Software; you can modify and/or share it under the terms of
 # the WPILib BSD license file in the root directory of this project.
 
+# IP is 10.18.91.100:1181/?action=stream
+
 import json
 import time
 import sys
@@ -37,9 +39,9 @@ class GreenContours:
         self.normalize_output = None
 
         self.__hsv_threshold_input = self.normalize_output
-        self.__hsv_threshold_hue = [70, 113]
-        self.__hsv_threshold_saturation = [112, 255.0]
-        self.__hsv_threshold_value = [76, 148]
+        self.__hsv_threshold_hue = [37, 98]
+        self.__hsv_threshold_saturation = [83, 210.0]
+        self.__hsv_threshold_value = [142, 255]
 
         self.hsv_threshold_output = None
 
@@ -497,7 +499,7 @@ if __name__ == "__main__":
                 # print(f"info: area {contourarea}")
                 
                 # if 450 <= contourarea <= 4500 :
-                if 0 <= contourarea <= 4500 :
+                if 0 <= contourarea <= 10000 :
 
                     # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
                     x, y, w, h = cv2.boundingRect(largest_contour)
