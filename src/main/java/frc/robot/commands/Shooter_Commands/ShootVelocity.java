@@ -36,14 +36,15 @@ public class ShootVelocity extends CommandBase {
    private boolean servoState = false;
    private List<Pair<Integer, Double>> distanceToPower = new ArrayList<>(
     Arrays.asList(
-      new Pair<> (99999, 0.1),
+      new Pair<> (99999, 0.10),
       new Pair<> (9300, .40),
       new Pair<> (7100, .36),
       new Pair<> (5800, .35),
       new Pair<> (4100, .34),
       new Pair<> (3000, .20),
-      new Pair<> (0, 0.1),
-      new Pair<> (-10000, 0.1)));
+      new Pair<> (2000, .30),
+      new Pair<> (0, 0.10),
+      new Pair<> (-10000, 0.10)));
 
   public ShootVelocity(Shooter shooter, Compressor compressor, Harm harm, BooleanSupplier isLongShot) {
     addRequirements(shooter, harm);
@@ -77,6 +78,7 @@ public class ShootVelocity extends CommandBase {
     
     var vel = 0.0;
     var cameraDist = SmartDashboard.getNumber("Distance", 0);
+    System.out.println(String.format("Distance = %.02f", cameraDist));
     for(var curDistPower:distanceToPower){
       var curDist = curDistPower.getFirst();
       if(curDist < cameraDist){
