@@ -215,7 +215,7 @@ public class RobotContainer {
     ));
 
     m_chooser.addOption("Competition", new SequentialCommandGroup(
-      new ShootVelocity(shooter, compressor, harm, () -> false).withTimeout(5),
+      new ShootDemo(shooter, compressor, harm, () -> true).withTimeout(5),
       new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
     ));
     
