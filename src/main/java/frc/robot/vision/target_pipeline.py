@@ -37,9 +37,9 @@ class GreenContours:
         self.normalize_output = None
 
         self.__hsv_threshold_input = self.normalize_output
-        self.__hsv_threshold_hue = [70, 113]
-        self.__hsv_threshold_saturation = [112, 255.0]
-        self.__hsv_threshold_value = [76, 148]
+        self.__hsv_threshold_hue = [53, 97]
+        self.__hsv_threshold_saturation = [135, 255.0]
+        self.__hsv_threshold_value = [148, 203]
 
         self.hsv_threshold_output = None
 
@@ -49,7 +49,7 @@ class GreenContours:
         self.find_contours_output = None
 
         self.__filter_contours_contours = self.find_contours_output
-        self.__filter_contours_min_area = 100.0
+        self.__filter_contours_min_area = 10.0
         self.__filter_contours_min_perimeter = 0
         self.__filter_contours_min_width = 0
         self.__filter_contours_max_width = 1000
@@ -497,7 +497,7 @@ if __name__ == "__main__":
                 # print(f"info: area {contourarea}")
                 
                 # if 450 <= contourarea <= 4500 :
-                if 0 <= contourarea <= 4500 :
+                if 0 <= contourarea <= 10000 :
 
                     # (x,y) top-left coordinate of the rectangle and (w,h) be its width and height.
                     x, y, w, h = cv2.boundingRect(largest_contour)
@@ -511,7 +511,7 @@ if __name__ == "__main__":
                     center_y -= half_height
 
                     # Green if near the center else Red
-                    color = (0, 255, 0) if abs(center_x) <= near_center_threshold else (0, 0, 255)
+                    color = (255, 0, 255) if abs(center_x) <= near_center_threshold else (0, 0, 255)
                     source = cv2.rectangle(color_image, (x, y), (x + w, y + h), color, 3)
                     # source = cv2.drawContours(color_image, largest_contour, -1, color, 3)
 
