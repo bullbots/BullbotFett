@@ -31,7 +31,7 @@ public class ShootVelocity extends CommandBase {
    private Harm harm;
    private Timer ball_release_delay;
    private double vel = 0;
-   private double backspin = 0.3;
+   private double backspin = 0.2;
    private BooleanSupplier isLongShot;
    private boolean servoState = false;
    private List<Pair<Integer, Double>> distanceToPower = new ArrayList<>(
