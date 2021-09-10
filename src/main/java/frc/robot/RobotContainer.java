@@ -261,13 +261,8 @@ public class RobotContainer {
     // Shooter: Determines shooting mode based on SmartDashboard chooser
     button2.whileHeld(new ConditionalCommand(
       new ShootVelocity(shooter, compressor, harm, () -> !button6.get()),
-<<<<<<< HEAD
-      new ShootDemo(shooter, compressor, harm), 
-      () -> true//(shooterMode.getSelected() == ShooterMode.COMPETITION)
-=======
       new ShootDemo(shooter, compressor, harm, () -> !button6.get()),
       () -> true
->>>>>>> CompetitionTestCode
     ));
 
     button5.whileHeld(new ConditionalCommand(
