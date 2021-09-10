@@ -59,6 +59,8 @@ public class ShootVelocity extends CommandBase {
     var vels = shooter.getVelocities();
     SmartDashboard.putNumber("Top Vel", vels[0]);
     SmartDashboard.putNumber("Bottom Vel", -vels[1]);
+
+    System.out.println("ShootVelocity running ****************");
   }
 
   // Called when the command is initially scheduled.

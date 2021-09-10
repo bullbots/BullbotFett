@@ -140,7 +140,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     // Configure the button bindings
-    
+    System.out.print("Testing Robot Container");
     // initializeTrajectory must come before configureButtonBindings
     configureButtonBindings();
     DriverStation.getInstance().silenceJoystickConnectionWarning(true);
@@ -212,6 +212,7 @@ public class RobotContainer {
     ));
 
     SmartDashboard.putData(m_chooser);
+    SmartDashboard.putData(turnDirection_chooser);
 
     // NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
