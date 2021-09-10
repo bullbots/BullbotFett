@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.ejml.equation.Sequence;
+
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -54,6 +56,7 @@ public class RobotContainer {
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
   private static JoystickButton button4 = new JoystickButton(stick, 4);
+  private static JoystickButton button5 = new JoystickButton(stick, 5);
   private static JoystickButton button6 = new JoystickButton(stick, 6);  
   private static JoystickButton button10 = new JoystickButton(stick, 10); 
 
@@ -211,8 +214,13 @@ public class RobotContainer {
       new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
     ));
 
-    SmartDashboard.putData(m_chooser);
-    SmartDashboard.putData(turnDirection_chooser);
+    m_chooser.addOption("Competition", new SequentialCommandGroup(
+      new ShootVelocity(shooter, compressor, harm, () -> false).withTimeout(5),
+      new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
+    ));
+    
+    SmartDashboard.putData(m_chooser);  
+    // SmartDashboard.putData(turnDirection_chooser);
 
     // NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
@@ -253,10 +261,15 @@ public class RobotContainer {
     // Shooter: Determines shooting mode based on SmartDashboard chooser
     button2.whileHeld(new ConditionalCommand(
       new ShootVelocity(shooter, compressor, harm, () -> !button6.get()),
-      new ShootDemo(shooter, compressor, harm),
-      () -> (shooterMode.getSelected() == ShooterMode.COMPETITION)
+      new ShootDemo(shooter, compressor, harm, () -> !button6.get()),
+      () -> true
     ));
 
+    button5.whileHeld(new ConditionalCommand(
+      new ShootDemo(shooter, compressor, harm, () -> !button6.get()),
+      new ShootDemo(shooter, compressor, harm, () -> !button6.get()),
+      () -> true
+    ));
     button4.whileHeld(new ShiftHigh(shifter));
     // button6.whileHeld(new RaiseShooterHood(harm));  // .whenReleased(new LowerShooterHood(harm));
     
