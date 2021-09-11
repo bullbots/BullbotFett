@@ -59,6 +59,7 @@ public class RobotContainer {
   private static JoystickButton button5 = new JoystickButton(stick, 5);
   private static JoystickButton button6 = new JoystickButton(stick, 6);  
   private static JoystickButton button10 = new JoystickButton(stick, 10); 
+  private static JoystickButton button11 = new JoystickButton(stick, 11);
 
   // Subsystems
   private final Shooter shooter = new Shooter();
@@ -152,8 +153,8 @@ public class RobotContainer {
     
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,
-      () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
-      () -> stick.getX(),
+      () -> -stick.getY() * (button3.get() ? -1.0 : 1.0) / (button10.get() ? 2 : 1),  // Because Negative Y is forward on the joysticks
+      () -> stick.getX() / (button10.get() ? 2 : 1),
       () -> (stick.getZ() - 1)/-2.0
     ));
 
@@ -215,7 +216,7 @@ public class RobotContainer {
     ));
 
     m_chooser.addOption("Competition", new SequentialCommandGroup(
-      new ShootDemo(shooter, compressor, harm, () -> true).withTimeout(5),
+      new ShootVelocity(shooter, compressor, harm, () -> false).withTimeout(5),
       new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
     ));
     
@@ -283,7 +284,7 @@ public class RobotContainer {
       SmartDashboard.putNumber("TargetX", 0);
     }
 
-    button10.whileHeld(new AlignShooter(pidcontroller, 
+    button11.whileHeld(new AlignShooter(pidcontroller, 
     () -> {
         double x = SmartDashboard.getNumber("TargetX", -9999);
         // System.out.println(String.format("Info: x %f", x));

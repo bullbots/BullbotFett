@@ -36,18 +36,18 @@ public class ShootVelocity extends CommandBase {
    private boolean servoState = false;
    private List<Pair<Integer, Double>> distanceToPower = new ArrayList<>(
     Arrays.asList(
-      new Pair<> (999999, 0.90),
-      new Pair<> (93000, .40),
-      new Pair<> (71000, .36),
-      new Pair<> (58000, .35),
-      new Pair<> (41000, .90),
-      new Pair<> (15000, .90),
-      new Pair<> (10500, .39),
+      new Pair<> (999999, 0.25),
+      new Pair<> (93000, .25),
+      new Pair<> (71000, .25),
+      new Pair<> (58000, .25),
+      new Pair<> (41000, .25),
+      new Pair<> (15000, .25),
+      new Pair<> (10500, .25),
       new Pair<> (10000, .25),
-      new Pair<> (9000, .375),
-      new Pair<> (1900, .32),
-      new Pair<> (0, 0.32),
-      new Pair<> (-10000, 0.32)));
+      new Pair<> (9000, .25),
+      new Pair<> (1900, .25),
+      new Pair<> (0, 0.25),
+      new Pair<> (-10000, 0.25)));
 
   public ShootVelocity(Shooter shooter, Compressor compressor, Harm harm, BooleanSupplier isLongShot) {
     addRequirements(shooter, harm);
