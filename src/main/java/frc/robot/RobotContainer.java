@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.AutonomousGSC;
@@ -37,8 +37,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpiutil.math.MathUtil;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -64,7 +65,7 @@ public class RobotContainer {
   private final Shifter shifter = new Shifter();
 
 
-  private final Compressor compressor = new Compressor();
+  private final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -143,9 +144,9 @@ public class RobotContainer {
     
     // initializeTrajectory must come before configureButtonBindings
     configureButtonBindings();
-    DriverStation.getInstance().silenceJoystickConnectionWarning(true);
+    DriverStation.silenceJoystickConnectionWarning(true);
 
-    compressor.start();
+    compressor.enableDigital();
     
     drivetrain.setDefaultCommand(new JoystickDrive(
       drivetrain,

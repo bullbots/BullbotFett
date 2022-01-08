@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,8 +26,8 @@ public class Harm extends SubsystemBase {
 
   private SafeSparkMax intake_belt;
   private SafeSparkMax intake_bar_spinner;
-  private DoubleSolenoid intake_solenoid = new DoubleSolenoid(Constants.INTAKE_DOWN, Constants.INTAKE_UP);
-  private DoubleSolenoid shooter_solenoid = new DoubleSolenoid(Constants.HIGH_ANGLE_CHANNEL, Constants.LOW_ANGLE_CHANNEL);
+  private DoubleSolenoid intake_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.INTAKE_DOWN, Constants.INTAKE_UP);
+  private DoubleSolenoid shooter_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.HIGH_ANGLE_CHANNEL, Constants.LOW_ANGLE_CHANNEL);
   private boolean raised = true;
 
   public Harm() {

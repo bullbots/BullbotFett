@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,7 +22,7 @@ public class Shifter extends SubsystemBase {
     private int highGearChannel = Constants.HIGH_GEAR_CHANNEL;
 
     public Shifter() {
-        shifterSolenoid = new DoubleSolenoid(lowGearChannel,     highGearChannel);
+        shifterSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, lowGearChannel, highGearChannel);
         setGear(Gear.LOW);
 
         setDefaultCommand(new ShiftLow(this));

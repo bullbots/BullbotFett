@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpiutil.math.MathUtil;
-import edu.wpi.first.wpiutil.math.Pair;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import frc.robot.subsystems.Harm;
 import frc.robot.subsystems.Shooter;
 
@@ -64,7 +64,7 @@ public class ShootVelocity extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    compressor.stop();
+    compressor.disable();
     ball_release_delay.reset();
     ball_release_delay.start();
     if (isLongShot.getAsBoolean()) {
@@ -128,7 +128,7 @@ public class ShootVelocity extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     shooter.set(0, 0);
-    compressor.start();
+    compressor.enableDigital();
   }
 
   @Override
