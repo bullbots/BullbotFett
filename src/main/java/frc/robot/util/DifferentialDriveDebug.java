@@ -7,13 +7,13 @@ package frc.robot.util;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpiutil.math.MathUtil;
+import edu.wpi.first.math.MathUtil;
 
 /** Add your docs here. */
 public class DifferentialDriveDebug extends DifferentialDrive {
 
-    private double m_quickStopThreshold = kDefaultQuickStopThreshold;
-    private double m_quickStopAlpha = kDefaultQuickStopAlpha;
+    // private double m_quickStopThreshold = kDefaultQuickStopThreshold;
+    // private double m_quickStopAlpha = kDefaultQuickStopAlpha;
     private double m_quickStopAccumulator;
 
     public DifferentialDriveDebug(SpeedController leftMotor, SpeedController rightMotor) {
@@ -25,48 +25,48 @@ public class DifferentialDriveDebug extends DifferentialDrive {
     public void arcadeDrive(double xSpeed, double zRotation, boolean squareInputs) {
         super.arcadeDrive(xSpeed, zRotation, squareInputs);
 
-        xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
-        xSpeed = applyDeadband(xSpeed, m_deadband);
+        // xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
+        // xSpeed = applyDeadband(xSpeed, m_deadband);
 
-        zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
-        zRotation = applyDeadband(zRotation, m_deadband);
+        // zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
+        // zRotation = applyDeadband(zRotation, m_deadband);
 
-        // Square the inputs (while preserving the sign) to increase fine control
-        // while permitting full power.
-        if (squareInputs) {
-        xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
-        zRotation = Math.copySign(zRotation * zRotation, zRotation);
-        }
+        // // Square the inputs (while preserving the sign) to increase fine control
+        // // while permitting full power.
+        // if (squareInputs) {
+        // xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
+        // zRotation = Math.copySign(zRotation * zRotation, zRotation);
+        // }
 
-        double leftMotorOutput;
-        double rightMotorOutput;
+        // double leftMotorOutput;
+        // double rightMotorOutput;
 
-        double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
+        // double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
 
-        if (xSpeed >= 0.0) {
-        // First quadrant, else second quadrant
-        if (zRotation >= 0.0) {
-            leftMotorOutput = maxInput;
-            rightMotorOutput = xSpeed - zRotation;
-        } else {
-            leftMotorOutput = xSpeed + zRotation;
-            rightMotorOutput = maxInput;
-        }
-        } else {
-        // Third quadrant, else fourth quadrant
-        if (zRotation >= 0.0) {
-            leftMotorOutput = xSpeed + zRotation;
-            rightMotorOutput = maxInput;
-        } else {
-            leftMotorOutput = maxInput;
-            rightMotorOutput = xSpeed - zRotation;
-        }
-        }
+        // if (xSpeed >= 0.0) {
+        // // First quadrant, else second quadrant
+        // if (zRotation >= 0.0) {
+        //     leftMotorOutput = maxInput;
+        //     rightMotorOutput = xSpeed - zRotation;
+        // } else {
+        //     leftMotorOutput = xSpeed + zRotation;
+        //     rightMotorOutput = maxInput;
+        // }
+        // } else {
+        // // Third quadrant, else fourth quadrant
+        // if (zRotation >= 0.0) {
+        //     leftMotorOutput = xSpeed + zRotation;
+        //     rightMotorOutput = maxInput;
+        // } else {
+        //     leftMotorOutput = maxInput;
+        //     rightMotorOutput = xSpeed - zRotation;
+        // }
+        // }
 
-        // SmartDashboard.putNumber("Left Motor - ArcadeDrive", MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
-        double rightSideInvertMultiplier = isRightSideInverted() ? -1.0 : 1.0;
-        double maxOutput = m_maxOutput * rightSideInvertMultiplier;
-        // SmartDashboard.putNumber("Right Motor - ArcadeDrive", MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * maxOutput);
+        // // SmartDashboard.putNumber("Left Motor - ArcadeDrive", MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
+        // double rightSideInvertMultiplier = isRightSideInverted() ? -1.0 : 1.0;
+        // double maxOutput = m_maxOutput * rightSideInvertMultiplier;
+        // // SmartDashboard.putNumber("Right Motor - ArcadeDrive", MathUtil.clamp(rightMotorOutput, -1.0, 1.0) * maxOutput);
     }
 
     @SuppressWarnings({"ParameterName", "PMD.CyclomaticComplexity"})

@@ -37,7 +37,7 @@ public class ShootDemo extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    compressor.stop();
+    compressor.disable();
     ball_release_delay.reset();
     ball_release_delay.start();
     harm.raiseShooterHood();
@@ -58,7 +58,7 @@ public class ShootDemo extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     shooter.set(0, 0);
-    compressor.start();
+    compressor.enableDigital();
   }
 
   // Returns true when the command should end.
