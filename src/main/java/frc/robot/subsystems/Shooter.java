@@ -90,6 +90,7 @@ public class Shooter extends SubsystemBase {
                     break;
                 case BOTTOM:
                     curIndex = curBottomVelIndex;
+                    break;
             }
 
             curVal = velocityRange.get(curIndex);
