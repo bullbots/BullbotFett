@@ -86,6 +86,7 @@ public class NEO_Shooter extends SubsystemBase {
       * @return curVal This returns the current velocity of the shooter motors
       */
      public double getVelocity(MotorPlacement motorPlacement) {
+
          double curVal = 0;
          if (Robot.isReal()) {
              switch (motorPlacement) {

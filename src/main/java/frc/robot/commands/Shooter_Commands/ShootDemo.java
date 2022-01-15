@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Harm;
+import frc.robot.subsystems.NEO_Shooter;
 import frc.robot.subsystems.Shooter;
 
 public class ShootDemo extends CommandBase {
@@ -19,17 +20,28 @@ public class ShootDemo extends CommandBase {
    */
 
   private Shooter shooter;
+  private NEO_Shooter neo_shooter;
   private Compressor compressor;
   private Harm harm;
   private Timer ball_release_delay;
   private double velocity = .6;
   private boolean servoState = false;
+  
 
   public ShootDemo(Shooter shooter, Compressor compressor, Harm harm) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooter, harm);
     this.shooter = shooter;
     this.compressor = compressor;
+    this.harm = harm;
+    ball_release_delay = new Timer();
+  }
+
+  public ShootDemo(NEO_Shooter neo_shooter, Compressor compressor, Harm harm) {
+    // Use addRequirement() here to declare subsystem dependencies.
+    addRequirements(neo_shooter, harm);
+    this.neo_shooter = neo_shooter;
+    this.compressor = compressor; 
     this.harm = harm;
     ball_release_delay = new Timer();
   }
@@ -43,6 +55,7 @@ public class ShootDemo extends CommandBase {
     harm.raiseShooterHood();
 
     shooter.set(velocity, -velocity);
+    neo_shooter.set(velocity, -velocity);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -50,6 +63,7 @@ public class ShootDemo extends CommandBase {
   public void execute() {
     if (!servoState && ball_release_delay.hasElapsed(1)) {
       shooter.ballReleaseServo.set(0);
+      neo_shooter.ballReleaseServo.set(0);
       servoState = true;
     }
   }
@@ -58,9 +72,12 @@ public class ShootDemo extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     shooter.set(0, 0);
+    neo_shooter.set(0, 0);
     compressor.start();
   }
 
+
+  
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
