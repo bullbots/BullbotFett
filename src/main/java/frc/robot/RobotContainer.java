@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -21,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Autonomous.AutonomousGSC;
 import frc.robot.commands.Autonomous.TrajectoryBase;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
+import frc.robot.commands.Drivetrain_Commands.JoystickAccelerationDrive;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
 import frc.robot.commands.Harm_Commands.IntakeGroup;
@@ -54,7 +52,8 @@ public class RobotContainer {
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
   private static JoystickButton button4 = new JoystickButton(stick, 4);
-  private static JoystickButton button6 = new JoystickButton(stick, 6);  
+  private static JoystickButton button6 = new JoystickButton(stick, 6);
+  private static JoystickButton button8 = new JoystickButton(stick, 8);
   private static JoystickButton button10 = new JoystickButton(stick, 10); 
 
   // Subsystems
@@ -147,11 +146,18 @@ public class RobotContainer {
 
     compressor.start();
     
-    drivetrain.setDefaultCommand(new JoystickDrive(
+    // drivetrain.setDefaultCommand(new JoystickDrive(
+    //   drivetrain,
+    //   () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
+    //   () -> stick.getX(),
+    //   () -> (stick.getZ() - 1)/-2.0
+    // ));
+    drivetrain.setDefaultCommand(new JoystickAccelerationDrive(
       drivetrain,
-      () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),  // Because Negative Y is forward on the joysticks
+      () -> -stick.getY() * (button3.get() ? -1.0 : 1.0),
       () -> stick.getX(),
-      () -> (stick.getZ() - 1)/-2.0
+      () -> (stick.getZ() - 1)/-2.0,
+      () -> button8.get()
     ));
 
     initializeAutonomousOptions();
