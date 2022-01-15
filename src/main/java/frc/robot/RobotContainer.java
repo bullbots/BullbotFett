@@ -28,6 +28,7 @@ import frc.robot.commands.Shooter_Commands.ShootDemo;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.Harm;
+import frc.robot.subsystems.NEO_Shooter;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shifter;
 import frc.robot.util.PIDControllerDebug;
@@ -58,6 +59,7 @@ public class RobotContainer {
   private static JoystickButton button10 = new JoystickButton(stick, 10); 
 
   // Subsystems
+  private final NEO_Shooter neo_shooter = new NEO_Shooter();
   private final Shooter shooter = new Shooter();
   private final DrivetrainFalcon drivetrain = new DrivetrainFalcon();
   private final Harm harm = new Harm();
@@ -251,8 +253,8 @@ public class RobotContainer {
 
     // Shooter: Determines shooting mode based on SmartDashboard chooser
     button2.whileHeld(new ConditionalCommand(
-      new ShootVelocity(shooter, compressor, harm, () -> !button6.get()),
-      new ShootDemo(shooter, compressor, harm),
+      new ShootVelocity(neo_shooter, compressor, harm, () -> !button6.get()),
+      new ShootDemo(neo_shooter, compressor, harm),
       () -> (shooterMode.getSelected() == ShooterMode.COMPETITION)
     ));
 
