@@ -70,6 +70,12 @@ public class ShootVelocity extends CommandBase {
     this.harm = harm;
     this.isLongShot = isLongShot;
     ball_release_delay = new Timer();
+
+    SmartDashboard.putNumber("Shooter Velocity", vel);
+    SmartDashboard.putNumber("Backspin Factor", backspin);
+    var neo_vels = neo_shooter.getVelocities();
+    SmartDashboard.putNumber("Neo Top Vel", neo_vels[0]);
+    SmartDashboard.putNumber("Neo Bottom Vel", neo_vels[1]);
   }
 
   // Called when the command is initially scheduled.
