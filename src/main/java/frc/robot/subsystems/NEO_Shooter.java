@@ -67,7 +67,7 @@ public class NEO_Shooter extends SubsystemBase {
          // Setting PID system to default
          bottom_shooter.restoreFactoryDefaults();
 
-         // COnfiguring the NEO bottom motors PID values
+         // Configuring the NEO bottom motors PID values
          bottom_shooter.getPIDController().setFF(Constants.SHOOTER_FF);
          bottom_shooter.getPIDController().setP(Constants.SHOOTER_P);
          bottom_shooter.getPIDController().setI(Constants.SHOOTER_I);
@@ -95,6 +95,7 @@ public class NEO_Shooter extends SubsystemBase {
                     break;
                 case BOTTOM:
                     curVal = bottom_shooter.get();
+                    break;
              }
          } else {
              int curIndex = 0;
@@ -105,6 +106,7 @@ public class NEO_Shooter extends SubsystemBase {
                     break;
                 case BOTTOM:
                     curIndex = curBottomVelIndex;
+                    break;
             }
 
             curVal = velocityRange.get(curIndex);
