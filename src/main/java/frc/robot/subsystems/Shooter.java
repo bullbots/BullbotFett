@@ -50,6 +50,9 @@ public class Shooter extends SubsystemBase {
         // bottomVelocity = inst.getEntry("Shooter Bottom Velocity");
     }
 
+    /**
+     * Sets the PID values needed for the shooter motors
+     */
     private void configurePID() {
         top_shooter.config_kF(0, Constants.SHOOTER_FF);
         top_shooter.config_kP(0, Constants.SHOOTER_P);
@@ -67,9 +70,12 @@ public class Shooter extends SubsystemBase {
         bottom_shooter.stopMotor();
     }
 
-    /**This gets the velocity of the motors
-     * @param motorPlacement This is where the motor is placed either at the top or bottem
-     * @return curVal This retuns the curent velocity of the shooter motors
+
+    /**
+     * Returns the velocity of the requested motor
+     *
+     * @param motorPlacement This chooses between the TOP and BOTTOM motor to get the velocity from
+     * @return curVal This returns the current velocity of the shooter motors
      */
     public double getVelocity(MotorPlacement motorPlacement) {
         double curVal = 0;
@@ -118,6 +124,10 @@ public class Shooter extends SubsystemBase {
         return curVal;
     }
 
+    /**
+     * Returns motor velocities as a double[]
+     * @return double[] motor velocities
+     */ 
     public double[] getVelocities() {
         double top_vel = top_shooter.getSelectedSensorVelocity();
         double bottom_vel = bottom_shooter.getSelectedSensorVelocity();

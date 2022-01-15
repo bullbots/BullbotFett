@@ -19,121 +19,129 @@ import frc.robot.util.SafeSparkMax;
 import frc.robot.util.SafeTalonFX;
 
 public class NEO_Shooter extends SubsystemBase {
-     // Inistalizing NEO Motors
-     private SafeSparkMax bottom_shooter;
-     private SafeSparkMax top_shooter;
+    // Declaring NEO Motors
+    private SafeSparkMax bottom_shooter;
+    private SafeSparkMax top_shooter;
 
-     //Inistalizing FALCON Motors
-     private SafeTalonFX top_fx_shooter;
-     private SafeTalonFX bottom_fx_shooer;
+    // Declaring FALCON Motors
+    private SafeTalonFX top_fx_shooter;
+    private SafeTalonFX bottom_fx_shooer;
 
-     // Inistalizing Servo
-     public final Servo ballReleaseServo = new Servo(Constants.RELEASE_SERVO_PORT);
+    // Initializing Servo
+    public final Servo ballReleaseServo = new Servo(Constants.RELEASE_SERVO_PORT);
 
-     //Adding Vlaues to Network table
-     private NetworkTableEntry topVelocity;
-     private NetworkTableEntry bottomVelocity;
+    // Adding Vlaues to Network table
+    private NetworkTableEntry topVelocity;
+    private NetworkTableEntry bottomVelocity;
 
-     //Intaking Values to determine velocity
-     List<Integer> velocityRange = IntStream.rangeClosed(-100, 100).boxed().collect(Collectors.toList());
-     private int curTopVelIndex = 0;
-     private int curBottomVelIndex = velocityRange.size() / 2;
+    // Intaking Values to determine velocity
+    List<Integer> velocityRange = IntStream.rangeClosed(-100, 100).boxed().collect(Collectors.toList());
+    private int curTopVelIndex = 0;
+    private int curBottomVelIndex = velocityRange.size() / 2;
 
-     private enum MotorPlacement {
-         BOTTOM, TOP
-     }
-
-     public NEO_Shooter() {
-         top_fx_shooter = new SafeTalonFX(Constants.TOP_SHOOTER_PORT, true);
-         bottom_shooter = new SafeSparkMax(Constants.BOTTOM_SHOOTER_PORT, MotorType.kBrushless);
-
-         configurePID();
-
-         top_fx_shooter.setNeutralMode(NeutralMode.Coast);
-         bottom_shooter.setIdleMode(IdleMode.kCoast);
-
-         setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
-
-         var inst = NetworkTableInstance.getDefault();
-     }
-
-     public void configurePID() {
-         // Configuring the FX top motors PID values
-         top_fx_shooter.config_kF(0, Constants.SHOOTER_FF);
-         top_fx_shooter.config_kP(0, Constants.SHOOTER_P);
-         top_fx_shooter.config_kI(0, Constants.SHOOTER_I);
-         top_fx_shooter.config_kP(0, Constants.SHOOTER_D);
-
-         // Setting PID system to default
-         bottom_shooter.restoreFactoryDefaults();
-
-         // Configuring the NEO bottom motors PID values
-         bottom_shooter.getPIDController().setFF(Constants.SHOOTER_FF);
-         bottom_shooter.getPIDController().setP(Constants.SHOOTER_P);
-         bottom_shooter.getPIDController().setI(Constants.SHOOTER_I);
-         bottom_shooter.getPIDController().setP(Constants.SHOOTER_D);
-     }
-
-     // Stops the motors
-     public void stop() {
-         top_fx_shooter.stopMotor();
-         bottom_shooter.stopMotor();
-     }
-
-     /**
-      * THis gets the velocity of the motors
-      * @param motorPlacement This is where the motor will be placed at the top or bottom slots
-      * @return curVal This returns the current velocity of the shooter motors
-      */
-     public double getVelocity(MotorPlacement motorPlacement) {
-
-         double curVal = 0;
-         if (Robot.isReal()) {
-             switch (motorPlacement) {
-                case TOP:
-                    curVal = top_fx_shooter.getSelectedSensorVelocity();
-                    break;
-                case BOTTOM:
-                    curVal = bottom_shooter.get();
-                    break;
-             }
-         } else {
-             int curIndex = 0;
-
-             switch (motorPlacement) {
-                case TOP:
-                    curIndex = curTopVelIndex;
-                    break;
-                case BOTTOM:
-                    curIndex = curBottomVelIndex;
-                    break;
-            }
-
-            curVal = velocityRange.get(curIndex);
-
-            if(curIndex >= velocityRange.size() - 1) {
-                switch (motorPlacement) {
-                    case TOP:
-                        curTopVelIndex = 0;
-                        break;
-                    case BOTTOM:
-                        curBottomVelIndex = 0;
-                        break;
-                }
-            } else {
-                switch (motorPlacement) {
-                    case TOP: 
-                        curTopVelIndex++;
-                        break;
-                    case BOTTOM: 
-                        curBottomVelIndex++;
-                        break;
-                }
-            }
-        }
-        return curVal;
+    private enum MotorPlacement {
+        BOTTOM, TOP
     }
 
+    public NEO_Shooter() {
+        top_fx_shooter = new SafeTalonFX(Constants.TOP_SHOOTER_PORT, true);
+        bottom_shooter = new SafeSparkMax(Constants.BOTTOM_SHOOTER_PORT, MotorType.kBrushless);
+
+        configurePID();
+
+        top_fx_shooter.setNeutralMode(NeutralMode.Coast);
+        bottom_shooter.setIdleMode(IdleMode.kCoast);
+
+        setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
+
+        var inst = NetworkTableInstance.getDefault();
+    }
+
+    /**
+     * Sets the PID values needed for the shooter motors
+     */
+    public void configurePID() {
+        // Configuring the FX top motors PID values
+        top_fx_shooter.config_kF(0, Constants.SHOOTER_FF);
+        top_fx_shooter.config_kP(0, Constants.SHOOTER_P);
+        top_fx_shooter.config_kI(0, Constants.SHOOTER_I);
+        top_fx_shooter.config_kP(0, Constants.SHOOTER_D);
+
+        // Setting PID system to default
+        bottom_shooter.restoreFactoryDefaults();
+
+        // Configuring the NEO bottom motors PID values
+        bottom_shooter.getPIDController().setFF(Constants.SHOOTER_FF);
+        bottom_shooter.getPIDController().setP(Constants.SHOOTER_P);
+        bottom_shooter.getPIDController().setI(Constants.SHOOTER_I);
+        bottom_shooter.getPIDController().setP(Constants.SHOOTER_D);
+    }
+
+    // Stops the motors
+    public void stop() {
+        top_fx_shooter.stopMotor();
+        bottom_shooter.stopMotor();
+    }
+
+    /**
+     * Returns the velocity of the requested motor
+     *
+     * @param motorPlacement This chooses between the TOP and BOTTOM motor to get the velocity from
+     * @return curVal This returns the current velocity of the shooter motors
+     */
+    public double getVelocity(MotorPlacement motorPlacement) {
+
+        double curVal = 0;
+        if (Robot.isReal()) {
+            switch (motorPlacement) {
+            case TOP:
+                curVal = top_fx_shooter.getSelectedSensorVelocity();
+                break;
+            case BOTTOM:
+                curVal = bottom_shooter.get();
+                break;
+            }
+        } else {
+            int curIndex = 0;
+
+            switch (motorPlacement) {
+            case TOP:
+                curIndex = curTopVelIndex;
+                break;
+            case BOTTOM:
+                curIndex = curBottomVelIndex;
+                break;
+        }
+
+        curVal = velocityRange.get(curIndex);
+
+        if(curIndex >= velocityRange.size() - 1) {
+            switch (motorPlacement) {
+                case TOP:
+                    curTopVelIndex = 0;
+                    break;
+                case BOTTOM:
+                    curBottomVelIndex = 0;
+                    break;
+            }
+        } else {
+            switch (motorPlacement) {
+                case TOP: 
+                    curTopVelIndex++;
+                    break;
+                case BOTTOM: 
+                    curBottomVelIndex++;
+                    break;
+            }
+        }
+    }
+    return curVal;
+    }
+
+    /**
+     * Returns motor velocities as a double[]
+     * @return double[] motor velocities
+     */ 
     public double[] getVelocities() {
         double top_vel = top_fx_shooter.getSelectedSensorVelocity();
         double bottom_vel = bottom_shooter.get();
