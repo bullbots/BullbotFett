@@ -55,13 +55,12 @@ public class RobotContainer {
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
   private static JoystickButton button4 = new JoystickButton(stick, 4);
-  private static JoystickButton button5 = new JoystickButton(stick, 5);
   private static JoystickButton button6 = new JoystickButton(stick, 6);  
   private static JoystickButton button10 = new JoystickButton(stick, 10); 
 
   // Subsystems
   private final NEO_Shooter neo_shooter = new NEO_Shooter();
-  private final Shooter shooter = new Shooter();
+  // private final Shooter shooter = new Shooter();
   private final DrivetrainFalcon drivetrain = new DrivetrainFalcon();
   private final Harm harm = new Harm();
   private final Shifter shifter = new Shifter();

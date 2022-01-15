@@ -19,7 +19,7 @@ public class ShootDemo extends CommandBase {
    * Creates a new ShootDemo.
    */
 
-  private Shooter shooter;
+  // private Shooter shooter;
   private NEO_Shooter neo_shooter;
   private Compressor compressor;
   private Harm harm;
@@ -28,14 +28,15 @@ public class ShootDemo extends CommandBase {
   private boolean servoState = false;
   
 
-  public ShootDemo(Shooter shooter, Compressor compressor, Harm harm) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooter, harm);
-    this.shooter = shooter;
-    this.compressor = compressor;
-    this.harm = harm;
-    ball_release_delay = new Timer();
-  }
+  // This is used for the Falcon 500
+  // public ShootDemo(Shooter shooter, Compressor compressor, Harm harm) {
+  //   // Use addRequirements() here to declare subsystem dependencies.
+  //   addRequirements(shooter, harm);
+  //   this.shooter = shooter;
+  //   this.compressor = compressor;
+  //   this.harm = harm;
+  //   ball_release_delay = new Timer();
+  // }
 
   public ShootDemo(NEO_Shooter neo_shooter, Compressor compressor, Harm harm) {
     // Use addRequirement() here to declare subsystem dependencies.
@@ -54,7 +55,7 @@ public class ShootDemo extends CommandBase {
     ball_release_delay.start();
     harm.raiseShooterHood();
 
-    shooter.set(velocity, -velocity);
+    // shooter.set(velocity, -velocity);
     neo_shooter.set(velocity, -velocity);
   }
 
@@ -71,7 +72,7 @@ public class ShootDemo extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.set(0, 0);
+    // shooter.set(0, 0);
     neo_shooter.set(0, 0);
     compressor.start();
   }

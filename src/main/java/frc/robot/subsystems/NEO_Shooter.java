@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -16,16 +15,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.SafeSparkMax;
-import frc.robot.util.SafeTalonFX;
 
 public class NEO_Shooter extends SubsystemBase {
      // Inistalizing NEO Motors
      private SafeSparkMax bottom_shooter;
      private SafeSparkMax top_shooter;
-
-     //Inistalizing FALCON Motors
-     private SafeTalonFX top_fx_shooter;
-     private SafeTalonFX bottom_fx_shooer;
 
      // Inistalizing Servo
      public final Servo ballReleaseServo = new Servo(Constants.RELEASE_SERVO_PORT);
@@ -44,12 +38,12 @@ public class NEO_Shooter extends SubsystemBase {
      }
 
      public NEO_Shooter() {
-         top_fx_shooter = new SafeTalonFX(Constants.TOP_SHOOTER_PORT, true);
+         top_shooter = new SafeSparkMax(Constants.TOP_SHOOTER_PORT, MotorType.kBrushless);
          bottom_shooter = new SafeSparkMax(Constants.BOTTOM_SHOOTER_PORT, MotorType.kBrushless);
 
          configurePID();
 
-         top_fx_shooter.setNeutralMode(NeutralMode.Coast);
+         top_shooter.setIdleMode(IdleMode.kCoast);
          bottom_shooter.setIdleMode(IdleMode.kCoast);
 
          setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
@@ -58,14 +52,12 @@ public class NEO_Shooter extends SubsystemBase {
      }
 
      public void configurePID() {
-         // Configuring the FX top motors PID values
-         top_fx_shooter.config_kF(0, Constants.SHOOTER_FF);
-         top_fx_shooter.config_kP(0, Constants.SHOOTER_P);
-         top_fx_shooter.config_kI(0, Constants.SHOOTER_I);
-         top_fx_shooter.config_kP(0, Constants.SHOOTER_D);
 
-         // Setting PID system to default
-         // bottom_shooter.restoreFactoryDefaults();
+         // Configuring the NEO Top motors PID values
+         top_shooter.getPIDController().setFF(Constants.SHOOTER_FF);
+         top_shooter.getPIDController().setP(Constants.SHOOTER_P);
+         top_shooter.getPIDController().setI(Constants.SHOOTER_I);
+         top_shooter.getPIDController().setP(Constants.SHOOTER_D);
 
          // Configuring the NEO bottom motors PID values
          bottom_shooter.getPIDController().setFF(Constants.SHOOTER_FF);
@@ -76,7 +68,7 @@ public class NEO_Shooter extends SubsystemBase {
 
      // Stops the motors
      public void stop() {
-         top_fx_shooter.stopMotor();
+         top_shooter.stopMotor();
          bottom_shooter.stopMotor();
      }
 
@@ -91,7 +83,7 @@ public class NEO_Shooter extends SubsystemBase {
          if (Robot.isReal()) {
              switch (motorPlacement) {
                 case TOP:
-                    curVal = top_fx_shooter.getSelectedSensorVelocity();
+                    curVal = top_shooter.get();
                     break;
                 case BOTTOM:
                     curVal = bottom_shooter.get();
@@ -135,7 +127,7 @@ public class NEO_Shooter extends SubsystemBase {
     }
 
     public double[] getVelocities() {
-        double top_vel = top_fx_shooter.getSelectedSensorVelocity();
+        double top_vel = top_shooter.get();
         double bottom_vel = bottom_shooter.get();
 
         return new double[] {top_vel, bottom_vel};
@@ -147,7 +139,7 @@ public class NEO_Shooter extends SubsystemBase {
      * @param bottom_vel This is the velocity of the bottom motor
      */
     public void set(double top_vel, double bottom_vel) {
-        top_fx_shooter.set(top_vel);
+        top_shooter.set(top_vel);
         bottom_shooter.set(bottom_vel);
         System.out.println(String.format("Top Velocity %.02f Bottom Velocity %.02f", top_vel, bottom_vel));
     }

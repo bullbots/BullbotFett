@@ -48,6 +48,7 @@ public class ShootVelocity extends CommandBase {
       new Pair<> (0, 0.10),
       new Pair<> (-10000, 0.10)));
 
+  // This is used for the Falcon 500
   // public ShootVelocity(Shooter shooter, Compressor compressor, Harm harm, BooleanSupplier isLongShot) {
   //   addRequirements(shooter, harm);
   //   this.shooter = shooter;
