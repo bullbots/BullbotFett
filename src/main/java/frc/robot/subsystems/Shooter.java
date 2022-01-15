@@ -21,7 +21,7 @@ public class Shooter extends SubsystemBase {
     private SafeTalonFX top_shooter;
     private SafeTalonFX bottom_shooter;
 
-    public final Servo ballReleaseServo = new Servo(Constants.RELEASE_SERVO_PORT);
+    // public final Servo ballReleaseServo = new Servo(Constants.RELEASE_SERVO_PORT);
 
     private NetworkTableEntry topVelocity;
     private NetworkTableEntry bottomVelocity;
@@ -43,7 +43,7 @@ public class Shooter extends SubsystemBase {
         top_shooter.setNeutralMode(NeutralMode.Coast);
         bottom_shooter.setNeutralMode(NeutralMode.Coast);
 
-        setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
+        // setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
 
         var inst = NetworkTableInstance.getDefault();
         // topVelocity = inst.getEntry("Shooter Top Velocity");

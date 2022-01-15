@@ -62,7 +62,7 @@ public class ShootDemo extends CommandBase {
   @Override
   public void execute() {
     if (!servoState && ball_release_delay.hasElapsed(1)) {
-      shooter.ballReleaseServo.set(0);
+      // shooter.ballReleaseServo.set(0);
       neo_shooter.ballReleaseServo.set(0);
       servoState = true;
     }

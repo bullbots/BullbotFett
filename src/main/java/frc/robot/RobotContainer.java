@@ -55,6 +55,7 @@ public class RobotContainer {
   private static JoystickButton button2 = new JoystickButton(stick, 2);
   private static JoystickButton button3 = new JoystickButton(stick, 3);
   private static JoystickButton button4 = new JoystickButton(stick, 4);
+  private static JoystickButton button5 = new JoystickButton(stick, 5);
   private static JoystickButton button6 = new JoystickButton(stick, 6);  
   private static JoystickButton button10 = new JoystickButton(stick, 10); 
 
