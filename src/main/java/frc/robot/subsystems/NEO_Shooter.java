@@ -64,9 +64,6 @@ public class NEO_Shooter extends SubsystemBase {
          top_fx_shooter.config_kI(0, Constants.SHOOTER_I);
          top_fx_shooter.config_kP(0, Constants.SHOOTER_D);
 
-         // Setting PID system to default
-         bottom_shooter.restoreFactoryDefaults();
-
          // Configuring the NEO bottom motors PID values
          bottom_shooter.getPIDController().setFF(Constants.SHOOTER_FF);
          bottom_shooter.getPIDController().setP(Constants.SHOOTER_P);
