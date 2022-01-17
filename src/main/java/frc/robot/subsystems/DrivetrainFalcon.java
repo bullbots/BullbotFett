@@ -141,6 +141,7 @@ public class DrivetrainFalcon extends SubsystemBase {
       m_rightDist = temporary;
     }
 
+    // Debugging values
     // SmartDashboard.putNumber("Left Distance", m_leftDist);
     // SmartDashboard.putNumber("Right Distance", m_rightDist);
 
@@ -176,7 +177,7 @@ public class DrivetrainFalcon extends SubsystemBase {
     leftMasterFalcon.config_kF(0, Constants.LEFT_VELOCITY_FF);
     leftMasterFalcon.config_kP(0, Constants.LEFT_VELOCITY_P);
     leftMasterFalcon.config_kI(0, Constants.LEFT_VELOCITY_I);
-    leftMasterFalcon.config_kP(0, Constants.LEFT_VELOCITY_D);
+    leftMasterFalcon.config_kD(0, Constants.LEFT_VELOCITY_D);
 
     rightMasterFalcon.config_kF(0, Constants.RIGHT_VELOCITY_FF);
     rightMasterFalcon.config_kP(0, Constants.RIGHT_VELOCITY_P);

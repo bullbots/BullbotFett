@@ -57,13 +57,13 @@ public class NEO_Shooter extends SubsystemBase {
          top_shooter.getPIDController().setFF(Constants.SHOOTER_FF);
          top_shooter.getPIDController().setP(Constants.SHOOTER_P);
          top_shooter.getPIDController().setI(Constants.SHOOTER_I);
-         top_shooter.getPIDController().setP(Constants.SHOOTER_D);
+         top_shooter.getPIDController().setD(Constants.SHOOTER_D);
 
          // Configuring the NEO bottom motors PID values
          bottom_shooter.getPIDController().setFF(Constants.SHOOTER_FF);
          bottom_shooter.getPIDController().setP(Constants.SHOOTER_P);
          bottom_shooter.getPIDController().setI(Constants.SHOOTER_I);
-         bottom_shooter.getPIDController().setP(Constants.SHOOTER_D);
+         bottom_shooter.getPIDController().setD(Constants.SHOOTER_D);
      }
 
      // Stops the motors

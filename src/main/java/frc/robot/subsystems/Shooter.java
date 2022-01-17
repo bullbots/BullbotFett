@@ -54,12 +54,12 @@ public class Shooter extends SubsystemBase {
         top_shooter.config_kF(0, Constants.SHOOTER_FF);
         top_shooter.config_kP(0, Constants.SHOOTER_P);
         top_shooter.config_kI(0, Constants.SHOOTER_I);
-        top_shooter.config_kP(0, Constants.SHOOTER_D);
+        top_shooter.config_kD(0, Constants.SHOOTER_D);
 
         bottom_shooter.config_kF(0, Constants.SHOOTER_FF);
         bottom_shooter.config_kP(0, Constants.SHOOTER_P);
         bottom_shooter.config_kI(0, Constants.SHOOTER_I);
-        bottom_shooter.config_kP(0, Constants.SHOOTER_D);
+        bottom_shooter.config_kD(0, Constants.SHOOTER_D);
     }
 
     public void stop() {

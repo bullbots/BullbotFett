@@ -12,9 +12,11 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainFalcon;
+import frc.robot.subsystems.DrivetrainNEO;
 
 public class JoystickDrive extends CommandBase {
-  
+
+  private DrivetrainNEO m_neo_drivetrain;
   private DrivetrainFalcon m_drivetrain;
   private DoubleSupplier joyY;
   private DoubleSupplier joyX;
