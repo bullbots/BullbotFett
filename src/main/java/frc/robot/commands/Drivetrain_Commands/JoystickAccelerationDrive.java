@@ -73,6 +73,11 @@ public class JoystickAccelerationDrive extends CommandBase {
     double accX = joyX.getAsDouble();
     double accY = joyY.getAsDouble();
 
+    // Throttling acceleration values
+    double throttle = joyZ.getAsDouble();
+    accX *= throttle;
+    accY *= throttle;
+
     // Calculating time since last call to execute
     // Necessary for calculating the change in the velocity
     long currentTime = System.nanoTime();
@@ -98,7 +103,9 @@ public class JoystickAccelerationDrive extends CommandBase {
     SmartDashboard.putNumber("velY", velY);
     SmartDashboard.putNumber("timeDelta", timeDelta);
 
-    m_drivetrain.arcadeDrive(velX * joyZ.getAsDouble(), velY * joyZ.getAsDouble(), true);
+    // // Throttles and inputs the velocities into arcadeDrive
+    // m_drivetrain.arcadeDrive(velX * joyZ.getAsDouble(), velY * joyZ.getAsDouble(), true);
+    m_drivetrain.arcadeDrive(velX, velY, true);
   }
 
   // Called once the command ends or is interrupted.
