@@ -1,6 +1,5 @@
 package frc.robot.util;
 
-import com.revrobotics.CANSparkMax;
 
 public class SafeSparkMax extends CANSparkMax {
 
@@ -8,12 +7,7 @@ public class SafeSparkMax extends CANSparkMax {
     private int freeLimit = 40;
 
     public SafeSparkMax(int deviceNumber, MotorType motorType) {
-        super(deviceNumber, motorType);
 
-        clearFaults();
-        setSmartCurrentLimit(stallLimit, freeLimit);
-        burnFlash();
-
-        restoreFactoryDefaults();
     }
+
 }

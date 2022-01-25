@@ -1,24 +1,23 @@
 package frc.robot.subsystems;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.util.SafeSparkMax;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import com.revrobotics.CANSparkMax;
 
 public class NEO_Shooter extends SubsystemBase {
      // Inistalizing NEO Motors
-     private SafeSparkMax bottom_shooter;
+     private Cansparkmax bottom_shooter;
      private SafeSparkMax top_shooter;
 
      // Inistalizing Servo

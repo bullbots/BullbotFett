@@ -21,7 +21,7 @@ public class NavX extends AHRS {
     public void reset() {
         angleDelta = getAngle();
     }
-    
+
     public void reset180() {
         angleDelta = getAngle() + 180;
     }

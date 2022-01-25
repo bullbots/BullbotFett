@@ -27,10 +27,10 @@ public class SafeTalonFX extends WPI_TalonFX {
         configFactoryDefault();
 
         StatorCurrentLimitConfiguration config = new StatorCurrentLimitConfiguration(
-            true,
-            currentLimit,
-            currentThreshold,
-            currentThresholdTime
+                true,
+                currentLimit,
+                currentThreshold,
+                currentThresholdTime
         );
 
         configNeutralDeadband(dead_band);
@@ -47,7 +47,7 @@ public class SafeTalonFX extends WPI_TalonFX {
     /**
      * Moves the motor at a percent of its max speed
      * @param percentOutput A double from -1 to 1
-     * 
+     *
      */
     @Override
     public void set(double percentOutput) {

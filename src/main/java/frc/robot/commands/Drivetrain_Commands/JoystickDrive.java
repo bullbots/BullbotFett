@@ -12,68 +12,67 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainFalcon;
-import frc.robot.subsystems.DrivetrainNEO;
 
 public class JoystickDrive extends CommandBase {
 
-  private DrivetrainNEO m_neo_drivetrain;
-  private DrivetrainFalcon m_drivetrain;
-  private DoubleSupplier joyY;
-  private DoubleSupplier joyX;
-  private DoubleSupplier joyZ;
 
-  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX) {
-    // m_drivetrain = drivetrain;
-    // this.joyY = joyY;
-    // this.joyX = joyX;
+    private DrivetrainFalcon m_drivetrain;
+    private DoubleSupplier joyY;
+    private DoubleSupplier joyX;
+    private DoubleSupplier joyZ;
 
-    // addRequirements(m_drivetrain);
-    this(drivetrain, joyY, joyX,  () -> 1.0);
-  }
+    public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX) {
+        // m_drivetrain = drivetrain;
+        // this.joyY = joyY;
+        // this.joyX = joyX;
 
-  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
-    m_drivetrain = drivetrain;
-    this.joyY = joyY;
-    this.joyX = joyX;
-    this.joyZ = joyZ;
+        // addRequirements(m_drivetrain);
+        this(drivetrain, joyY, joyX,  () -> 1.0);
+    }
 
-    addRequirements(m_drivetrain);
-  }
+    public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
+        m_drivetrain = drivetrain;
+        this.joyY = joyY;
+        this.joyX = joyX;
+        this.joyZ = joyZ;
 
-  @Override
-  public void initialize() {
-  }
+        addRequirements(m_drivetrain);
+    }
 
-  @Override
-  public void execute() {
-    double _joyY = joyY.getAsDouble();
-    double _joyX = joyX.getAsDouble();
-    boolean turnInPlace = true;
-    double _joyZ = joyZ.getAsDouble();
-    m_drivetrain.curvatureDrive(_joyY, _joyX, turnInPlace);
-    // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
+    @Override
+    public void initialize() {
+    }
 
-    SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
-    // SmartDashboard.putNumber("JoyY", joyY.getAsDouble());
-    // SmartDashboard.putNumber("JoyZ", joyZ.getAsDouble());
+    @Override
+    public void execute() {
+        double _joyY = joyY.getAsDouble();
+        double _joyX = joyX.getAsDouble();
+        boolean turnInPlace = true;
+        double _joyZ = joyZ.getAsDouble();
+        m_drivetrain.curvatureDrive(_joyY, _joyX, turnInPlace);
+        // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
 
-    // if (joyX.getAsDouble() < -.1) {
-    //   m_drivetrain.driveLeft(.5);
-    // } else if (joyX.getAsDouble() > .1) {
-    //   m_drivetrain.driveRight(.5);
-    // } else {
-    //   m_drivetrain.driveLeft(0);
-    //   m_drivetrain.driveRight(0);
-    // }
-  }
+        SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
+        // SmartDashboard.putNumber("JoyY", joyY.getAsDouble());
+        // SmartDashboard.putNumber("JoyZ", joyZ.getAsDouble());
 
-  @Override
-  public void end(boolean interrupted) {
-    m_drivetrain.set(0,0);
-  }
+        // if (joyX.getAsDouble() < -.1) {
+        //   m_drivetrain.driveLeft(.5);
+        // } else if (joyX.getAsDouble() > .1) {
+        //   m_drivetrain.driveRight(.5);
+        // } else {
+        //   m_drivetrain.driveLeft(0);
+        //   m_drivetrain.driveRight(0);
+        // }
+    }
 
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    @Override
+    public void end(boolean interrupted) {
+        m_drivetrain.set(0,0);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

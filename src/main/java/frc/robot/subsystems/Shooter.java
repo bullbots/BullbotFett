@@ -1,20 +1,16 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import frc.robot.Robot;
+import frc.robot.util.SafeTalonFX;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import frc.robot.util.SafeTalonFX;
 
 public class Shooter extends SubsystemBase {
 

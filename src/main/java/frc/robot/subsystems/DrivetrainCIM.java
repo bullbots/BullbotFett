@@ -1,9 +1,11 @@
 package frc.robot.subsystems;
 
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.drive.RobotDriveBase;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -13,26 +15,17 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.DifferentialDriveDebug;
 import frc.robot.util.NavX;
-import com.revrobotics.frc;
-public class DrivetrainNEO extends SubsystemBase {
 
 
+public class DrivetrainCIM extends SubsystemBase {
+    // Inistalizing Master left and right + Slave left and right motors
+    private final SpeedController leftMasterCIM = new Talon(Constants.LEFT_MASTER_PORT);
+    private final SpeedController rightMasterCIM = new Talon(Constants.RIGHT_MASTER_PORT);
 
+    private final SpeedController leftSlaveCIM = new Talon(Constants.LEFT_SLAVE_PORT);
+    private final SpeedController rightSlaveCIM = new Talon(Constants.RIGHT_SLAVE_PORT);
 
-    // Setting the ticks rates for wheel revolution, feet, and per hundred milliseconds
-    public double ticks_per_wheel_revolution = 4096;
-    private double ticks_per_foot = ticks_per_wheel_revolution / (.5 * Math.PI); // 0.5(ft) is Diameter of the wheel in the front
-    private double max_ticks_per_hundred_milliseconds = ticks_per_foot * Constants.MAX_SPEED_LOW_GEAR / 10;
-
-    // Inistilizing Master left and right + Slave left and right motors
-    private final SafeSparkMax leftMasterNEO = new SafeSparkMax(Constants.LEFT_MASTER_PORT, MotorType.kBrushless);
-    private final SafeSparkMax rightMasterNEO = new SafeSparkMax(Constants.RIGHT_MASTER_PORT, MotorType.kBrushless);
-
-    // These are going to be the slave to the master motors if we have two motors on each side
-    // private final SafeSparkMax leftSlaveNEO = new SafeSparkMax(Constants.LEFT_SLAVE_PORT, MotorType.kBrushless);
-    // private final SafeSparkMax rightSlaveNEO = new SafeSparkMax(Constants.RIGHT_SLAVE_PORT, MotorType.kBrushless);
-
-    private final DifferentialDriveDebug diffDrive = new DifferentialDriveDebug(leftMasterNEO, rightMasterNEO);
+    private final DifferentialDriveDebug diffDrive = new DifferentialDriveDebug(leftMasterCIM, rightMasterCIM);
     private final NavX gyro = new NavX();
 
     private NetworkTableEntry leftCurrent;
@@ -61,12 +54,11 @@ public class DrivetrainNEO extends SubsystemBase {
         Coast, Brake
     }
 
-    public DrivetrainNEO() {
+    public DrivetrainCIM() {
         if (Robot.isReal()) {
-            rightMasterNEO.setInverted(false);
-            leftMasterNEO.setInverted(false);
+            rightMasterCIM.setInverted(false);
+            leftMasterCIM.setInverted(false);
 
-            setCoastMode(CoastMode.Coast);
 
             diffDrive.setDeadband(0.05);
         }
@@ -79,49 +71,21 @@ public class DrivetrainNEO extends SubsystemBase {
         SmartDashboard.putData("Field", m_fieldSim);
     }
 
-    // Might need to add "else if" to set it to kcoast
-    public void setCoastMode(CoastMode coastMode) {
-        var neutralMode = IdleMode.kCoast;
-        if (coastMode == CoastMode.Brake) {
-            neutralMode = IdleMode.kBrake;
-        }
-
-        rightMasterNEO.setIdleMode(neutralMode);
-        leftMasterNEO.setIdleMode(neutralMode);
-
-    }
 
     public void setOdometryDirection(boolean invert) {
         m_flippedOdometry = invert;
     }
 
     public void updateOdometry() {
-        m_leftDist = (leftMasterNEO.getEncoder().getPosition() / ticks_per_foot);
-        m_rightDist = (rightMasterNEO.getEncoder().getPosition() / ticks_per_foot);
 
-        if (m_flippedOdometry) {
-            var temporary = -m_leftDist;
-            m_leftDist = -m_rightDist;
-            m_rightDist = temporary;
-        }
-
-        // Debugging values
-        // SmartDashboard.putNumber("Left Distance", m_leftDist);
-        // SmartDashboard.putNumber("Right Distance", m_rightDist);
-
-        var rotation2d = gyro.getRotation2d();
-        if(m_flippedOdometry) {
-            rotation2d.rotateBy(Rotation2d.fromDegrees(180));
-        }
-
-        m_odometry.update(rotation2d, m_leftDist, m_rightDist);
     }
 
-    public void resetOdometry(Pose2d pose) {
-        leftMasterNEO.getEncoder().setPosition(0);
-        rightMasterNEO.getEncoder().setPosition(0);
 
-        m_odometry.resetPosition(pose, gyro.getRotation2d());
+
+
+
+    public void resetOdometry(Pose2d pose) {
+
     }
 
     public void resetGyro() {
@@ -136,26 +100,11 @@ public class DrivetrainNEO extends SubsystemBase {
 
     public void configurePID() {
 
-        // Set Velocity PID Constants in slot 0
-        leftMasterNEO.getPIDController().setFF(Constants.LEFT_VELOCITY_FF);
-        leftMasterNEO.getPIDController().setP(Constants.LEFT_VELOCITY_P);
-        leftMasterNEO.getPIDController().setI(Constants.LEFT_VELOCITY_I);
-        leftMasterNEO.getPIDController().setD(Constants.LEFT_VELOCITY_D);
-
-        rightMasterNEO.getPIDController().setFF(Constants.RIGHT_VELOCITY_FF);
-        rightMasterNEO.getPIDController().setP(Constants.RIGHT_VELOCITY_P);
-        rightMasterNEO.getPIDController().setI(Constants.RIGHT_VELOCITY_I);
-        rightMasterNEO.getPIDController().setD(Constants.RIGHT_VELOCITY_D);
-
     }
 
     // For Falcon 500 it is "configureMotionMagic"
     public void configureSmartMotion() {
-        leftMasterNEO.getPIDController().setSmartMotionMaxVelocity(Constants.LEFT_MASTER_VELOCITY, Constants.kTIMEOUT_MS);
-        leftMasterNEO.getPIDController().setSmartMotionMaxAccel(Constants.LEFT_MASTER_ACCELERATION, Constants.kTIMEOUT_MS);
 
-        rightMasterNEO.getPIDController().setSmartMotionMaxVelocity(Constants.RIGHT_MASTER_VELOCITY, Constants.kTIMEOUT_MS);
-        rightMasterNEO.getPIDController().setSmartMotionMaxAccel(Constants.RIGHT_MASTER_ACCELERATION, Constants.kTIMEOUT_MS);
     }
 
 
@@ -185,23 +134,9 @@ public class DrivetrainNEO extends SubsystemBase {
         // SmartDashboard.putNumber("Left Master Current", leftMasterFalcon.getStatorCurrent());
         // SmartDashboard.putNumber("Left Slave Current", leftSlaveFalcon.getStatorCurrent());
 
-        updateOdometry();
 
-        if(Robot.isReal()) {
-            leftCurrent.setNumber(leftMasterNEO.getOutputCurrent());
 
-            rightCurrent.setNumber(rightMasterNEO.getOutputCurrent());
-        } else {
-            double curLeftCurrent = 0;
 
-            leftCurrent.setNumber(curLeftCurrent);
-            leftPosition.setNumber(0.0);
-            leftVelocity.setNumber(0.0);
-
-            rightCurrent.setNumber(0.0);
-            rightPosition.setNumber(0.0);
-            rightVelocity.setNumber(0.0);
-        }
     }
 
     /**
@@ -222,9 +157,7 @@ public class DrivetrainNEO extends SubsystemBase {
      *  Sets the Encoder values back to zero
      */
     public void resetEncoders() {
-        System.out.println("Reset Encoders called");
-        leftMasterNEO.getEncoder().setPosition(0);
-        rightMasterNEO.getEncoder().setPosition(0);
+
     }
 
     /**
@@ -232,7 +165,7 @@ public class DrivetrainNEO extends SubsystemBase {
      * @return double array of positions [left, right]
      */
     public double[] getPositions(){
-        return new double[] {leftMasterNEO.getEncoder().getPosition(), rightMasterNEO.getEncoder().getPosition()};
+       return null;
     }
 
     /**
@@ -241,14 +174,13 @@ public class DrivetrainNEO extends SubsystemBase {
      * @param rightPercent
      */
     public void set(double leftPercent, double rightPercent) {
-        leftMasterNEO.set(leftPercent);
-        rightMasterNEO.set(rightPercent);
+
     }
 
     // Immediately stops the drivetrain, only use in emergencies
     public void stop() {
-        leftMasterNEO.stopMotor();
-        rightMasterNEO.stopMotor();
+        leftMasterCIM.stopMotor();
+        rightMasterCIM.stopMotor();
     }
 
     // Helper function to generate NetworkTableEntries
@@ -262,11 +194,11 @@ public class DrivetrainNEO extends SubsystemBase {
     }
 
     public void driveLeft(double val) {
-        leftMasterNEO.set(val);
+        leftMasterCIM.set(val);
     }
 
     public void driveRight(double val) {
-        rightMasterNEO.set(val);
+        rightMasterCIM.set(val);
     }
 
 }
