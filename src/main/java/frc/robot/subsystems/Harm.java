@@ -26,7 +26,7 @@ public class Harm extends SubsystemBase {
 
   private SafeSparkMax intake_belt;
   private SafeSparkMax intake_bar_spinner;
-  private DoubleSolenoid intake_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.HIGH_ANGLE_CHANNEL, Constants.LOW_ANGLE_CHANNEL);
+  private DoubleSolenoid intake_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.INTAKE_DOWN, Constants.INTAKE_UP);
   private DoubleSolenoid shooter_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.HIGH_ANGLE_CHANNEL, Constants.LOW_ANGLE_CHANNEL);
   private boolean raised = true;
 
