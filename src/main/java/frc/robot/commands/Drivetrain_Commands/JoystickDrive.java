@@ -45,6 +45,8 @@ public class JoystickDrive extends CommandBase {
         m_drivetrain = drivetrain;
         this.joyY = joyY;
         this.joyX = joyX;
+
+        addRequirements(m_drivetrain);
     }
 
     @Override
@@ -56,7 +58,7 @@ public class JoystickDrive extends CommandBase {
         double _joyY = joyY.getAsDouble();
         double _joyX = joyX.getAsDouble();
         boolean turnInPlace = true;
-        double _joyZ = joyZ.getAsDouble();
+        // double _joyZ = joyZ.getAsDouble();
         m_drivetrain.curvatureDrive(_joyY, _joyX, turnInPlace);
         // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
 

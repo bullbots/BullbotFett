@@ -140,7 +140,7 @@ public class NEO_Shooter extends SubsystemBase {
      */
     public void set(double top_vel, double bottom_vel) {
         top_shooter.set(top_vel);
-        bottom_shooter.set(bottom_vel);
+        bottom_shooter.set(-bottom_vel);
         System.out.println(String.format("Top Velocity %.02f Bottom Velocity %.02f", top_vel, bottom_vel));
     }
 
