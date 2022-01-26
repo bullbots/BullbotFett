@@ -11,17 +11,19 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.DrivetrainCIM;
 import frc.robot.subsystems.DrivetrainFalcon;
 
 public class JoystickDrive extends CommandBase {
 
 
-    private DrivetrainFalcon m_drivetrain;
+    // private DrivetrainFalcon m_drivetrain;
+    private DrivetrainCIM m_drivetrain;
     private DoubleSupplier joyY;
     private DoubleSupplier joyX;
     private DoubleSupplier joyZ;
 
-    public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX) {
+    public JoystickDrive(DrivetrainCIM drivetrain, DoubleSupplier joyY, DoubleSupplier joyX) {
         // m_drivetrain = drivetrain;
         // this.joyY = joyY;
         // this.joyX = joyX;
@@ -30,13 +32,19 @@ public class JoystickDrive extends CommandBase {
         this(drivetrain, joyY, joyX,  () -> 1.0);
     }
 
-    public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
+//    public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
+//        m_drivetrain = drivetrain;
+//        this.joyY = joyY;
+//        this.joyX = joyX;
+//        this.joyZ = joyZ;
+//
+//        addRequirements(m_drivetrain);
+//    }
+
+    public JoystickDrive(DrivetrainCIM drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
         m_drivetrain = drivetrain;
         this.joyY = joyY;
         this.joyX = joyX;
-        this.joyZ = joyZ;
-
-        addRequirements(m_drivetrain);
     }
 
     @Override

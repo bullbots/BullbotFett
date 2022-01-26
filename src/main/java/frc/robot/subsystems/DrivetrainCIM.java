@@ -80,10 +80,6 @@ public class DrivetrainCIM extends SubsystemBase {
 
     }
 
-
-
-
-
     public void resetOdometry(Pose2d pose) {
 
     }

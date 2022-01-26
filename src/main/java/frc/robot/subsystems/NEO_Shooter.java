@@ -1,9 +1,9 @@
 package frc.robot.subsystems;
 
 
+import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,10 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import com.revrobotics.CANSparkMax;
+import frc.robot.util.SafeSparkMax;
 
 public class NEO_Shooter extends SubsystemBase {
      // Inistalizing NEO Motors
-     private Cansparkmax bottom_shooter;
+     private SafeSparkMax bottom_shooter;
      private SafeSparkMax top_shooter;
 
      // Inistalizing Servo
@@ -37,13 +38,13 @@ public class NEO_Shooter extends SubsystemBase {
      }
 
      public NEO_Shooter() {
-         top_shooter = new SafeSparkMax(Constants.TOP_SHOOTER_PORT, MotorType.kBrushless);
-         bottom_shooter = new SafeSparkMax(Constants.BOTTOM_SHOOTER_PORT, MotorType.kBrushless);
+         top_shooter = new SafeSparkMax(Constants.TOP_SHOOTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
+         bottom_shooter = new SafeSparkMax(Constants.BOTTOM_SHOOTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
 
          configurePID();
 
-         top_shooter.setIdleMode(IdleMode.kCoast);
-         bottom_shooter.setIdleMode(IdleMode.kCoast);
+         top_shooter.setIdleMode(CANSparkMax.IdleMode.kCoast);
+         bottom_shooter.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
          setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
 

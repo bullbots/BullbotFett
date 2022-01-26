@@ -4,42 +4,25 @@
 
 package frc.robot;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
-import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.Autonomous.AutonomousGSC;
-import frc.robot.commands.Autonomous.TrajectoryBase;
+import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Drivetrain_Commands.AlignShooter;
 import frc.robot.commands.Drivetrain_Commands.JoystickDrive;
 import frc.robot.commands.Drivetrain_Commands.ShiftHigh;
 import frc.robot.commands.Harm_Commands.IntakeGroup;
 import frc.robot.commands.Shooter_Commands.ShootDemo;
 import frc.robot.commands.Shooter_Commands.ShootVelocity;
-import frc.robot.subsystems.DrivetrainFalcon;
-import frc.robot.subsystems.Harm;
-import frc.robot.subsystems.NEO_Shooter;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Shifter;
+import frc.robot.subsystems.*;
 import frc.robot.util.PIDControllerDebug;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpiutil.math.MathUtil;
-import edu.wpi.first.wpilibj.Joystick;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -61,12 +44,13 @@ public class RobotContainer {
     // Subsystems
     private final NEO_Shooter neo_shooter = new NEO_Shooter();
     // private final Shooter shooter = new Shooter();
-    private final DrivetrainFalcon drivetrain = new DrivetrainFalcon();
+    // private final DrivetrainFalcon drivetrain = new DrivetrainFalcon();
+    private final DrivetrainCIM drivetrain = new DrivetrainCIM();
     private final Harm harm = new Harm();
     private final Shifter shifter = new Shifter();
 
 
-    private final Compressor compressor = new Compressor();
+    private final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
     // A chooser for autonomous commands
     SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -165,66 +149,66 @@ public class RobotContainer {
 
     private void initializeAutonomousOptions() {
 
-        // Add commands to the autonomous command chooser
-        m_chooser.setDefaultOption("Bounce Piece", new SequentialCommandGroup(
-                new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
-                new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
-                new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
-                new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
-        ));
-        m_chooser.addOption("Bounce Path", new SequentialCommandGroup(
-                new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
-                new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
-                new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
-                new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
-        ));
-        m_chooser.addOption("Slalom Path",
-                new TrajectoryBase(drivetrain, "/SLALOM")
-        );
-
-        System.out.println("Path Color: " + pathColor.get());
-        m_chooser.addOption("Galactic Search Challenge",
-                new ParallelCommandGroup(
-                        new AutonomousGSC(
-                                drivetrain,
-                                harm,
-                                () -> ((int) SmartDashboard.getNumber("isRed", 0) != 0), //&& pathLetter.get() != Letter.UNLOADED),
-                                () -> ((int) SmartDashboard.getNumber("isRed", 0) == 1),
-                                () -> (pathLetter.get() == Letter.A)
-                        )
-                ));
-
-        m_chooser.addOption("Galactic Red",
-                new ParallelCommandGroup(
-                        new TrajectoryBase(drivetrain, "/RED-COMBINED", true, false).deadlineWith(
-                                new IntakeGroup(harm))
-                )
-        );
-
-        // m_chooser.addOption("Galactic Search Challenge B", new AutonomousGSC_B(
-        //   drivetrain,
-        //   harm,
-        //   () -> (pathColor.get() != Color.UNLOADED),
-        //   () -> (pathColor.get() == Color.RED)
-        // ));
-
-        m_chooser.addOption("Forward Then Backward Path", new SequentialCommandGroup(
-                new TrajectoryBase(drivetrain, "/FORWARD-DISTANCE", false, true), // ... boolean isBackwards, boolean resetGyro
-                new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
-        ));
-
-        SmartDashboard.putData(m_chooser);
-
-        // NetworkTableInstance inst = NetworkTableInstance.getDefault();
-
-        // NetworkTable table = inst.getTable("SmartDashboard");
-
-        // table.addEntryListener("isRed",
-        //   (local_table, key, entry, value, flags) -> {
-        //     pathColor.set(Color.valueOf((int) value.getValue()));
-        //   },
-        //   EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-        // );
+//        // Add commands to the autonomous command chooser
+//        m_chooser.setDefaultOption("Bounce Piece", new SequentialCommandGroup(
+//                new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
+//                new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
+//                new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
+//                new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
+//        ));
+//        m_chooser.addOption("Bounce Path", new SequentialCommandGroup(
+//                new TrajectoryBase(drivetrain, "/BOUNCE-1", false, true), // ... boolean isBackwards, boolean resetGyro
+//                new TrajectoryBase(drivetrain, "/BOUNCE-2", true, false),
+//                new TrajectoryBase(drivetrain, "/BOUNCE-3", false, false),
+//                new TrajectoryBase(drivetrain, "/BOUNCE-4", true, false)
+//        ));
+//        m_chooser.addOption("Slalom Path",
+//                new TrajectoryBase(drivetrain, "/SLALOM")
+//        );
+//
+//        System.out.println("Path Color: " + pathColor.get());
+//        m_chooser.addOption("Galactic Search Challenge",
+//                new ParallelCommandGroup(
+//                        new AutonomousGSC(
+//                                drivetrain,
+//                                harm,
+//                                () -> ((int) SmartDashboard.getNumber("isRed", 0) != 0), //&& pathLetter.get() != Letter.UNLOADED),
+//                                () -> ((int) SmartDashboard.getNumber("isRed", 0) == 1),
+//                                () -> (pathLetter.get() == Letter.A)
+//                        )
+//                ));
+//
+//        m_chooser.addOption("Galactic Red",
+//                new ParallelCommandGroup(
+//                        new TrajectoryBase(drivetrain, "/RED-COMBINED", true, false).deadlineWith(
+//                                new IntakeGroup(harm))
+//                )
+//        );
+//
+//        // m_chooser.addOption("Galactic Search Challenge B", new AutonomousGSC_B(
+//        //   drivetrain,
+//        //   harm,
+//        //   () -> (pathColor.get() != Color.UNLOADED),
+//        //   () -> (pathColor.get() == Color.RED)
+//        // ));
+//
+//        m_chooser.addOption("Forward Then Backward Path", new SequentialCommandGroup(
+//                new TrajectoryBase(drivetrain, "/FORWARD-DISTANCE", false, true), // ... boolean isBackwards, boolean resetGyro
+//                new TrajectoryBase(drivetrain, "/BACKWARD-DISTANCE", true, false)
+//        ));
+//
+//        SmartDashboard.putData(m_chooser);
+//
+//        // NetworkTableInstance inst = NetworkTableInstance.getDefault();
+//
+//        // NetworkTable table = inst.getTable("SmartDashboard");
+//
+//        // table.addEntryListener("isRed",
+//        //   (local_table, key, entry, value, flags) -> {
+//        //     pathColor.set(Color.valueOf((int) value.getValue()));
+//        //   },
+//        //   EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+//        // );
     }
 
     /**
