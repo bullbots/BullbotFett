@@ -7,26 +7,24 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.robot.util.SafeTalonFX;
-import frc.robot.util.DifferentialDriveDebug;
-import frc.robot.util.NavX;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.music.Orchestra;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Robot;
+import frc.robot.util.DifferentialDriveDebug;
+import frc.robot.util.NavX;
+import frc.robot.util.SafeTalonFX;
 
 
 public class DrivetrainFalcon extends SubsystemBase {
@@ -141,6 +139,7 @@ public class DrivetrainFalcon extends SubsystemBase {
       m_rightDist = temporary;
     }
 
+    // Debugging values
     // SmartDashboard.putNumber("Left Distance", m_leftDist);
     // SmartDashboard.putNumber("Right Distance", m_rightDist);
 
@@ -176,7 +175,7 @@ public class DrivetrainFalcon extends SubsystemBase {
     leftMasterFalcon.config_kF(0, Constants.LEFT_VELOCITY_FF);
     leftMasterFalcon.config_kP(0, Constants.LEFT_VELOCITY_P);
     leftMasterFalcon.config_kI(0, Constants.LEFT_VELOCITY_I);
-    leftMasterFalcon.config_kP(0, Constants.LEFT_VELOCITY_D);
+    leftMasterFalcon.config_kD(0, Constants.LEFT_VELOCITY_D);
 
     rightMasterFalcon.config_kF(0, Constants.RIGHT_VELOCITY_FF);
     rightMasterFalcon.config_kP(0, Constants.RIGHT_VELOCITY_P);

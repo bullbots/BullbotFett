@@ -16,4 +16,5 @@ public class SafeSparkMax extends CANSparkMax {
 
         restoreFactoryDefaults();
     }
+
 }

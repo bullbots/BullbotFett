@@ -4,13 +4,15 @@
 
 package frc.robot.util;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpiutil.math.MathUtil;
 
 /** Add your docs here. */
 public class DifferentialDriveDebug extends DifferentialDrive {
+    private double m_rightSideInvertMultiplier = -1.0;
+    private double kDefaultQuickStopThreshold = 0.2;
+    private double kDefaultQuickStopAlpha = 0.1;
 
     private double m_quickStopThreshold = kDefaultQuickStopThreshold;
     private double m_quickStopAlpha = kDefaultQuickStopAlpha;
@@ -34,8 +36,8 @@ public class DifferentialDriveDebug extends DifferentialDrive {
         // Square the inputs (while preserving the sign) to increase fine control
         // while permitting full power.
         if (squareInputs) {
-        xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
-        zRotation = Math.copySign(zRotation * zRotation, zRotation);
+            xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
+            zRotation = Math.copySign(zRotation * zRotation, zRotation);
         }
 
         double leftMotorOutput;
@@ -44,23 +46,23 @@ public class DifferentialDriveDebug extends DifferentialDrive {
         double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
 
         if (xSpeed >= 0.0) {
-        // First quadrant, else second quadrant
-        if (zRotation >= 0.0) {
-            leftMotorOutput = maxInput;
-            rightMotorOutput = xSpeed - zRotation;
+            // First quadrant, else second quadrant
+            if (zRotation >= 0.0) {
+                leftMotorOutput = maxInput;
+                rightMotorOutput = xSpeed - zRotation;
+            } else {
+                leftMotorOutput = xSpeed + zRotation;
+                rightMotorOutput = maxInput;
+            }
         } else {
-            leftMotorOutput = xSpeed + zRotation;
-            rightMotorOutput = maxInput;
-        }
-        } else {
-        // Third quadrant, else fourth quadrant
-        if (zRotation >= 0.0) {
-            leftMotorOutput = xSpeed + zRotation;
-            rightMotorOutput = maxInput;
-        } else {
-            leftMotorOutput = maxInput;
-            rightMotorOutput = xSpeed - zRotation;
-        }
+            // Third quadrant, else fourth quadrant
+            if (zRotation >= 0.0) {
+                leftMotorOutput = xSpeed + zRotation;
+                rightMotorOutput = maxInput;
+            } else {
+                leftMotorOutput = maxInput;
+                rightMotorOutput = xSpeed - zRotation;
+            }
         }
 
         // SmartDashboard.putNumber("Left Motor - ArcadeDrive", MathUtil.clamp(leftMotorOutput, -1.0, 1.0) * m_maxOutput);
@@ -72,7 +74,7 @@ public class DifferentialDriveDebug extends DifferentialDrive {
     @SuppressWarnings({"ParameterName", "PMD.CyclomaticComplexity"})
     public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
         super.curvatureDrive(xSpeed, zRotation, isQuickTurn);
-     
+
         // xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
         // xSpeed = applyDeadband(xSpeed, m_deadband);
 
@@ -133,5 +135,13 @@ public class DifferentialDriveDebug extends DifferentialDrive {
         // SmartDashboard.putNumber("Left Motor - CurvatureDrive", leftMotorOutput * m_maxOutput);
         // double rightSideInvertMultiplier = isRightSideInverted() ? -1.0 : 1.0;
         // SmartDashboard.putNumber("Right Motor - CurvatureDrive", rightMotorOutput * m_maxOutput * rightSideInvertMultiplier);
+    }
+
+    public boolean isRightSideInverted() {
+        return m_rightSideInvertMultiplier == -1.0;
+    }
+
+    public void setRightSideInverted(boolean rightSideInverted) {
+        m_rightSideInvertMultiplier = rightSideInverted ? -1.0 : 1.0;
     }
 }

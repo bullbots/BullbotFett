@@ -7,26 +7,27 @@
 
 package frc.robot.commands.Shooter_Commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.BooleanSupplier;
-
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpiutil.math.MathUtil;
-import edu.wpi.first.wpiutil.math.Pair;
 import frc.robot.subsystems.Harm;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.NEO_Shooter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class ShootVelocity extends CommandBase {
   /**
    * Creates a new Shoot.
    */
 
-   private Shooter shooter;
+   // private Shooter shooter;
+   private NEO_Shooter neo_shooter;
    private Compressor compressor;
    private Harm harm;
    private Timer ball_release_delay;
@@ -46,9 +47,25 @@ public class ShootVelocity extends CommandBase {
       new Pair<> (0, 0.10),
       new Pair<> (-10000, 0.10)));
 
-  public ShootVelocity(Shooter shooter, Compressor compressor, Harm harm, BooleanSupplier isLongShot) {
-    addRequirements(shooter, harm);
-    this.shooter = shooter;
+  // This is used for the Falcon 500
+  // public ShootVelocity(Shooter shooter, Compressor compressor, Harm harm, BooleanSupplier isLongShot) {
+  //   addRequirements(shooter, harm);
+  //   this.shooter = shooter;
+  //   this.compressor = compressor;
+  //   this.harm = harm;
+  //   this.isLongShot = isLongShot;
+  //   ball_release_delay = new Timer();
+
+  //   SmartDashboard.putNumber("Shooter Velocity", vel);
+  //   SmartDashboard.putNumber("Backspin Factor", backspin);
+  //   var vels = shooter.getVelocities();
+  //   SmartDashboard.putNumber("Top Vel", vels[0]);
+  //   SmartDashboard.putNumber("Bottom Vel", -vels[1]);
+  // }
+
+  public ShootVelocity(NEO_Shooter neo_shooter, Compressor compressor, Harm harm, BooleanSupplier isLongShot) {
+    addRequirements(neo_shooter, harm);
+    this.neo_shooter = neo_shooter;
     this.compressor = compressor;
     this.harm = harm;
     this.isLongShot = isLongShot;
@@ -56,9 +73,9 @@ public class ShootVelocity extends CommandBase {
 
     SmartDashboard.putNumber("Shooter Velocity", vel);
     SmartDashboard.putNumber("Backspin Factor", backspin);
-    var vels = shooter.getVelocities();
-    SmartDashboard.putNumber("Top Vel", vels[0]);
-    SmartDashboard.putNumber("Bottom Vel", -vels[1]);
+    var neo_vels = neo_shooter.getVelocities();
+    SmartDashboard.putNumber("Neo Top Vel", neo_vels[0]);
+    SmartDashboard.putNumber("Neo Bottom Vel", neo_vels[1]);
   }
 
   // Called when the command is initially scheduled.
@@ -95,10 +112,12 @@ public class ShootVelocity extends CommandBase {
     double bottom_vel = vel + vel * backspin / 2;
     MathUtil.clamp(top_vel, 0, 1);
     MathUtil.clamp(bottom_vel, 0, 1);
-    shooter.set(top_vel, -bottom_vel);
+    // shooter.set(top_vel, -bottom_vel);
+    neo_shooter.set(top_vel, bottom_vel);
     // shooter.set(0.1, -bottom_vel);
 
-    shooter.ballReleaseServo.set(1.0);
+    // shooter.ballReleaseServo.set(1.0);
+    neo_shooter.ballReleaseServo.set(1.0);
     servoState = false;
   }
 
@@ -106,7 +125,8 @@ public class ShootVelocity extends CommandBase {
   @Override
   public void execute() {
     if (!servoState && ball_release_delay.hasElapsed(1)) {
-      shooter.ballReleaseServo.set(0);
+      // shooter.ballReleaseServo.set(0);
+      neo_shooter.ballReleaseServo.set(0);
       servoState = true;
     }
 
@@ -119,15 +139,19 @@ public class ShootVelocity extends CommandBase {
       harm.lowerShooterHood();
     }
 
-    var vels = shooter.getVelocities();
-    SmartDashboard.putNumber("Top Vel", vels[0]);
-    SmartDashboard.putNumber("Bottom Vel", -vels[1]);
+    // var vels = shooter.getVelocities();
+    var neo_vels = neo_shooter.getVelocities();
+    // SmartDashboard.putNumber("Top Vel", vels[0]);
+    // SmartDashboard.putNumber("Bottom Vel", -vels[1]);
+    SmartDashboard.putNumber("NEO Top Vel", neo_vels[0]);
+    SmartDashboard.putNumber("NEO Bottom Vel", neo_vels[1]);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.set(0, 0);
+    // shooter.set(0, 0);
+    neo_shooter.set(0, 0);
     compressor.start();
   }
 

@@ -7,25 +7,26 @@
 
 package frc.robot.commands.Drivetrain_Commands;
 
-import java.util.function.DoubleConsumer;
-import java.util.function.DoubleSupplier;
-
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
-import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.Constants;
+import frc.robot.subsystems.DrivetrainCIM;
 import frc.robot.subsystems.DrivetrainFalcon;
 import frc.robot.subsystems.DrivetrainFalcon.CoastMode;
+
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
 
 public class AlignShooter extends PIDCommand {
   /**
    * Creates a new AlignShooter.
    */
   private DrivetrainFalcon drivetrain;
+  private DrivetrainCIM drivetrainCIM;
   private final double kP = 1. / 950.0;
 
   private double decay = -.5;
@@ -39,13 +40,22 @@ public class AlignShooter extends PIDCommand {
   private AlignMotorFeedforward m_ff = new AlignMotorFeedforward(0.18, 0.0);
 
   public AlignShooter(PIDController controller,
-  DoubleSupplier measurementSource,
-  double setpointSource,
-  DoubleConsumer useOutput,
-  DrivetrainFalcon drivetrain) {
+                      DoubleSupplier measurementSource,
+                      double setpointSource,
+                      DoubleConsumer useOutput,
+                      DrivetrainFalcon drivetrain) {
     super(controller, measurementSource, setpointSource, useOutput, drivetrain);
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
+  }
+
+  public AlignShooter(PIDController controller,
+                      DoubleSupplier measurementSource,
+                      double setpointSource,
+                      DoubleConsumer useOutput,
+                      DrivetrainCIM drivetrainCIM) {
+    super(controller, measurementSource, setpointSource, useOutput, drivetrainCIM);
+    this.drivetrainCIM = drivetrainCIM;
   }
 
   @Override

@@ -8,7 +8,7 @@
 package frc.robot.commands.Harm_Commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Harm;
 
 public class RaiseIntake extends CommandBase {
   /**

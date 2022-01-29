@@ -4,11 +4,11 @@
 
 package frc.robot.util;
 
-import java.lang.reflect.Field;
-
-import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+
+import java.lang.reflect.Field;
 
 /** Add your docs here. */
 public class PIDControllerDebug extends PIDController {

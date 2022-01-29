@@ -4,14 +4,14 @@
 
 package frc.robot.util;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Filesystem;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 
 /** Data class for storing and generating Trajectory parameters */
 public class TrajectoryPacket {

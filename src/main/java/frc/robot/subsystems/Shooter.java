@@ -1,27 +1,23 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import frc.robot.Robot;
+import frc.robot.util.SafeTalonFX;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import frc.robot.util.SafeTalonFX;
 
 public class Shooter extends SubsystemBase {
 
     private SafeTalonFX top_shooter;
     private SafeTalonFX bottom_shooter;
 
-    public final Servo ballReleaseServo = new Servo(Constants.RELEASE_SERVO_PORT);
+    // public final Servo ballReleaseServo = new Servo(Constants.RELEASE_SERVO_PORT);
 
     private NetworkTableEntry topVelocity;
     private NetworkTableEntry bottomVelocity;
@@ -43,7 +39,7 @@ public class Shooter extends SubsystemBase {
         top_shooter.setNeutralMode(NeutralMode.Coast);
         bottom_shooter.setNeutralMode(NeutralMode.Coast);
 
-        setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
+        // setDefaultCommand(new RunCommand(() -> ballReleaseServo.set(1), this));
 
         var inst = NetworkTableInstance.getDefault();
         // topVelocity = inst.getEntry("Shooter Top Velocity");
@@ -54,12 +50,12 @@ public class Shooter extends SubsystemBase {
         top_shooter.config_kF(0, Constants.SHOOTER_FF);
         top_shooter.config_kP(0, Constants.SHOOTER_P);
         top_shooter.config_kI(0, Constants.SHOOTER_I);
-        top_shooter.config_kP(0, Constants.SHOOTER_D);
+        top_shooter.config_kD(0, Constants.SHOOTER_D);
 
         bottom_shooter.config_kF(0, Constants.SHOOTER_FF);
         bottom_shooter.config_kP(0, Constants.SHOOTER_P);
         bottom_shooter.config_kI(0, Constants.SHOOTER_I);
-        bottom_shooter.config_kP(0, Constants.SHOOTER_D);
+        bottom_shooter.config_kD(0, Constants.SHOOTER_D);
     }
 
     public void stop() {
@@ -90,6 +86,7 @@ public class Shooter extends SubsystemBase {
                     break;
                 case BOTTOM:
                     curIndex = curBottomVelIndex;
+                    break;
             }
 
             curVal = velocityRange.get(curIndex);

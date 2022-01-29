@@ -11,67 +11,78 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.DrivetrainCIM;
 import frc.robot.subsystems.DrivetrainFalcon;
 
 public class JoystickDrive extends CommandBase {
-  
-  private DrivetrainFalcon m_drivetrain;
-  private DoubleSupplier joyY;
-  private DoubleSupplier joyX;
-  private DoubleSupplier joyZ;
 
-  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX) {
-    // m_drivetrain = drivetrain;
-    // this.joyY = joyY;
-    // this.joyX = joyX;
 
-    // addRequirements(m_drivetrain);
-    this(drivetrain, joyY, joyX,  () -> 1.0);
-  }
+    // private DrivetrainFalcon m_drivetrain;
+    private DrivetrainCIM m_drivetrain;
+    private DoubleSupplier joyY;
+    private DoubleSupplier joyX;
+    private DoubleSupplier joyZ;
 
-  public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
-    m_drivetrain = drivetrain;
-    this.joyY = joyY;
-    this.joyX = joyX;
-    this.joyZ = joyZ;
+    public JoystickDrive(DrivetrainCIM drivetrain, DoubleSupplier joyY, DoubleSupplier joyX) {
+        // m_drivetrain = drivetrain;
+        // this.joyY = joyY;
+        // this.joyX = joyX;
 
-    addRequirements(m_drivetrain);
-  }
+        // addRequirements(m_drivetrain);
+        this(drivetrain, joyY, joyX,  () -> 1.0);
+    }
 
-  @Override
-  public void initialize() {
-  }
+//    public JoystickDrive(DrivetrainFalcon drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
+//        m_drivetrain = drivetrain;
+//        this.joyY = joyY;
+//        this.joyX = joyX;
+//        this.joyZ = joyZ;
+//
+//        addRequirements(m_drivetrain);
+//    }
 
-  @Override
-  public void execute() {
-    double _joyY = joyY.getAsDouble();
-    double _joyX = joyX.getAsDouble();
-    boolean turnInPlace = true;
-    double _joyZ = joyZ.getAsDouble();
-    m_drivetrain.curvatureDrive(_joyY, _joyX, turnInPlace);
-    // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
+    public JoystickDrive(DrivetrainCIM drivetrain, DoubleSupplier joyY, DoubleSupplier joyX, DoubleSupplier joyZ) {
+        m_drivetrain = drivetrain;
+        this.joyY = joyY;
+        this.joyX = joyX;
 
-    SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
-    // SmartDashboard.putNumber("JoyY", joyY.getAsDouble());
-    // SmartDashboard.putNumber("JoyZ", joyZ.getAsDouble());
+        addRequirements(m_drivetrain);
+    }
 
-    // if (joyX.getAsDouble() < -.1) {
-    //   m_drivetrain.driveLeft(.5);
-    // } else if (joyX.getAsDouble() > .1) {
-    //   m_drivetrain.driveRight(.5);
-    // } else {
-    //   m_drivetrain.driveLeft(0);
-    //   m_drivetrain.driveRight(0);
-    // }
-  }
+    @Override
+    public void initialize() {
+    }
 
-  @Override
-  public void end(boolean interrupted) {
-    m_drivetrain.set(0,0);
-  }
+    @Override
+    public void execute() {
+        double _joyY = joyY.getAsDouble();
+        double _joyX = joyX.getAsDouble();
+        boolean turnInPlace = true;
+        // double _joyZ = joyZ.getAsDouble();
+        m_drivetrain.curvatureDrive(_joyY, _joyX, turnInPlace);
+        // m_drivetrain.arcadeDrive(joyY.getAsDouble(), 0, true);
 
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+        SmartDashboard.putNumber("JoyX", joyX.getAsDouble());
+        // SmartDashboard.putNumber("JoyY", joyY.getAsDouble());
+        // SmartDashboard.putNumber("JoyZ", joyZ.getAsDouble());
+
+        // if (joyX.getAsDouble() < -.1) {
+        //   m_drivetrain.driveLeft(.5);
+        // } else if (joyX.getAsDouble() > .1) {
+        //   m_drivetrain.driveRight(.5);
+        // } else {
+        //   m_drivetrain.driveLeft(0);
+        //   m_drivetrain.driveRight(0);
+        // }
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        m_drivetrain.set(0,0);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

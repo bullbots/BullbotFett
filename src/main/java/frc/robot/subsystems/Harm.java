@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,8 +26,8 @@ public class Harm extends SubsystemBase {
 
   private SafeSparkMax intake_belt;
   private SafeSparkMax intake_bar_spinner;
-  private DoubleSolenoid intake_solenoid = new DoubleSolenoid(Constants.INTAKE_DOWN, Constants.INTAKE_UP);
-  private DoubleSolenoid shooter_solenoid = new DoubleSolenoid(Constants.HIGH_ANGLE_CHANNEL, Constants.LOW_ANGLE_CHANNEL);
+  private DoubleSolenoid intake_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.INTAKE_DOWN, Constants.INTAKE_UP);
+  private DoubleSolenoid shooter_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.HIGH_ANGLE_CHANNEL, Constants.LOW_ANGLE_CHANNEL);
   private boolean raised = true;
 
   public Harm() {
@@ -47,14 +48,15 @@ public class Harm extends SubsystemBase {
   }
 
   /** This sets the intake motor
-   * @param val This is a value that sets the motor
+   * @param spinner This is a value that sets the motor
+   * @param belt
    */
   public void set(double spinner, double belt){
     intake_bar_spinner.set(spinner);
     intake_belt.set(-belt);
   }
 /**This sets the value of the intake wheel
- * @param val
+ * @param
  */
 
   public void intake() {
