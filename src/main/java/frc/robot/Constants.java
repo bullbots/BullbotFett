@@ -7,10 +7,10 @@ public final class Constants {
      */
 
      // Drivetrain Ports
-    public static int RIGHT_MASTER_PORT = 1; // 7 CIM
-    public static int RIGHT_SLAVE_PORT = 2; // 5 CIM
-    public static int LEFT_MASTER_PORT = 3; // 3 CIM
-    public static int LEFT_SLAVE_PORT = 4; // 4 CIM
+    public static int LEFT_MASTER_PORT = 1;
+    public static int LEFT_SLAVE_PORT = 2;
+    public static int RIGHT_MASTER_PORT = 3;
+    public static int RIGHT_SLAVE_PORT = 4;
 
     // Intake Ports
     // public static int INTAKE_PORT = 10;

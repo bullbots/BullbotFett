@@ -1,11 +1,15 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.IMotorController;
+import com.ctre.phoenix.motorcontrol.FollowerType;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -15,15 +19,16 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.util.DifferentialDriveDebug;
 import frc.robot.util.NavX;
+import frc.robot.util.SafeTalonFX;
 
 
 public class DrivetrainCIM extends SubsystemBase {
     // Inistalizing Master left and right + Slave left and right motors
-    private final SpeedController leftMasterCIM = new Talon(Constants.LEFT_MASTER_PORT);
-    private final SpeedController rightMasterCIM = new Talon(Constants.RIGHT_MASTER_PORT);
+    private final SafeTalonFX leftMasterCIM = new SafeTalonFX(Constants.LEFT_MASTER_PORT);
+    private final SafeTalonFX rightMasterCIM = new SafeTalonFX(Constants.RIGHT_MASTER_PORT);
 
-    private final SpeedController leftSlaveCIM = new Talon(Constants.LEFT_SLAVE_PORT);
-    private final SpeedController rightSlaveCIM = new Talon(Constants.RIGHT_SLAVE_PORT);
+    private final SafeTalonFX leftSlaveCIM = new SafeTalonFX(Constants.LEFT_SLAVE_PORT);
+    private final SafeTalonFX rightSlaveCIM = new SafeTalonFX(Constants.RIGHT_SLAVE_PORT);
 
     private final DifferentialDriveDebug diffDrive = new DifferentialDriveDebug(leftMasterCIM, rightMasterCIM);
     private final NavX gyro = new NavX();
@@ -50,14 +55,21 @@ public class DrivetrainCIM extends SubsystemBase {
 
     public static final Field2d m_fieldSim = new Field2d();
 
-    public enum CoastMode {
-        Coast, Brake
-    }
+//    public enum CoastMode {
+//        Coast, Brake
+//    }
 
     public DrivetrainCIM() {
         if (Robot.isReal()) {
+
+
+            leftSlaveCIM.follow(leftMasterCIM);
+            rightSlaveCIM.follow(rightMasterCIM);
+
             rightMasterCIM.setInverted(false);
-            leftMasterCIM.setInverted(false);
+            rightSlaveCIM.setInverted(InvertType.FollowMaster);
+            leftMasterCIM.setInverted(true);
+            leftSlaveCIM.setInverted(InvertType.FollowMaster);
 
 
             diffDrive.setDeadband(0.05);
@@ -147,6 +159,7 @@ public class DrivetrainCIM extends SubsystemBase {
 
     public void curvatureDrive(double speed, double rotation, boolean isQuickTurn) {
         diffDrive.curvatureDrive(speed, rotation, isQuickTurn);
+
     }
 
     /**
@@ -171,12 +184,17 @@ public class DrivetrainCIM extends SubsystemBase {
      */
     public void set(double leftPercent, double rightPercent) {
 
+        leftMasterCIM.set(leftPercent);
+        rightMasterCIM.set(rightPercent);
+
     }
 
     // Immediately stops the drivetrain, only use in emergencies
     public void stop() {
+
         leftMasterCIM.stopMotor();
         rightMasterCIM.stopMotor();
+
     }
 
     // Helper function to generate NetworkTableEntries
@@ -189,12 +207,8 @@ public class DrivetrainCIM extends SubsystemBase {
                 .getEntry();
     }
 
-    public void driveLeft(double val) {
-        leftMasterCIM.set(val);
-    }
+    public void driveLeft(double val) { leftMasterCIM.set(val); }
 
-    public void driveRight(double val) {
-        rightMasterCIM.set(val);
-    }
+    public void driveRight(double val) { rightMasterCIM.set(val); }
 
 }
